@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.LotteryUserInfoDao">
+  <resultMap id="BaseResultMap" type="com.stip.net.entity.LotteryUserInfo">
+    <id column="LotteryUserInfo_id" jdbcType="BIGINT" property="id" />
+    <result column="LotteryUserInfo_user_id" jdbcType="INTEGER" property="userId" />
+    <result column="LotteryUserInfo_mobile_phone" jdbcType="VARCHAR" property="mobilePhone" />
+    <result column="LotteryUserInfo_email" jdbcType="VARCHAR" property="email" />
+    <result column="LotteryUserInfo_password" jdbcType="VARCHAR" property="password" />
+    <result column="LotteryUserInfo_private_key" jdbcType="VARCHAR" property="privateKey" />
+    <result column="LotteryUserInfo_create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="LotteryUserInfo_update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    LotteryUserInfo.id as LotteryUserInfo_id, LotteryUserInfo.user_id as LotteryUserInfo_user_id, 
+    LotteryUserInfo.mobile_phone as LotteryUserInfo_mobile_phone, LotteryUserInfo.email as LotteryUserInfo_email, 
+    LotteryUserInfo.password as LotteryUserInfo_password, LotteryUserInfo.private_key as LotteryUserInfo_private_key, 
+    LotteryUserInfo.create_time as LotteryUserInfo_create_time, LotteryUserInfo.update_time as LotteryUserInfo_update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.stip.net.example.LotteryUserInfoExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_lottery_user_info LotteryUserInfo
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="fromRowNum != null and toRowNum >= 0">
+      limit #{fromRowNum}, #{toRowNum}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_lottery_user_info LotteryUserInfo
+    where LotteryUserInfo.id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_lottery_user_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.stip.net.example.LotteryUserInfoExample">
+    delete LotteryUserInfo from t_lottery_user_info LotteryUserInfo
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.stip.net.entity.LotteryUserInfo">
+    insert into t_lottery_user_info (id, user_id, mobile_phone, 
+      email, password, private_key, 
+      create_time, update_time)
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=INTEGER}, #{mobilePhone,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{privateKey,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.stip.net.entity.LotteryUserInfo">
+    insert into t_lottery_user_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="mobilePhone != null">
+        mobile_phone,
+      </if>
+      <if test="email != null">
+        email,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="privateKey != null">
+        private_key,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="mobilePhone != null">
+        #{mobilePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="privateKey != null">
+        #{privateKey,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.stip.net.example.LotteryUserInfoExample" resultType="java.lang.Integer">
+    select count(*) from t_lottery_user_info LotteryUserInfo
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_lottery_user_info LotteryUserInfo
+    <set>
+      <if test="record.id != null">
+        LotteryUserInfo.id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.userId != null">
+        LotteryUserInfo.user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.mobilePhone != null">
+        LotteryUserInfo.mobile_phone = #{record.mobilePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.email != null">
+        LotteryUserInfo.email = #{record.email,jdbcType=VARCHAR},
+      </if>
+      <if test="record.password != null">
+        LotteryUserInfo.password = #{record.password,jdbcType=VARCHAR},
+      </if>
+      <if test="record.privateKey != null">
+        LotteryUserInfo.private_key = #{record.privateKey,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        LotteryUserInfo.create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        LotteryUserInfo.update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_lottery_user_info LotteryUserInfo
+    set LotteryUserInfo.id = #{record.id,jdbcType=BIGINT},
+      LotteryUserInfo.user_id = #{record.userId,jdbcType=INTEGER},
+      LotteryUserInfo.mobile_phone = #{record.mobilePhone,jdbcType=VARCHAR},
+      LotteryUserInfo.email = #{record.email,jdbcType=VARCHAR},
+      LotteryUserInfo.password = #{record.password,jdbcType=VARCHAR},
+      LotteryUserInfo.private_key = #{record.privateKey,jdbcType=VARCHAR},
+      LotteryUserInfo.create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      LotteryUserInfo.update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.stip.net.entity.LotteryUserInfo">
+    update t_lottery_user_info
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="mobilePhone != null">
+        mobile_phone = #{mobilePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="privateKey != null">
+        private_key = #{privateKey,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.stip.net.entity.LotteryUserInfo">
+    update t_lottery_user_info
+    set user_id = #{userId,jdbcType=INTEGER},
+      mobile_phone = #{mobilePhone,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      private_key = #{privateKey,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.GameDao">
+
+	<insert id="insertEosFlow" parameterType="com.stip.net.entity.EosFlow">
+		INSERT INTO t_eos_flow
+			(username,gameType,io,source,roomId,qid,eos,serialNumber,childName,createTime)
+		VALUES
+			(#{username},#{gameType},#{io},#{source},#{roomId},#{qid},#{eos},#{serialNumber},#{childName},#{createTime})
+	</insert>
+
+	<select id="countMyPut" parameterType="string" resultType="_long">
+		SELECT COUNT(id) FROM t_eos_flow
+		WHERE username = #{username}
+		AND io=0
+		AND source=0
+	</select>
+</mapper>

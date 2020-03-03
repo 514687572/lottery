@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.lottery.dao.LotteryRecordsDao">
+
+	<select id="get" resultType="com.bootdo.lottery.domain.LotteryRecordsDO">
+		select `records_id`,`bet_num`,`lottery_one`,`lottery_two`,`lottery_three`,`lottery_four`,`lottery_five`,`large_num`,`lottery_single`,`hash_one`,`hash_two`,`hash_three`,`hash_four`,`hash_five`,`create_time`,`update_time`,`remark` from t_lottery_records where records_id = #{value}
+	</select>
+
+	<select id="list" resultType="com.bootdo.lottery.domain.LotteryRecordsDO">
+		select `records_id`,`bet_num`,`lottery_one`,`lottery_two`,`lottery_three`,`lottery_four`,`lottery_five`,`large_num`,`lottery_single`,`hash_one`,`hash_two`,`hash_three`,`hash_four`,`hash_five`,`create_time`,`update_time`,`remark` from t_lottery_records
+        <where>  
+		  		  <if test="recordsId != null and recordsId != ''"> and records_id = #{recordsId} </if>
+		  		  <if test="betNum != null and betNum != ''"> and bet_num = #{betNum} </if>
+		  		  <if test="lotteryOne != null and lotteryOne != ''"> and lottery_one = #{lotteryOne} </if>
+		  		  <if test="lotteryTwo != null and lotteryTwo != ''"> and lottery_two = #{lotteryTwo} </if>
+		  		  <if test="lotteryThree != null and lotteryThree != ''"> and lottery_three = #{lotteryThree} </if>
+		  		  <if test="lotteryFour != null and lotteryFour != ''"> and lottery_four = #{lotteryFour} </if>
+		  		  <if test="lotteryFive != null and lotteryFive != ''"> and lottery_five = #{lotteryFive} </if>
+		  		  <if test="largeNum != null and largeNum != ''"> and large_num = #{largeNum} </if>
+		  		  <if test="lotterySingle != null and lotterySingle != ''"> and lottery_single = #{lotterySingle} </if>
+		  		  <if test="hashOne != null and hashOne != ''"> and hash_one = #{hashOne} </if>
+		  		  <if test="hashTwo != null and hashTwo != ''"> and hash_two = #{hashTwo} </if>
+		  		  <if test="hashThree != null and hashThree != ''"> and hash_three = #{hashThree} </if>
+		  		  <if test="hashFour != null and hashFour != ''"> and hash_four = #{hashFour} </if>
+		  		  <if test="hashFive != null and hashFive != ''"> and hash_five = #{hashFive} </if>
+		  		  <if test="createTime != null and createTime != ''"> and create_time = #{createTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="remark != null and remark != ''"> and remark = #{remark} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by records_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_lottery_records
+		 <where>  
+		  		  <if test="recordsId != null and recordsId != ''"> and records_id = #{recordsId} </if>
+		  		  <if test="betNum != null and betNum != ''"> and bet_num = #{betNum} </if>
+		  		  <if test="lotteryOne != null and lotteryOne != ''"> and lottery_one = #{lotteryOne} </if>
+		  		  <if test="lotteryTwo != null and lotteryTwo != ''"> and lottery_two = #{lotteryTwo} </if>
+		  		  <if test="lotteryThree != null and lotteryThree != ''"> and lottery_three = #{lotteryThree} </if>
+		  		  <if test="lotteryFour != null and lotteryFour != ''"> and lottery_four = #{lotteryFour} </if>
+		  		  <if test="lotteryFive != null and lotteryFive != ''"> and lottery_five = #{lotteryFive} </if>
+		  		  <if test="largeNum != null and largeNum != ''"> and large_num = #{largeNum} </if>
+		  		  <if test="lotterySingle != null and lotterySingle != ''"> and lottery_single = #{lotterySingle} </if>
+		  		  <if test="hashOne != null and hashOne != ''"> and hash_one = #{hashOne} </if>
+		  		  <if test="hashTwo != null and hashTwo != ''"> and hash_two = #{hashTwo} </if>
+		  		  <if test="hashThree != null and hashThree != ''"> and hash_three = #{hashThree} </if>
+		  		  <if test="hashFour != null and hashFour != ''"> and hash_four = #{hashFour} </if>
+		  		  <if test="hashFive != null and hashFive != ''"> and hash_five = #{hashFive} </if>
+		  		  <if test="createTime != null and createTime != ''"> and create_time = #{createTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="remark != null and remark != ''"> and remark = #{remark} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.bootdo.lottery.domain.LotteryRecordsDO" useGeneratedKeys="true" keyProperty="recordsId">
+		insert into t_lottery_records
+		(
+			`bet_num`, 
+			`lottery_one`, 
+			`lottery_two`, 
+			`lottery_three`, 
+			`lottery_four`, 
+			`lottery_five`, 
+			`large_num`, 
+			`lottery_single`, 
+			`hash_one`, 
+			`hash_two`, 
+			`hash_three`, 
+			`hash_four`, 
+			`hash_five`, 
+			`create_time`, 
+			`update_time`, 
+			`remark`
+		)
+		values
+		(
+			#{betNum}, 
+			#{lotteryOne}, 
+			#{lotteryTwo}, 
+			#{lotteryThree}, 
+			#{lotteryFour}, 
+			#{lotteryFive}, 
+			#{largeNum}, 
+			#{lotterySingle}, 
+			#{hashOne}, 
+			#{hashTwo}, 
+			#{hashThree}, 
+			#{hashFour}, 
+			#{hashFive}, 
+			#{createTime}, 
+			#{updateTime}, 
+			#{remark}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.bootdo.lottery.domain.LotteryRecordsDO">
+		update t_lottery_records 
+		<set>
+			<if test="betNum != null">`bet_num` = #{betNum}, </if>
+			<if test="lotteryOne != null">`lottery_one` = #{lotteryOne}, </if>
+			<if test="lotteryTwo != null">`lottery_two` = #{lotteryTwo}, </if>
+			<if test="lotteryThree != null">`lottery_three` = #{lotteryThree}, </if>
+			<if test="lotteryFour != null">`lottery_four` = #{lotteryFour}, </if>
+			<if test="lotteryFive != null">`lottery_five` = #{lotteryFive}, </if>
+			<if test="largeNum != null">`large_num` = #{largeNum}, </if>
+			<if test="lotterySingle != null">`lottery_single` = #{lotterySingle}, </if>
+			<if test="hashOne != null">`hash_one` = #{hashOne}, </if>
+			<if test="hashTwo != null">`hash_two` = #{hashTwo}, </if>
+			<if test="hashThree != null">`hash_three` = #{hashThree}, </if>
+			<if test="hashFour != null">`hash_four` = #{hashFour}, </if>
+			<if test="hashFive != null">`hash_five` = #{hashFive}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="remark != null">`remark` = #{remark}</if>
+		</set>
+		where records_id = #{recordsId}
+	</update>
+	
+	<delete id="remove">
+		delete from t_lottery_records where records_id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_lottery_records where records_id in 
+		<foreach item="recordsId" collection="array" open="(" separator="," close=")">
+			#{recordsId}
+		</foreach>
+	</delete>
+
+</mapper>

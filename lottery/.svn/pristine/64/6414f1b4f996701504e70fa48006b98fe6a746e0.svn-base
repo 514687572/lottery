@@ -1,0 +1,143 @@
+#live{
+    width: 1000px;
+    height: 341px;
+    margin:auto;
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    box-shadow: 4px 4px 2px 1px #20223b;
+    margin-bottom:46px;
+}
+#betsLive{
+    width: 296px;
+    height: 340px;
+    background-color:#252A48;
+    text-align: center;
+    color:#8D99A6;
+    border-radius: 2px 2px 2px 2px;
+}
+
+.userProfita{
+    width: 296px;
+    height: 305px;
+    background-color:#252A48;
+    text-align: center;
+    color:#8D99A6;
+    margin-top: 5px;
+    /*background-color: red;*/
+    border-radius: 2px 2px 2px 2px;
+}
+#betsLive>p{
+    color: white;
+    margin-top: 16px;
+    font-weight: bolder;
+}
+#myOrders{
+    width: 1000px;
+    height: 340px;
+    background-color:#252a48;
+    text-align: center;
+    /*background-color: red;*/
+    margin: auto;
+}
+.userProfit{
+    width: 272px;
+    height: 60px;
+    margin: auto;
+    /*background-color: #000066;*/
+    border-top: 1px solid #313862;
+}
+.userProfit>div{
+    text-align: left;
+    margin-top: 12px;
+    color: #656F7B;
+    font-size: smaller;
+}
+.userDetail{
+    display: flex;
+    justify-content: space-between;
+}
+.win{
+    color: #3083de;
+}
+.win>b{
+    color: #4d5569;
+}
+.winR{
+    color: #ff564f;
+}
+.winR>b{
+    color:#4d5569;
+}
+#myOrders>p{
+    color: white;
+    width: 1000px;
+    height: 50px;
+    margin: auto;
+    line-height: 50px;
+    /*margin-top: 16px;*/
+    font-weight: bolder;
+    /*padding-bottom: 18px;*/
+    border-bottom: 1px solid #313862;
+}
+.orderHead{
+    width:1000px;
+    height:40px;
+}
+.orderHead:not(:first-of-type):hover{
+    background-color: #313862;
+    border: 1px solid #3083de;
+    width: 1000px;
+}
+.orderHeadInner{
+    width: 1000px;
+    height: 40px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    border-bottom: 1px  solid #313862;
+}
+.orderHeadInner>div{
+    text-align: center;
+    line-height: 41px;
+    font-size:12px;
+}
+
+
+.orderHeadInner>div:nth-child(1){
+    width:95px;
+    text-align: center;
+    /*background-color: red;*/
+}
+.orderHeadInner>div:nth-child(2){
+    width:60px;
+    /*background-color: blue;*/
+}
+.orderHeadInner>div:nth-child(3){
+    width:100px;
+    /*background-color: red;*/
+}
+.orderHeadInner>div:nth-child(4){
+    width:60px;
+    /*background-color: blue;*/
+}
+.orderHeadInner>div:nth-child(5){
+    width:60px;
+    /*background-color: red;*/
+}
+.orderHeadInner>div:nth-child(6){
+    width:200px;
+    /*background-color: blue;*/
+}
+
+/*
+.smartmarquee{
+    position: relative;
+    overflow: hidden;
+    duration:500;
+    loop:false
+    !*background-color: red;*!
+}
+
+.smartmarquee.container{ position: absolute; }*/

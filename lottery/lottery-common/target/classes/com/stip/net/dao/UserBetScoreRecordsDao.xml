@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.UserBetScoreRecordsDao">
+  <resultMap id="BaseResultMap" type="com.stip.net.entity.UserBetScoreRecords">
+    <id column="UserBetScoreRecords_bet_id" jdbcType="INTEGER" property="betId" />
+    <result column="UserBetScoreRecords_bet_num" jdbcType="BIGINT" property="betNum" />
+    <result column="UserBetScoreRecords_user_id" jdbcType="BIGINT" property="userId" />
+    <result column="UserBetScoreRecords_user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="UserBetScoreRecords_bet_json" jdbcType="VARCHAR" property="betJson" />
+    <result column="UserBetScoreRecords_lottery_one" jdbcType="VARCHAR" property="lotteryOne" />
+    <result column="UserBetScoreRecords_lottery_two" jdbcType="VARCHAR" property="lotteryTwo" />
+    <result column="UserBetScoreRecords_lottery_three" jdbcType="VARCHAR" property="lotteryThree" />
+    <result column="UserBetScoreRecords_lottery_four" jdbcType="VARCHAR" property="lotteryFour" />
+    <result column="UserBetScoreRecords_lottery_five" jdbcType="VARCHAR" property="lotteryFive" />
+    <result column="UserBetScoreRecords_high_class" jdbcType="VARCHAR" property="highClass" />
+    <result column="UserBetScoreRecords_large_num" jdbcType="VARCHAR" property="largeNum" />
+    <result column="UserBetScoreRecords_lottery_single" jdbcType="VARCHAR" property="lotterySingle" />
+    <result column="UserBetScoreRecords_note_num" jdbcType="INTEGER" property="noteNum" />
+    <result column="UserBetScoreRecords_note_money" jdbcType="DOUBLE" property="noteMoney" />
+    <result column="UserBetScoreRecords_lottery_bonus" jdbcType="DOUBLE" property="lotteryBonus" />
+    <result column="UserBetScoreRecords_lottery_status" jdbcType="VARCHAR" property="lotteryStatus" />
+    <result column="UserBetScoreRecords_create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UserBetScoreRecords_update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="UserBetScoreRecords_remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    UserBetScoreRecords.bet_id as UserBetScoreRecords_bet_id, UserBetScoreRecords.bet_num as UserBetScoreRecords_bet_num, 
+    UserBetScoreRecords.user_id as UserBetScoreRecords_user_id, UserBetScoreRecords.user_name as UserBetScoreRecords_user_name, 
+    UserBetScoreRecords.bet_json as UserBetScoreRecords_bet_json, UserBetScoreRecords.lottery_one as UserBetScoreRecords_lottery_one, 
+    UserBetScoreRecords.lottery_two as UserBetScoreRecords_lottery_two, UserBetScoreRecords.lottery_three as UserBetScoreRecords_lottery_three, 
+    UserBetScoreRecords.lottery_four as UserBetScoreRecords_lottery_four, UserBetScoreRecords.lottery_five as UserBetScoreRecords_lottery_five, 
+    UserBetScoreRecords.high_class as UserBetScoreRecords_high_class, UserBetScoreRecords.large_num as UserBetScoreRecords_large_num, 
+    UserBetScoreRecords.lottery_single as UserBetScoreRecords_lottery_single, UserBetScoreRecords.note_num as UserBetScoreRecords_note_num, 
+    UserBetScoreRecords.note_money as UserBetScoreRecords_note_money, UserBetScoreRecords.lottery_bonus as UserBetScoreRecords_lottery_bonus, 
+    UserBetScoreRecords.lottery_status as UserBetScoreRecords_lottery_status, UserBetScoreRecords.create_time as UserBetScoreRecords_create_time, 
+    UserBetScoreRecords.update_time as UserBetScoreRecords_update_time, UserBetScoreRecords.remark as UserBetScoreRecords_remark
+  </sql>
+  <select id="selectByExample" parameterType="com.stip.net.example.UserBetScoreRecordsExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_user_bet_records_score UserBetScoreRecords
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="fromRowNum != null and toRowNum >= 0">
+      limit #{fromRowNum}, #{toRowNum}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_user_bet_records_score UserBetScoreRecords
+    where UserBetScoreRecords.bet_id = #{betId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_user_bet_records_score
+    where bet_id = #{betId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.stip.net.example.UserBetScoreRecordsExample">
+    delete UserBetScoreRecords from t_user_bet_records_score UserBetScoreRecords
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.stip.net.entity.UserBetScoreRecords">
+    insert into t_user_bet_records_score (bet_id, bet_num, user_id, 
+      user_name, bet_json, lottery_one, 
+      lottery_two, lottery_three, lottery_four, 
+      lottery_five, high_class, large_num, 
+      lottery_single, note_num, note_money, 
+      lottery_bonus, lottery_status, create_time, 
+      update_time, remark)
+    values (#{betId,jdbcType=INTEGER}, #{betNum,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, 
+      #{userName,jdbcType=VARCHAR}, #{betJson,jdbcType=VARCHAR}, #{lotteryOne,jdbcType=VARCHAR}, 
+      #{lotteryTwo,jdbcType=VARCHAR}, #{lotteryThree,jdbcType=VARCHAR}, #{lotteryFour,jdbcType=VARCHAR}, 
+      #{lotteryFive,jdbcType=VARCHAR}, #{highClass,jdbcType=VARCHAR}, #{largeNum,jdbcType=VARCHAR}, 
+      #{lotterySingle,jdbcType=VARCHAR}, #{noteNum,jdbcType=INTEGER}, #{noteMoney,jdbcType=DOUBLE}, 
+      #{lotteryBonus,jdbcType=DOUBLE}, #{lotteryStatus,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.stip.net.entity.UserBetScoreRecords">
+    insert into t_user_bet_records_score
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="betId != null">
+        bet_id,
+      </if>
+      <if test="betNum != null">
+        bet_num,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="betJson != null">
+        bet_json,
+      </if>
+      <if test="lotteryOne != null">
+        lottery_one,
+      </if>
+      <if test="lotteryTwo != null">
+        lottery_two,
+      </if>
+      <if test="lotteryThree != null">
+        lottery_three,
+      </if>
+      <if test="lotteryFour != null">
+        lottery_four,
+      </if>
+      <if test="lotteryFive != null">
+        lottery_five,
+      </if>
+      <if test="highClass != null">
+        high_class,
+      </if>
+      <if test="largeNum != null">
+        large_num,
+      </if>
+      <if test="lotterySingle != null">
+        lottery_single,
+      </if>
+      <if test="noteNum != null">
+        note_num,
+      </if>
+      <if test="noteMoney != null">
+        note_money,
+      </if>
+      <if test="lotteryBonus != null">
+        lottery_bonus,
+      </if>
+      <if test="lotteryStatus != null">
+        lottery_status,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="betId != null">
+        #{betId,jdbcType=INTEGER},
+      </if>
+      <if test="betNum != null">
+        #{betNum,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="betJson != null">
+        #{betJson,jdbcType=VARCHAR},
+      </if>
+      <if test="lotteryOne != null">
+        #{lotteryOne,jdbcType=VARCHAR},
+      </if>
+      <if test="lotteryTwo != null">
+        #{lotteryTwo,jdbcType=VARCHAR},
+      </if>
+      <if test="lotteryThree != null">
+        #{lotteryThree,jdbcType=VARCHAR},
+      </if>
+      <if test="lotteryFour != null">
+        #{lotteryFour,jdbcType=VARCHAR},
+      </if>
+      <if test="lotteryFive != null">
+        #{lotteryFive,jdbcType=VARCHAR},
+      </if>
+      <if test="highClass != null">
+        #{highClass,jdbcType=VARCHAR},
+      </if>
+      <if test="largeNum != null">
+        #{largeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="lotterySingle != null">
+        #{lotterySingle,jdbcType=VARCHAR},
+      </if>
+      <if test="noteNum != null">
+        #{noteNum,jdbcType=INTEGER},
+      </if>
+      <if test="noteMoney != null">
+        #{noteMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="lotteryBonus != null">
+        #{lotteryBonus,jdbcType=DOUBLE},
+      </if>
+      <if test="lotteryStatus != null">
+        #{lotteryStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.stip.net.example.UserBetScoreRecordsExample" resultType="java.lang.Integer">
+    select count(*) from t_user_bet_records_score UserBetScoreRecords
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_user_bet_records_score UserBetScoreRecords
+    <set>
+      <if test="record.betId != null">
+        UserBetScoreRecords.bet_id = #{record.betId,jdbcType=INTEGER},
+      </if>
+      <if test="record.betNum != null">
+        UserBetScoreRecords.bet_num = #{record.betNum,jdbcType=BIGINT},
+      </if>
+      <if test="record.userId != null">
+        UserBetScoreRecords.user_id = #{record.userId,jdbcType=BIGINT},
+      </if>
+      <if test="record.userName != null">
+        UserBetScoreRecords.user_name = #{record.userName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.betJson != null">
+        UserBetScoreRecords.bet_json = #{record.betJson,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lotteryOne != null">
+        UserBetScoreRecords.lottery_one = #{record.lotteryOne,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lotteryTwo != null">
+        UserBetScoreRecords.lottery_two = #{record.lotteryTwo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lotteryThree != null">
+        UserBetScoreRecords.lottery_three = #{record.lotteryThree,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lotteryFour != null">
+        UserBetScoreRecords.lottery_four = #{record.lotteryFour,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lotteryFive != null">
+        UserBetScoreRecords.lottery_five = #{record.lotteryFive,jdbcType=VARCHAR},
+      </if>
+      <if test="record.highClass != null">
+        UserBetScoreRecords.high_class = #{record.highClass,jdbcType=VARCHAR},
+      </if>
+      <if test="record.largeNum != null">
+        UserBetScoreRecords.large_num = #{record.largeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lotterySingle != null">
+        UserBetScoreRecords.lottery_single = #{record.lotterySingle,jdbcType=VARCHAR},
+      </if>
+      <if test="record.noteNum != null">
+        UserBetScoreRecords.note_num = #{record.noteNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.noteMoney != null">
+        UserBetScoreRecords.note_money = #{record.noteMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="record.lotteryBonus != null">
+        UserBetScoreRecords.lottery_bonus = #{record.lotteryBonus,jdbcType=DOUBLE},
+      </if>
+      <if test="record.lotteryStatus != null">
+        UserBetScoreRecords.lottery_status = #{record.lotteryStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        UserBetScoreRecords.create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        UserBetScoreRecords.update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.remark != null">
+        UserBetScoreRecords.remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_user_bet_records_score UserBetScoreRecords
+    set UserBetScoreRecords.bet_id = #{record.betId,jdbcType=INTEGER},
+      UserBetScoreRecords.bet_num = #{record.betNum,jdbcType=BIGINT},
+      UserBetScoreRecords.user_id = #{record.userId,jdbcType=BIGINT},
+      UserBetScoreRecords.user_name = #{record.userName,jdbcType=VARCHAR},
+      UserBetScoreRecords.bet_json = #{record.betJson,jdbcType=VARCHAR},
+      UserBetScoreRecords.lottery_one = #{record.lotteryOne,jdbcType=VARCHAR},
+      UserBetScoreRecords.lottery_two = #{record.lotteryTwo,jdbcType=VARCHAR},
+      UserBetScoreRecords.lottery_three = #{record.lotteryThree,jdbcType=VARCHAR},
+      UserBetScoreRecords.lottery_four = #{record.lotteryFour,jdbcType=VARCHAR},
+      UserBetScoreRecords.lottery_five = #{record.lotteryFive,jdbcType=VARCHAR},
+      UserBetScoreRecords.high_class = #{record.highClass,jdbcType=VARCHAR},
+      UserBetScoreRecords.large_num = #{record.largeNum,jdbcType=VARCHAR},
+      UserBetScoreRecords.lottery_single = #{record.lotterySingle,jdbcType=VARCHAR},
+      UserBetScoreRecords.note_num = #{record.noteNum,jdbcType=INTEGER},
+      UserBetScoreRecords.note_money = #{record.noteMoney,jdbcType=DOUBLE},
+      UserBetScoreRecords.lottery_bonus = #{record.lotteryBonus,jdbcType=DOUBLE},
+      UserBetScoreRecords.lottery_status = #{record.lotteryStatus,jdbcType=VARCHAR},
+      UserBetScoreRecords.create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      UserBetScoreRecords.update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      UserBetScoreRecords.remark = #{record.remark,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.stip.net.entity.UserBetScoreRecords">
+    update t_user_bet_records_score
+    <set>
+      <if test="betNum != null">
+        bet_num = #{betNum,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="betJson != null">
+        bet_json = #{betJson,jdbcType=VARCHAR},
+      </if>
+      <if test="lotteryOne != null">
+        lottery_one = #{lotteryOne,jdbcType=VARCHAR},
+      </if>
+      <if test="lotteryTwo != null">
+        lottery_two = #{lotteryTwo,jdbcType=VARCHAR},
+      </if>
+      <if test="lotteryThree != null">
+        lottery_three = #{lotteryThree,jdbcType=VARCHAR},
+      </if>
+      <if test="lotteryFour != null">
+        lottery_four = #{lotteryFour,jdbcType=VARCHAR},
+      </if>
+      <if test="lotteryFive != null">
+        lottery_five = #{lotteryFive,jdbcType=VARCHAR},
+      </if>
+      <if test="highClass != null">
+        high_class = #{highClass,jdbcType=VARCHAR},
+      </if>
+      <if test="largeNum != null">
+        large_num = #{largeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="lotterySingle != null">
+        lottery_single = #{lotterySingle,jdbcType=VARCHAR},
+      </if>
+      <if test="noteNum != null">
+        note_num = #{noteNum,jdbcType=INTEGER},
+      </if>
+      <if test="noteMoney != null">
+        note_money = #{noteMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="lotteryBonus != null">
+        lottery_bonus = #{lotteryBonus,jdbcType=DOUBLE},
+      </if>
+      <if test="lotteryStatus != null">
+        lottery_status = #{lotteryStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where bet_id = #{betId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.stip.net.entity.UserBetScoreRecords">
+    update t_user_bet_records_score
+    set bet_num = #{betNum,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=BIGINT},
+      user_name = #{userName,jdbcType=VARCHAR},
+      bet_json = #{betJson,jdbcType=VARCHAR},
+      lottery_one = #{lotteryOne,jdbcType=VARCHAR},
+      lottery_two = #{lotteryTwo,jdbcType=VARCHAR},
+      lottery_three = #{lotteryThree,jdbcType=VARCHAR},
+      lottery_four = #{lotteryFour,jdbcType=VARCHAR},
+      lottery_five = #{lotteryFive,jdbcType=VARCHAR},
+      high_class = #{highClass,jdbcType=VARCHAR},
+      large_num = #{largeNum,jdbcType=VARCHAR},
+      lottery_single = #{lotterySingle,jdbcType=VARCHAR},
+      note_num = #{noteNum,jdbcType=INTEGER},
+      note_money = #{noteMoney,jdbcType=DOUBLE},
+      lottery_bonus = #{lotteryBonus,jdbcType=DOUBLE},
+      lottery_status = #{lotteryStatus,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR}
+    where bet_id = #{betId,jdbcType=INTEGER}
+  </update>
+</mapper>

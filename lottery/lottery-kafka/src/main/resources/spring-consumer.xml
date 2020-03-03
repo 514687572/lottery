@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+        http://www.springframework.org/schema/context   
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<bean id="consumerProperties" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+				<entry key="bootstrap.servers" value="39.98.139.4:9099" />
+				<entry key="group.id" value="g1" />
+				<entry key="enable.auto.commit" value="true" />
+				<entry key="auto.commit.interval.ms" value="1000" />
+				<entry key="session.timeout.ms" value="15000" />
+				<entry key="key.deserializer" value="org.apache.kafka.common.serialization.StringDeserializer" />
+				<entry key="value.deserializer" value="org.apache.kafka.common.serialization.StringDeserializer" />
+			</map>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="consumerFactory" class="org.springframework.kafka.core.DefaultKafkaConsumerFactory">
+		<constructor-arg>
+			<ref bean="consumerProperties" />
+		</constructor-arg>
+	</bean>
+	
+	<!-- 区块消费者 -->
+	<bean id="messageListernerConsumerService" class="com.stip.net.kafka.consumer.KafkaConsumer" />
+	
+	<bean id="containerProperties" class="org.springframework.kafka.listener.config.ContainerProperties">
+		<constructor-arg value="eos_accept_topic" />
+		<property name="messageListener" ref="messageListernerConsumerService" />
+	</bean>
+	
+	<bean id="logInfoListenerContainer" class="org.springframework.kafka.listener.ConcurrentMessageListenerContainer" init-method="doStart">
+		<constructor-arg ref="consumerFactory"/>
+		<constructor-arg ref="containerProperties"/>
+		<property name="concurrency" value="20"/>
+	</bean>
+	
+	<!--下注确认消息消费者 -->
+	<bean id="BetConsumerFactory" class="org.springframework.kafka.core.DefaultKafkaConsumerFactory">
+		<constructor-arg>
+			<ref bean="consumerProperties" />
+		</constructor-arg>
+	</bean>
+	
+	<bean id="BetConsumerService" class="com.stip.net.kafka.consumer.BetConsumer" />
+	
+	<bean id="BetContainerProperties" class="org.springframework.kafka.listener.config.ContainerProperties">
+		<constructor-arg value="eos_applied_topic" />
+		<property name="messageListener" ref="BetConsumerService" />
+	</bean>
+	
+	<bean id="BetListenerContainer" class="org.springframework.kafka.listener.ConcurrentMessageListenerContainer" init-method="doStart">
+		<constructor-arg ref="BetConsumerFactory"/>
+		<constructor-arg ref="BetContainerProperties"/>
+		<property name="concurrency" value="20"/>
+	</bean>
+
+	
+	
+	<!-- 骰子区块消费者 -->
+	<bean id="messageListernerConsumerServiceDice" class="com.stip.net.kafka.consumer.OPenDiceConsumer" />
+	
+	<bean id="containerPropertiesDice" class="org.springframework.kafka.listener.config.ContainerProperties">
+		<constructor-arg value="eos_new_topic" />
+		<property name="messageListener" ref="messageListernerConsumerServiceDice" />
+	</bean>
+	
+	<bean id="logInfoListenerContainerDice" class="org.springframework.kafka.listener.ConcurrentMessageListenerContainer" init-method="doStart">
+		<constructor-arg ref="consumerFactory"/>
+		<constructor-arg ref="containerPropertiesDice"/>
+		<property name="concurrency" value="20"/>
+	</bean>
+
+	<!-- 龙虎斗区块消费者 -->
+	<bean id="messageListernerConsumerServiceTiger" class="com.stip.net.kafka.consumer.TigerOpenConsumer" />
+
+	<bean id="containerPropertiesTiger" class="org.springframework.kafka.listener.config.ContainerProperties">
+		<constructor-arg value="eos_slotmach_topic" />
+		<property name="messageListener" ref="messageListernerConsumerServiceTiger" />
+	</bean>
+
+	<bean id="logInfoListenerContainerTiger" class="org.springframework.kafka.listener.ConcurrentMessageListenerContainer" init-method="doStart">
+		<constructor-arg ref="consumerFactory"/>
+		<constructor-arg ref="containerPropertiesTiger"/>
+		<property name="concurrency" value="20"/>
+	</bean>
+</beans>

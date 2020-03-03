@@ -1,0 +1,32 @@
+package com.stip.net.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+
+import com.stip.mybatis.generator.plugin.GenericMapper;
+import com.stip.net.entity.DBDiceBetting;
+import com.stip.net.entity.LotteryRecords;
+import com.stip.net.example.LotteryRecordsExample;
+
+ /**
+ * 可添加自定义查询语句，方便后续扩展
+ **/
+public interface LotteryRecordsDao extends GenericMapper<LotteryRecords, LotteryRecordsExample, Integer> {
+	//插入骰子开奖信息
+	int insertDiceBetting(List<DBDiceBetting> dices);
+
+	//查询用户的参与骰子记录
+	@Select("select * from t_user_bet_dice where account=#{account} ORDER BY id DESC limit 6")
+	List<DBDiceBetting> getAccountDice(@Param(value = "account") String account);
+	
+	//修改补发的状态
+	@Update("update t_user_bet_dice set state = 1 where account = #{account}")
+	void updateDiceStateto(@Param(value = "account") String account);
+	
+	//查询发奖失败列表
+	@Select("select * from t_user_bet_dice where state = 2")
+	List<DBDiceBetting> getDiceState();
+}

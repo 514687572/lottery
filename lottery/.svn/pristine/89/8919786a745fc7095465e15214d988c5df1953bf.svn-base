@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.UserWithdrawApplRecordsDao">
+  <resultMap id="BaseResultMap" type="com.stip.net.entity.UserWithdrawApplRecords">
+    <id column="UserWithdrawApplRecords_inOrderId" jdbcType="VARCHAR" property="inorderid" />
+    <result column="UserWithdrawApplRecords_uid" jdbcType="BIGINT" property="uid" />
+    <result column="UserWithdrawApplRecords_eos_price" jdbcType="DECIMAL" property="eosPrice" />
+    <result column="UserWithdrawApplRecords_recharge_num" jdbcType="INTEGER" property="rechargeNum" />
+    <result column="UserWithdrawApplRecords_recharge_type" jdbcType="INTEGER" property="rechargeType" />
+    <result column="UserWithdrawApplRecords_recharge_status" jdbcType="INTEGER" property="rechargeStatus" />
+    <result column="UserWithdrawApplRecords_num" jdbcType="DECIMAL" property="num" />
+    <result column="UserWithdrawApplRecords_time" jdbcType="TIMESTAMP" property="time" />
+    <result column="UserWithdrawApplRecords_update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="UserWithdrawApplRecords_remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    UserWithdrawApplRecords.inOrderId as UserWithdrawApplRecords_inOrderId, UserWithdrawApplRecords.uid as UserWithdrawApplRecords_uid, 
+    UserWithdrawApplRecords.eos_price as UserWithdrawApplRecords_eos_price, UserWithdrawApplRecords.recharge_num as UserWithdrawApplRecords_recharge_num, 
+    UserWithdrawApplRecords.recharge_type as UserWithdrawApplRecords_recharge_type, UserWithdrawApplRecords.recharge_status as UserWithdrawApplRecords_recharge_status, 
+    UserWithdrawApplRecords.num as UserWithdrawApplRecords_num, UserWithdrawApplRecords.time as UserWithdrawApplRecords_time, 
+    UserWithdrawApplRecords.update_time as UserWithdrawApplRecords_update_time, UserWithdrawApplRecords.remark as UserWithdrawApplRecords_remark
+  </sql>
+  <select id="selectByExample" parameterType="com.stip.net.example.UserWithdrawApplRecordsExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_user_withdrawappl_records UserWithdrawApplRecords
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="fromRowNum != null and toRowNum >= 0">
+      limit #{fromRowNum}, #{toRowNum}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_user_withdrawappl_records UserWithdrawApplRecords
+    where UserWithdrawApplRecords.inOrderId = #{inorderid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_user_withdrawappl_records
+    where inOrderId = #{inorderid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.stip.net.example.UserWithdrawApplRecordsExample">
+    delete UserWithdrawApplRecords from t_user_withdrawappl_records UserWithdrawApplRecords
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.stip.net.entity.UserWithdrawApplRecords">
+    insert into t_user_withdrawappl_records (inOrderId, uid, eos_price, 
+      recharge_num, recharge_type, recharge_status, 
+      num, time, update_time, 
+      remark)
+    values (#{inorderid,jdbcType=VARCHAR}, #{uid,jdbcType=BIGINT}, #{eosPrice,jdbcType=DECIMAL}, 
+      #{rechargeNum,jdbcType=INTEGER}, #{rechargeType,jdbcType=INTEGER}, #{rechargeStatus,jdbcType=INTEGER}, 
+      #{num,jdbcType=DECIMAL}, #{time,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.stip.net.entity.UserWithdrawApplRecords">
+    insert into t_user_withdrawappl_records
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="inorderid != null">
+        inOrderId,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="eosPrice != null">
+        eos_price,
+      </if>
+      <if test="rechargeNum != null">
+        recharge_num,
+      </if>
+      <if test="rechargeType != null">
+        recharge_type,
+      </if>
+      <if test="rechargeStatus != null">
+        recharge_status,
+      </if>
+      <if test="num != null">
+        num,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="inorderid != null">
+        #{inorderid,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=BIGINT},
+      </if>
+      <if test="eosPrice != null">
+        #{eosPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="rechargeNum != null">
+        #{rechargeNum,jdbcType=INTEGER},
+      </if>
+      <if test="rechargeType != null">
+        #{rechargeType,jdbcType=INTEGER},
+      </if>
+      <if test="rechargeStatus != null">
+        #{rechargeStatus,jdbcType=INTEGER},
+      </if>
+      <if test="num != null">
+        #{num,jdbcType=DECIMAL},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.stip.net.example.UserWithdrawApplRecordsExample" resultType="java.lang.Integer">
+    select count(*) from t_user_withdrawappl_records UserWithdrawApplRecords
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_user_withdrawappl_records UserWithdrawApplRecords
+    <set>
+      <if test="record.inorderid != null">
+        UserWithdrawApplRecords.inOrderId = #{record.inorderid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.uid != null">
+        UserWithdrawApplRecords.uid = #{record.uid,jdbcType=BIGINT},
+      </if>
+      <if test="record.eosPrice != null">
+        UserWithdrawApplRecords.eos_price = #{record.eosPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.rechargeNum != null">
+        UserWithdrawApplRecords.recharge_num = #{record.rechargeNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.rechargeType != null">
+        UserWithdrawApplRecords.recharge_type = #{record.rechargeType,jdbcType=INTEGER},
+      </if>
+      <if test="record.rechargeStatus != null">
+        UserWithdrawApplRecords.recharge_status = #{record.rechargeStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.num != null">
+        UserWithdrawApplRecords.num = #{record.num,jdbcType=DECIMAL},
+      </if>
+      <if test="record.time != null">
+        UserWithdrawApplRecords.time = #{record.time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        UserWithdrawApplRecords.update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.remark != null">
+        UserWithdrawApplRecords.remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_user_withdrawappl_records UserWithdrawApplRecords
+    set UserWithdrawApplRecords.inOrderId = #{record.inorderid,jdbcType=VARCHAR},
+      UserWithdrawApplRecords.uid = #{record.uid,jdbcType=BIGINT},
+      UserWithdrawApplRecords.eos_price = #{record.eosPrice,jdbcType=DECIMAL},
+      UserWithdrawApplRecords.recharge_num = #{record.rechargeNum,jdbcType=INTEGER},
+      UserWithdrawApplRecords.recharge_type = #{record.rechargeType,jdbcType=INTEGER},
+      UserWithdrawApplRecords.recharge_status = #{record.rechargeStatus,jdbcType=INTEGER},
+      UserWithdrawApplRecords.num = #{record.num,jdbcType=DECIMAL},
+      UserWithdrawApplRecords.time = #{record.time,jdbcType=TIMESTAMP},
+      UserWithdrawApplRecords.update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      UserWithdrawApplRecords.remark = #{record.remark,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.stip.net.entity.UserWithdrawApplRecords">
+    update t_user_withdrawappl_records
+    <set>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=BIGINT},
+      </if>
+      <if test="eosPrice != null">
+        eos_price = #{eosPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="rechargeNum != null">
+        recharge_num = #{rechargeNum,jdbcType=INTEGER},
+      </if>
+      <if test="rechargeType != null">
+        recharge_type = #{rechargeType,jdbcType=INTEGER},
+      </if>
+      <if test="rechargeStatus != null">
+        recharge_status = #{rechargeStatus,jdbcType=INTEGER},
+      </if>
+      <if test="num != null">
+        num = #{num,jdbcType=DECIMAL},
+      </if>
+      <if test="time != null">
+        time = #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where inOrderId = #{inorderid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.stip.net.entity.UserWithdrawApplRecords">
+    update t_user_withdrawappl_records
+    set uid = #{uid,jdbcType=BIGINT},
+      eos_price = #{eosPrice,jdbcType=DECIMAL},
+      recharge_num = #{rechargeNum,jdbcType=INTEGER},
+      recharge_type = #{rechargeType,jdbcType=INTEGER},
+      recharge_status = #{rechargeStatus,jdbcType=INTEGER},
+      num = #{num,jdbcType=DECIMAL},
+      time = #{time,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR}
+    where inOrderId = #{inorderid,jdbcType=VARCHAR}
+  </update>
+</mapper>

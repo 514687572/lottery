@@ -1,0 +1,46 @@
+package com.stip.net.service.impl;
+
+import com.stip.mybatis.generator.plugin.BaseService;
+import com.stip.net.dao.LotteryConfirmDao;
+import com.stip.net.dao.LotteryUserInfoDao;
+import com.stip.net.entity.LotteryUserInfo;
+import com.stip.net.example.LotteryUserInfoExample;
+import com.stip.net.service.LotteryUserInfoService;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class LotteryUserInfoServiceImpl extends BaseService<LotteryUserInfo, LotteryUserInfoExample, Long>
+        implements LotteryUserInfoService {
+	@Autowired
+	private LotteryUserInfoDao lotteryUserInfoDao;
+
+    @Override
+    public void insertUserInfo(LotteryUserInfo lotteryUserInfo) {
+    	lotteryUserInfoDao.insertSelective(lotteryUserInfo);
+    }
+
+	@Override
+	public void updateLotteryUserInfo(LotteryUserInfo record) {
+		lotteryUserInfoDao.updateByPrimaryKey(record);
+	}
+
+	@Override
+	public LotteryUserInfo selectLotteryUserInfo(int uid) {
+		return lotteryUserInfoDao.selectLotteryUserInfo(uid);
+	}
+
+	@Override
+	public LotteryUserInfo selectLotteryUserInfoTel(String tel) {
+		return lotteryUserInfoDao.selectLotteryUserInfoTel(tel);
+	}
+
+	@Override
+	public LotteryUserInfo selectLotteryUserInfoEmail(String email) {
+		return lotteryUserInfoDao.selectLotteryUserInfoEmail(email);
+	}
+
+}

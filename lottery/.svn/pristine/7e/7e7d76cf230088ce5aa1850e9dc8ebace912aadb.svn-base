@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.LotteryRecordsDao">
+  <resultMap id="BaseResultMap" type="com.stip.net.entity.LotteryRecords">
+    <id column="lotteryRecords_records_id" jdbcType="BIGINT" property="recordsId" />
+    <result column="lotteryRecords_bet_num" jdbcType="BIGINT" property="betNum" />
+    <result column="lotteryRecords_lottery_one" jdbcType="INTEGER" property="lotteryOne" />
+    <result column="lotteryRecords_lottery_two" jdbcType="INTEGER" property="lotteryTwo" />
+    <result column="lotteryRecords_lottery_three" jdbcType="INTEGER" property="lotteryThree" />
+    <result column="lotteryRecords_lottery_four" jdbcType="INTEGER" property="lotteryFour" />
+    <result column="lotteryRecords_lottery_five" jdbcType="INTEGER" property="lotteryFive" />
+    <result column="lotteryRecords_large_num" jdbcType="VARCHAR" property="largeNum" />
+    <result column="lotteryRecords_lottery_single" jdbcType="VARCHAR" property="lotterySingle" />
+    <result column="lotteryRecords_hash_one" jdbcType="VARCHAR" property="hashOne" />
+    <result column="lotteryRecords_hash_two" jdbcType="VARCHAR" property="hashTwo" />
+    <result column="lotteryRecords_hash_three" jdbcType="VARCHAR" property="hashThree" />
+    <result column="lotteryRecords_hash_four" jdbcType="VARCHAR" property="hashFour" />
+    <result column="lotteryRecords_hash_five" jdbcType="VARCHAR" property="hashFive" />
+    <result column="lotteryRecords_create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="lotteryRecords_update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="lotteryRecords_remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    lotteryRecords.records_id as lotteryRecords_records_id, lotteryRecords.bet_num as lotteryRecords_bet_num, 
+    lotteryRecords.lottery_one as lotteryRecords_lottery_one, lotteryRecords.lottery_two as lotteryRecords_lottery_two, 
+    lotteryRecords.lottery_three as lotteryRecords_lottery_three, lotteryRecords.lottery_four as lotteryRecords_lottery_four, 
+    lotteryRecords.lottery_five as lotteryRecords_lottery_five, lotteryRecords.large_num as lotteryRecords_large_num, 
+    lotteryRecords.lottery_single as lotteryRecords_lottery_single, lotteryRecords.hash_one as lotteryRecords_hash_one, 
+    lotteryRecords.hash_two as lotteryRecords_hash_two, lotteryRecords.hash_three as lotteryRecords_hash_three, 
+    lotteryRecords.hash_four as lotteryRecords_hash_four, lotteryRecords.hash_five as lotteryRecords_hash_five, 
+    lotteryRecords.create_time as lotteryRecords_create_time, lotteryRecords.update_time as lotteryRecords_update_time, 
+    lotteryRecords.remark as lotteryRecords_remark
+  </sql>
+  <select id="selectByExample" parameterType="com.stip.net.example.LotteryRecordsExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_lottery_records lotteryRecords
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="fromRowNum != null and toRowNum >= 0">
+      limit #{fromRowNum}, #{toRowNum}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_lottery_records lotteryRecords
+    where lotteryRecords.records_id = #{recordsId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_lottery_records
+    where records_id = #{recordsId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.stip.net.example.LotteryRecordsExample">
+    delete lotteryRecords from t_lottery_records lotteryRecords
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.stip.net.entity.LotteryRecords">
+    insert into t_lottery_records (records_id, bet_num, lottery_one, 
+      lottery_two, lottery_three, lottery_four, 
+      lottery_five, large_num, lottery_single, 
+      hash_one, hash_two, hash_three, 
+      hash_four, hash_five, create_time, 
+      update_time, remark)
+    values (#{recordsId,jdbcType=BIGINT}, #{betNum,jdbcType=BIGINT}, #{lotteryOne,jdbcType=INTEGER}, 
+      #{lotteryTwo,jdbcType=INTEGER}, #{lotteryThree,jdbcType=INTEGER}, #{lotteryFour,jdbcType=INTEGER}, 
+      #{lotteryFive,jdbcType=INTEGER}, #{largeNum,jdbcType=VARCHAR}, #{lotterySingle,jdbcType=VARCHAR}, 
+      #{hashOne,jdbcType=VARCHAR}, #{hashTwo,jdbcType=VARCHAR}, #{hashThree,jdbcType=VARCHAR}, 
+      #{hashFour,jdbcType=VARCHAR}, #{hashFive,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.stip.net.entity.LotteryRecords">
+    insert into t_lottery_records
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="recordsId != null">
+        records_id,
+      </if>
+      <if test="betNum != null">
+        bet_num,
+      </if>
+      <if test="lotteryOne != null">
+        lottery_one,
+      </if>
+      <if test="lotteryTwo != null">
+        lottery_two,
+      </if>
+      <if test="lotteryThree != null">
+        lottery_three,
+      </if>
+      <if test="lotteryFour != null">
+        lottery_four,
+      </if>
+      <if test="lotteryFive != null">
+        lottery_five,
+      </if>
+      <if test="largeNum != null">
+        large_num,
+      </if>
+      <if test="lotterySingle != null">
+        lottery_single,
+      </if>
+      <if test="hashOne != null">
+        hash_one,
+      </if>
+      <if test="hashTwo != null">
+        hash_two,
+      </if>
+      <if test="hashThree != null">
+        hash_three,
+      </if>
+      <if test="hashFour != null">
+        hash_four,
+      </if>
+      <if test="hashFive != null">
+        hash_five,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="recordsId != null">
+        #{recordsId,jdbcType=BIGINT},
+      </if>
+      <if test="betNum != null">
+        #{betNum,jdbcType=BIGINT},
+      </if>
+      <if test="lotteryOne != null">
+        #{lotteryOne,jdbcType=INTEGER},
+      </if>
+      <if test="lotteryTwo != null">
+        #{lotteryTwo,jdbcType=INTEGER},
+      </if>
+      <if test="lotteryThree != null">
+        #{lotteryThree,jdbcType=INTEGER},
+      </if>
+      <if test="lotteryFour != null">
+        #{lotteryFour,jdbcType=INTEGER},
+      </if>
+      <if test="lotteryFive != null">
+        #{lotteryFive,jdbcType=INTEGER},
+      </if>
+      <if test="largeNum != null">
+        #{largeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="lotterySingle != null">
+        #{lotterySingle,jdbcType=VARCHAR},
+      </if>
+      <if test="hashOne != null">
+        #{hashOne,jdbcType=VARCHAR},
+      </if>
+      <if test="hashTwo != null">
+        #{hashTwo,jdbcType=VARCHAR},
+      </if>
+      <if test="hashThree != null">
+        #{hashThree,jdbcType=VARCHAR},
+      </if>
+      <if test="hashFour != null">
+        #{hashFour,jdbcType=VARCHAR},
+      </if>
+      <if test="hashFive != null">
+        #{hashFive,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.stip.net.example.LotteryRecordsExample" resultType="java.lang.Integer">
+    select count(*) from t_lottery_records lotteryRecords
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_lottery_records lotteryRecords
+    <set>
+      <if test="record.recordsId != null">
+        lotteryRecords.records_id = #{record.recordsId,jdbcType=BIGINT},
+      </if>
+      <if test="record.betNum != null">
+        lotteryRecords.bet_num = #{record.betNum,jdbcType=BIGINT},
+      </if>
+      <if test="record.lotteryOne != null">
+        lotteryRecords.lottery_one = #{record.lotteryOne,jdbcType=INTEGER},
+      </if>
+      <if test="record.lotteryTwo != null">
+        lotteryRecords.lottery_two = #{record.lotteryTwo,jdbcType=INTEGER},
+      </if>
+      <if test="record.lotteryThree != null">
+        lotteryRecords.lottery_three = #{record.lotteryThree,jdbcType=INTEGER},
+      </if>
+      <if test="record.lotteryFour != null">
+        lotteryRecords.lottery_four = #{record.lotteryFour,jdbcType=INTEGER},
+      </if>
+      <if test="record.lotteryFive != null">
+        lotteryRecords.lottery_five = #{record.lotteryFive,jdbcType=INTEGER},
+      </if>
+      <if test="record.largeNum != null">
+        lotteryRecords.large_num = #{record.largeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lotterySingle != null">
+        lotteryRecords.lottery_single = #{record.lotterySingle,jdbcType=VARCHAR},
+      </if>
+      <if test="record.hashOne != null">
+        lotteryRecords.hash_one = #{record.hashOne,jdbcType=VARCHAR},
+      </if>
+      <if test="record.hashTwo != null">
+        lotteryRecords.hash_two = #{record.hashTwo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.hashThree != null">
+        lotteryRecords.hash_three = #{record.hashThree,jdbcType=VARCHAR},
+      </if>
+      <if test="record.hashFour != null">
+        lotteryRecords.hash_four = #{record.hashFour,jdbcType=VARCHAR},
+      </if>
+      <if test="record.hashFive != null">
+        lotteryRecords.hash_five = #{record.hashFive,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        lotteryRecords.create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        lotteryRecords.update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.remark != null">
+        lotteryRecords.remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_lottery_records lotteryRecords
+    set lotteryRecords.records_id = #{record.recordsId,jdbcType=BIGINT},
+      lotteryRecords.bet_num = #{record.betNum,jdbcType=BIGINT},
+      lotteryRecords.lottery_one = #{record.lotteryOne,jdbcType=INTEGER},
+      lotteryRecords.lottery_two = #{record.lotteryTwo,jdbcType=INTEGER},
+      lotteryRecords.lottery_three = #{record.lotteryThree,jdbcType=INTEGER},
+      lotteryRecords.lottery_four = #{record.lotteryFour,jdbcType=INTEGER},
+      lotteryRecords.lottery_five = #{record.lotteryFive,jdbcType=INTEGER},
+      lotteryRecords.large_num = #{record.largeNum,jdbcType=VARCHAR},
+      lotteryRecords.lottery_single = #{record.lotterySingle,jdbcType=VARCHAR},
+      lotteryRecords.hash_one = #{record.hashOne,jdbcType=VARCHAR},
+      lotteryRecords.hash_two = #{record.hashTwo,jdbcType=VARCHAR},
+      lotteryRecords.hash_three = #{record.hashThree,jdbcType=VARCHAR},
+      lotteryRecords.hash_four = #{record.hashFour,jdbcType=VARCHAR},
+      lotteryRecords.hash_five = #{record.hashFive,jdbcType=VARCHAR},
+      lotteryRecords.create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      lotteryRecords.update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      lotteryRecords.remark = #{record.remark,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.stip.net.entity.LotteryRecords">
+    update t_lottery_records
+    <set>
+      <if test="betNum != null">
+        bet_num = #{betNum,jdbcType=BIGINT},
+      </if>
+      <if test="lotteryOne != null">
+        lottery_one = #{lotteryOne,jdbcType=INTEGER},
+      </if>
+      <if test="lotteryTwo != null">
+        lottery_two = #{lotteryTwo,jdbcType=INTEGER},
+      </if>
+      <if test="lotteryThree != null">
+        lottery_three = #{lotteryThree,jdbcType=INTEGER},
+      </if>
+      <if test="lotteryFour != null">
+        lottery_four = #{lotteryFour,jdbcType=INTEGER},
+      </if>
+      <if test="lotteryFive != null">
+        lottery_five = #{lotteryFive,jdbcType=INTEGER},
+      </if>
+      <if test="largeNum != null">
+        large_num = #{largeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="lotterySingle != null">
+        lottery_single = #{lotterySingle,jdbcType=VARCHAR},
+      </if>
+      <if test="hashOne != null">
+        hash_one = #{hashOne,jdbcType=VARCHAR},
+      </if>
+      <if test="hashTwo != null">
+        hash_two = #{hashTwo,jdbcType=VARCHAR},
+      </if>
+      <if test="hashThree != null">
+        hash_three = #{hashThree,jdbcType=VARCHAR},
+      </if>
+      <if test="hashFour != null">
+        hash_four = #{hashFour,jdbcType=VARCHAR},
+      </if>
+      <if test="hashFive != null">
+        hash_five = #{hashFive,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where records_id = #{recordsId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.stip.net.entity.LotteryRecords">
+    update t_lottery_records
+    set bet_num = #{betNum,jdbcType=BIGINT},
+      lottery_one = #{lotteryOne,jdbcType=INTEGER},
+      lottery_two = #{lotteryTwo,jdbcType=INTEGER},
+      lottery_three = #{lotteryThree,jdbcType=INTEGER},
+      lottery_four = #{lotteryFour,jdbcType=INTEGER},
+      lottery_five = #{lotteryFive,jdbcType=INTEGER},
+      large_num = #{largeNum,jdbcType=VARCHAR},
+      lottery_single = #{lotterySingle,jdbcType=VARCHAR},
+      hash_one = #{hashOne,jdbcType=VARCHAR},
+      hash_two = #{hashTwo,jdbcType=VARCHAR},
+      hash_three = #{hashThree,jdbcType=VARCHAR},
+      hash_four = #{hashFour,jdbcType=VARCHAR},
+      hash_five = #{hashFive,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR}
+    where records_id = #{recordsId,jdbcType=BIGINT}
+  </update>
+</mapper>

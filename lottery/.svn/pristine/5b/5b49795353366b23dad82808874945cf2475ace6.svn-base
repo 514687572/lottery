@@ -1,0 +1,99 @@
+package com.stip.net.dao;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import com.stip.net.entity.tiger.TigerHistory;
+import com.stip.net.entity.tiger.TigerPutRecord;
+import com.stip.net.entity.tiger.TigerRoom;
+
+public interface TigerDao {
+
+	/**
+	 * 查询用户某房间某期的投注总金额
+	 */
+	@Select("SELECT SUM(putMoney) FROM t_tiger_records WHERE qid=#{qid} AND userId=#{userId} AND roomId=#{roomId} AND opt=#{opt}")
+	BigDecimal getMyPutMoney(@Param("userId") String userId, @Param("roomId") int roomId, @Param("qid") int qid, @Param("opt") int opt);
+
+	void saveRecord(TigerPutRecord record);
+
+	/**
+	 * 根据txId查询投注记录
+	 */
+	@Select("SELECT * FROM t_tiger_records WHERE txId=#{txId}")
+	TigerPutRecord getRecordByTxId(@Param("txId") String txId);
+
+	/**
+	 * 根据状态查询投注记录
+	 */
+	@Select("SELECT * FROM t_tiger_records WHERE status=#{status}")
+	List<TigerPutRecord> getRecordsByStatus(@Param("status") int status);
+
+	void updateRecord(TigerPutRecord record);
+
+	/**
+	 * 房间开奖时，查询此房间当期投注记录（不管区块链方面是否被确认投注）
+	 */
+	@Select("SELECT * FROM t_tiger_records WHERE roomId=#{roomId} AND qid=#{qid} AND status=0")
+	List<TigerPutRecord> getRecordsWhenOpen(@Param("roomId") int roomId, @Param("qid") int qid);
+
+	/**
+	 * 开奖时查询需要发奖的投注记录
+	 */
+	@Select("SELECT * FROM t_tiger_records WHERE roomId=#{roomId} AND qid=#{qid} AND txStatus=1	AND status=2")
+	List<TigerPutRecord> getRecordsWhenSend(@Param("roomId") int roomId, @Param("qid") int qid);
+
+	List<TigerPutRecord> getMyRecords(@Param("userId") String userId, @Param("pageSize") int pageSize, @Param("time") long time);
+
+	void batchInsertRooms(List<TigerRoom> list);
+
+	/**
+	 * 房间，查询所有
+	 */
+	@Select("SELECT * FROM t_tiger_room ORDER BY id")
+	List<TigerRoom> getAllTigerRooms();
+
+	/**
+	 * 房间，删除所有
+	 */
+	@Delete("DELETE FROM t_tiger_room")
+	void deleteAllRooms();
+
+	@Select("SELECT * FROM t_tiger_records WHERE txStatus=0 LIMIT 1")
+	TigerPutRecord test1();
+
+	/**
+	 * 插入投注确认表
+	 */
+	@Insert("INSERT INTO t_tiger_confirm (txId) VALUES (#{txId})")
+	void insertConfirm(@Param("txId") String txId);
+
+	/**
+	 * 删除投注确认
+	 */
+	@Delete("DELETE FROM t_tiger_confirm WHERE txId=#{txId}")
+	void deleteConfirm(String txId);
+
+	/**
+	 * 查询所有投注确认数据
+	 */
+	@Select("SELECT txId FROM t_tiger_confirm")
+	List<String> getAllConfirm();
+
+	/**
+	 * 插入开奖历史记录
+	 */
+	@Insert("INSERT INTO t_tiger_history (roomId,qid,lp,hp,openTimeSpt) VALUES (#{roomId},#{qid},#{lp},#{hp},#{openTimeSpt})")
+	void insertTigerHistory(TigerHistory th);
+
+	/**
+	 * 查询最近3分钟内的开奖记录
+	 */
+	@Select("SELECT * FROM t_tiger_history WHERE #{cur} - openTimeSpt < #{rec}")
+	List<TigerHistory> getRecentHistory(@Param("cur") long cur, @Param("rec") long rec);
+}

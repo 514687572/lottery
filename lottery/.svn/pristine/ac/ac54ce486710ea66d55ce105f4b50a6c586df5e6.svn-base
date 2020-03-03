@@ -1,0 +1,196 @@
+let userName="";
+let publicKey="";
+let loginBtn=false;
+let totalCpuWidth=$("#totalCpu").width();
+let betsTime=0;
+let loginBoolean = false;
+
+$(".loginBtnBets").click(function(){
+    $("#loginContainer").css("display","block");
+})
+
+
+//私钥登录
+$("#loginComfire").click(function () {
+    let reg = new RegExp("^[A-Za-z0-9]{51}$");
+    if (reg.test($("#userChainId").val()) == true) {
+      $.ajax({
+        type: "post",
+        url: `${baseUrl}/account/loginWidthPriKey.do`,
+        data: {
+          private_key: $("#userChainId").val(),
+          userCode: userCode ? userCode : ""
+        },
+        success: function (date) {
+          // console.log(date)
+            popup({type:'success',msg:loginSuccess,delay:1000,callBack:function(){
+                $("#userChainId").val("");
+                userName = date.userName;
+                window.sessionStorage.setItem("userName",`${userName}`);
+                publicKey = date.pubKey;
+                window.sessionStorage.setItem("publicKey",`${publicKey}`);
+                loginBoolean = true;
+             }});
+          
+          $.ajax({
+            type: "get",
+            url: `${baseUrl}/account/getAccount.do`,
+            data: {
+              account: date.userName
+            },
+            success: function (msg) {
+              console.log(msg.balance)
+              uid = date.userName;
+              $("#userInfo").css("display", "block");
+              $("#userInfomation").css("display", "block");
+              $("#loginBtn").css("display", "none");
+              $("#loginContainer").css("display", "none");
+              $(".loginBtnBets").css("display", "none");
+              $(".betsBtn").css("display", "block");
+  
+              
+              $("#cpu").text(`${parseFloat((msg.cpu.used / msg.cpu.max) * 100).toFixed(2)}%`);
+              $("#userCpu").css("width",`${parseInt((msg.cpu.used / msg.cpu.max))*totalCpuWidth/100}rem`);
+              $("#userName").text(`${date.userName}`);
+              $("#EosMoney").text(`${msg.balance.replace("EOS","")}`);
+            }
+          });
+          getHisBets();
+        }
+      });
+    } else {
+        popup({type:'error',msg:placeholderWap,delay:1000,bg:true,clickDomCancel:true});
+        $("#userChainId").val("");
+    }
+});
+
+
+
+
+
+
+//获取账户信息
+function checkIdentity() {
+  console.log(totalCpuWidth)
+    let userNameCheck="";
+    let userEos=0;
+    if(window.ScatterJS==undefined){
+      userNameCheck=userName;
+      loginBoolean=true;
+  }else{
+      if(window.ScatterJS.scatter.identity==null){
+        userNameCheck=userName;
+        loginBoolean=true;
+      }else{
+        userNameCheck=scatter.identity.accounts[0].name;
+        loginBoolean=false;
+      }
+  }
+    if(userNameCheck!=undefined&&userNameCheck!=""&&userNameCheck!=null){
+      $.ajax({
+        type: "get",
+        url: `${baseUrl}/account/getAccount.do`,
+        data: {
+          account: userNameCheck
+        },
+        success: function (msg) {
+          if(msg.balance){
+              userEos=msg.balance.replace("EOS","");
+          }
+          if (userNameCheck!=""&&userNameCheck!=null) {
+            uid =userNameCheck
+            $("#userInfo").css("display", "block");
+            $("#userInfomation").css("display", "block");
+            $("#loginBtn").css("display", "none");
+            $("#loginContainer").css("display", "none");
+            $(".loginBtnBets").css("display", "none");
+            $(".betsBtn").css("display", "block");
+            console.log((msg.cpu.used / msg.cpu.max)*totalCpuWidth/100)
+            $("#cpu").text(`${parseFloat((msg.cpu.used / msg.cpu.max) * 100).toFixed(2)}%`);
+            $("#userCpu").css("width",`${(msg.cpu.used / msg.cpu.max)*totalCpuWidth/100}rem`);
+            $("#userName").text(`${userNameCheck}`);
+            $("#EosMoney").text(`${userEos}`);
+          } else {
+            $("#userInfo").css("display", "none");
+            $(".loginBtn").css("display", "block");
+            $(".loginBtnBets").css("display", "block");
+            $(".betsBtn").css("display", "none");
+          }
+        }
+      });
+    }
+}
+
+
+//获取奖金池的数量
+function getBlance() {
+    // console.log(111)
+    $.ajax({
+      type: "get",
+      url: `${baseUrl}/account/getSysInfo.do`,
+      success: function (msg) {
+        if(msg.size!=0){
+          balance = parseInt(msg.balance.replace("EOS", "")*10000)/10000;
+          totalLimitBets =parseFloat(balance * 0.05).toFixed(1);
+          if(totalLimitBets>=1000){
+              $("#percent").text(`/${+(parseInt(totalLimitBets / 1000*10000)/10000)}K`)
+            }else{
+              $("#percent").text(`/${totalLimitBets}`)
+            }
+          if(balance>=10000){
+            $("#bonus").text(`${parseInt((balance/1000)*10000)/10000}K`);
+          }else{
+            $("#bonus").text(`${parseInt(balance*10000)/10000}`);
+          }
+        }
+      }
+    });
+}
+
+
+// 抵押cpu
+$("#cpuImg").click(function () {
+  let cpuInput = 0;
+  $("#cpuContainer").css("display", "block");
+    $("#cpuInput").blur(function () {
+      cpuInput = parseFloat($("#cpuInput").val()).toFixed(4);
+    });
+        $("#cpuComfire").click(function () {
+          if(loginBoolean==false){
+          const eosOptions = {
+            expireInSeconds: 60
+          };
+          const eos = scatter.eos(network, Eos, eosOptions);
+          eos.transaction(tr => {
+            tr.delegatebw({
+              from: scatter.identity.accounts[0].name,
+              receiver: scatter.identity.accounts[0].name,
+              stake_net_quantity: "0.0000 EOS",
+              stake_cpu_quantity: `${cpuInput} EOS`,
+              transfer: 0
+            });
+            }).then(result => {
+              checkIdentity();
+              $("#cpuContainer").css("display", "none");
+            })
+          }else{
+              $.ajax({
+                url:`${baseUrl}/account/delegatebw.do`,
+                type:"post",
+                data:{
+                  account:userName,
+                  quantity:`${cpuInput} EOS`
+                },
+                success:function(msg){
+                  checkIdentity();
+                  $("#cpuContainer").css("display", "none");
+                }
+              })
+        }
+    });
+});
+
+$("#cpuClose").click(function(){
+  $("#cpuContainer").css("display", "none");
+  $("#cpuInput").val("");
+})

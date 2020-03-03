@@ -1,0 +1,968 @@
+//let ws = new WebSocket(`ws://172.16.1.47/lottery/ws?userId=&gameType=dice`);
+//let ip = "http://172.16.1.47/lottery";
+ let ws = new WebSocket(`wss://myeosgame.com/ws?userId=&gameType=dice`);
+ let ip = "https://myeosgame.com";
+$(function () {
+    let bettingType = 0;//投注类型
+    let hovering = false;//鼠标悬停
+    let received_msg = "";//接收区块信息
+    let text_msg = "";//区块时间
+    let dateAndTime = "";
+    let time = "";
+    let id = "";//区块链号
+    let carouselAry = [];//开奖轮播
+    let listNum = 0;
+    let timer = "";//时间函数
+    // let num = "";//中奖号
+    let number = "";//判断大小对子
+    let DevoteTheResults = "";//玩家投注服务器返回信息
+    let allPrize = "";//中奖投注信息
+    let TheWinningBetsAry = [];
+    let theLlotteryIssue = "";//开奖期数
+    let status = "";//用户账号状态
+    let privateKey = "";//私钥
+    let accountInformation = "";//用户账号提示信息
+    let type = 1;//用户登录方式，0：scatter登录；1：私钥登录。
+    let url = document.location.href;//获取邀请好友用户名
+    let name = "";//用户名
+    let userName = "";//获取我的投注区域用户名
+    let sendTime = "";//投注时间
+    let userBettingPeriods = "";//投注期数
+    
+    let userCode = url.split("=")[1];
+    if (userCode == undefined) {
+        userCode = ""
+    }
+    else {
+        userCode = url.split("=")[1];
+    }
+    console.log("userCode", userCode);
+    // 建立 web socket 连接成功触发事件
+    ws.onopen = function () {
+        // 使用 send() 方法发送数据
+        // alert("数据发送中...");
+
+        let loginType = getStorage("loginType");
+
+
+        if (loginType == 2) {
+            privateKey = getStorage("privateKey");
+            privateKeyLogin(privateKey, userCode);
+        }
+        // console.log(loginType)
+        console.log("链接已开启")
+    };
+    // 接收服务端数据时触发事件
+    ws.onmessage = function (evt) {
+        mag = evt;
+        // console.log("mag",evt)
+        received_msg = evt.data;
+        received_msg = JSON.parse(received_msg);
+        // console.log("from", received_msg);
+        if (received_msg.from == "diceBlock") {//区块消息
+            sendTime = received_msg.date;
+            theLotteryResults();
+            theLotteryList();
+
+        }
+        else if (received_msg.from == "diceUserPrize") {//发送给某个用户
+            console.log(received_msg)
+            iBetThe();
+
+        }
+        else if (received_msg.from == "diceAllPrize") {//中奖展示
+            allPrizeRecord();
+        }
+        else if (received_msg.code == 10) {
+            let wrongPassword = JSON.parse(received_msg.data);
+            if (wrongPassword.err == 1) {//私钥输入错误提示
+                popup({ type: 'error', msg: "私钥输入错误！", delay: 2000, bg: true, clickDomCancel: true });
+                $("#userChainId").val("")
+            }
+        }
+
+        else if (received_msg.code == 1110) {
+            let userinfo = JSON.parse(received_msg.data);
+            if (userinfo.type == 1) {
+                type = userinfo.type;
+                name = userinfo.loginUserId;
+                console.log(userinfo)
+                $("#userChainId").val("");
+                $("#userName").text(name);
+                $(".loginCPM").css("display", "none");
+                popup({ type: 'success', msg: "登录成功", delay: 1000 });
+                // Copy();//邀请好友复制到剪切板
+                $("#loginBtn").text("投注");
+                $("#loginBtn").attr("data-state", "2");
+                saveStorage("username", name);
+                saveStorage("loginType", 2);
+                accountStatus(name);
+                $("#logOut").css("display","block");
+            }
+        }
+        else if (received_msg.code == 1125) {//用户余额
+            let userinfo = JSON.parse(received_msg.data);
+            $("#userBalance").text(userinfo.balance);
+
+        }
+        else if (received_msg.code == 1201) {//奖池余额
+            let userinfo = JSON.parse(received_msg.data);
+            userinfo = userinfo.balance.split(" ");
+            let jackpotNum = parseInt(userinfo[0]);
+            let jackpotMoney = jackpotNum + ` ${userinfo[1]}`;
+            if (jackpotNum.toString().length > 3) {
+                jackpotMoney = jackpotNum / 1000 + "k" + ` ${userinfo[1]}`;
+            }
+            $("#jackpotSum").text(jackpotMoney);
+        }
+        theLlotteryIssue = text_msg.block_num;
+    };
+
+    // 断开 web socket 连接成功触发事件
+    ws.onclose = function () {
+        // alert("连接已关闭...");
+        console.log("链接已关闭")
+    };
+    ws.onerror = function (e) {
+        console.log('WebSocket发生错误: ' + e.code)
+        console.log(e)
+    }
+    setInterval(function () {//webSocket心跳
+        let heartbeat = {
+            code: 0,
+            data: {}
+        }
+        let stringheartbeat = JSON.stringify(heartbeat);
+        ws.send(stringheartbeat);
+    }, 60000);
+
+    //点击右上角更多操作图标弹出弹窗
+    $("#MoreOperations").click(function () {
+        if ($("#MoreOperations").attr("data-more") == 0) {
+            $("#operation").css("display", "block");
+            $("#MoreOperations").attr("data-more", 1);
+        }
+        else {
+            $("#operation").css("display", "none");
+            $("#MoreOperations").attr("data-more", 0);
+        }
+    });
+    //点击游戏帮助跳转帮助页面
+    $("#gameHelpBtn").click(function () {
+        $("#gamePage").css("display", "none");
+        $("#invuteFriends").css("display", "none");
+        $("#gameRules").css("display", "block");
+        $("#operation").css("display", "none");
+        $("#MoreOperations").attr("data-more", 0);
+
+    });
+    $("#getBack").click(function () {
+        $("#gamePage").css("display", "block");
+        $("#gameRules").css("display", "none");
+        $("#invuteFriends").css("display", "none");
+        $("#operation").css("display", "none");
+        $("#MoreOperations").attr("data-more", 0);
+    });
+    //点击邀请好友跳转到邀请好友页面
+    $("#InviteBtn").click(function () {
+        $("#gamePage").css("display", "none");
+        $("#gameRules").css("display", "none");
+        $("#invuteFriends").css("display", "block");
+        $("#operation").css("display", "none");
+        $("#MoreOperations").attr("data-more", 0);
+
+    });
+    $("#getBack1").click(function () {
+        $("#gamePage").css("display", "block");
+        $("#gameRules").css("display", "none");
+        $("#invuteFriends").css("display", "none");
+        $("#operation").css("display", "none");
+        $("#MoreOperations").attr("data-more", 0);
+    });
+
+    //切换投注选项（猜区间，猜大小）
+
+    $("#crap").click(function () {
+        $(".SelectTypeArea").css("display", "none");
+        $(".crap1-1").css("display", "block");
+        $("#crap").css({
+            "color": "#3097ff",
+            "border-bottom": "1px solid #3097ff"
+        });
+        $("#GuessInterval").css({
+            "color": "#ffffff",
+            "border-bottom": "none"
+        });
+        $(".CrapBtn").css("background", "#313862");
+        bettingType = 0;
+        $("#range1").attr("disabled", true);
+        $(".slider>input").css("opacity", 0.5);
+    });
+    $("#GuessInterval").click(function () {
+        $(".SelectTypeArea").css("display", "block");
+        $(".crap1-1").css("display", "none");
+        $("#GuessInterval").css({
+            "color": "#3097ff",
+            "border-bottom": "1px solid #3097ff"
+        });
+        $("#crap").css({
+            "color": "#ffffff",
+            "border-bottom": "none"
+        });
+        $(".CrapBtn").css("background", "#313862");
+        bettingType = 0;
+    });
+
+
+    //切换中奖投注和我的投注
+    $("#iBetTheFont").click(function () {
+        $("#theWinningTable").css("display", "none");
+        $("#iBetTheTable").css("display", "block");
+        $("#iBetTheFont").css({
+            "color": "white"
+        });
+        $("#theWinningBetsFont").css({
+            "color": "#424A55"
+        });
+        if ($("#loginBtn").attr("data-state") == 1) {
+            userName = "";
+        }
+        if (type == 1) {
+            if ($("#loginBtn").attr("data-state") == 1) {
+                userName = "";
+            } else {
+                userName = name;
+            }
+        }
+        bettingPage(1)
+    });
+
+
+    $("#theWinningBetsFont").click(function () {
+        $("#iBetTheTable").css("display", "none");
+        $("#theWinningTable").css("display", "block");
+        $("#theWinningBetsFont").css({
+            "color": "white"
+        });
+        $("#iBetTheFont").css({
+            "color": "#424A55"
+        });
+    });
+
+    //点击登录按钮弹出登录窗口
+    $("#loginBtn").click(function () {
+        if ($("#loginBtn").attr("data-state") == 1) {
+            $(".loginCPM").css("display", "block");
+        }
+        else if ($("#loginBtn").attr("data-state") == 2) {
+            if (type == 1) {
+                if (status) {
+                    if (bettingType == 0) {
+                        popup({ type: 'tip', msg: "请选择投注类型！", delay: 1000 });
+                    }
+                    else {
+                        let bettingMoney = $("#inputBox").val() - 0;
+                        $.ajax({//投注请求
+                            type: "post",
+                            url: `${ip}/lottery/getDiceBetting`,
+                            async: false,
+                            data: {
+                                account: name,
+                                type: bettingType,
+                                termnumber: theLlotteryIssue,
+                                betTime: sendTime,
+                                forecast: $("#range1").val(),
+                                bettingEOS: bettingMoney,
+                                transaction_id: "",
+                                privateKey: privateKey,
+                                isPrivate: 1//投注时传送登录方式，0：scatter登录；1：私钥登录
+                            },
+                            success: function (data) {
+                                if (data.err) {
+                                    popup({ type: 'tip', msg: data.err, delay: 1000 });
+                                }
+                                else {
+                                    popup({ type: 'success', msg: data.msg, delay: 1000 });
+
+                                    $("#userBalance").text(data.balance);
+                                    userBettingPeriods = data.termnumber
+
+                                    $("#loginBtn").attr("data-state", "3");
+                                   
+
+                                }
+
+                            }
+                        })
+                    }
+                }
+                else {
+                    $.message({
+                        message: accountInformation,
+                        type: 'warning'
+                    });
+                }
+            }
+        }
+        else if ($("#loginBtn").attr("data-state") == 3) {
+            popup({ type: 'tip', msg: "已在投注状态，请耐心等待开奖!", delay: 1000 });
+        }
+    });
+
+
+    $("#closeCPM").click(function () {
+        $(".loginCPM").css("display", "none");
+    });
+
+
+    //退出登录
+    $("#logOut").click(function(){
+        sessionStorage.removeItem('loginType');
+        sessionStorage.removeItem('privateKey');
+        sessionStorage.removeItem('username');
+        window.location.reload();
+    })
+
+
+    //点击登录
+    $("#loginComfire").click(function () {
+        privateKey = $("#userChainId").val();
+        console.log(privateKey)
+        saveStorage("privateKey", privateKey);
+        privateKeyLogin(privateKey, userCode);
+    })
+
+    //猜区间默认预测数
+    $("#b").text(50);
+
+    // 猜区间大小区域
+    $(".CrapBtn").click(function () {
+        $(".CrapBtn").css("background", "#313862");
+        $(this).css({
+            "background": "-webkit-linear-gradient(left, #FF564F , #FF8523)",
+            "background": "-o-linear-gradient(right, #FF564F, #FF8523)",
+            "background": "-moz-linear-gradient(right, #FF564F, #FF8523)",
+            "background": "linear-gradient(to right, #FF564F , #FF8523)"
+        });
+        //猜区间区域点击大的功能  
+        if ($(this).attr("data-id") == 1) { //猜区间大于
+            bettingType = 1;
+            $("#range1").attr("disabled", false);
+            $(".slider>input").css("opacity", 1);
+            if ($("#range1").val() == 1) {
+                $("#range1").val(2);
+                $("#b").text(2);
+            }
+            $("#range1").attr("min", 2);
+            $("#range1").attr("max", 98);
+
+
+            let value = $("#range1").val();
+            let price = 99 - value;
+            let odds = (100 / price) * 0.98;
+            odds = odds.toFixed(2) - 0;
+            $("#odds").text(odds);
+            $("#minimum").text(2);
+            $("#max").text(98);
+            let moneyValue = $("#inputBox").val() - 0;
+            let bonus = (moneyValue * odds).toFixed(3) - 0;
+            $("#bonus").text(bonus);
+            $("#range1").on('input propertychange', function () {
+                value = $("#range1").val();
+                price = 99 - value;
+                odds = (100 / price) * 0.98;
+                odds = odds.toFixed(2) - 0;
+                $("#odds").text(odds);
+                moneyValue = $("#inputBox").val() - 0;
+                bonus = (moneyValue * odds).toFixed(3) - 0;
+                $("#bonus").text(bonus);
+            });
+        } else if ($(this).attr("data-id") == 2) {//小于
+            bettingType = 2;
+            $("#range1").attr("disabled", false);
+            $(".slider>input").css("opacity", 1);
+            if ($("#range1").val() == 98) {
+                $("#range1").val(97);
+                $("#b").text(97);
+            }
+            $("#range1").attr("min", 1);
+            $("#range1").attr("max", 97);
+
+            let value = $("#range1").val();
+            let odds = (98 / value).toFixed(2) - 0;
+            $("#odds").text(odds);
+            $("#minimum").text(1);
+            $("#max").text(97);
+            let moneyValue = $("#inputBox").val() - 0;
+            let bonus = (moneyValue * odds).toFixed(3) - 0;
+            $("#bonus").text(bonus);
+            $("#range1").on('input propertychange', function () {
+                value = $("#range1").val();
+                odds = (98 / value).toFixed(2) - 0;
+                $("#odds").text(odds);
+                moneyValue = $("#inputBox").val() - 0;
+                bonus = (moneyValue * odds).toFixed(3) - 0;
+                $("#bonus").text(bonus);
+            });
+        }
+        else if ($(this).attr("data-id") == 3) {//大
+            bettingType = 3;
+            $("#range1").attr("disabled", true);
+            $("#odds").text("2.18");
+            let value = $("#inputBox").val() - 0;
+            let bonus = (value * 2.18).toFixed(3) - 0;
+            $("#bonus").text(bonus);
+        }
+        else if ($(this).attr("data-id") == 4) {//小
+            bettingType = 4;
+            $("#range1").attr("disabled", true);
+            $("#odds").text("2.18");
+            let value = $("#inputBox").val() - 0;
+            let bonus = (value * 2.18).toFixed(3) - 0;
+            $("#bonus").text(bonus);
+        }
+        else if ($(this).attr("data-id") == 5) {//等于
+            bettingType = 5;
+            $("#range1").attr("disabled", true);
+            $("#odds").text("9.80");
+            let value = $("#inputBox").val() - 0;
+            let bonus = (value * 9.8).toFixed(3) - 0;
+            $("#bonus").text(bonus);
+        }
+        else {
+            bettingType = 0;
+            $("#range1").attr("disabled", true);
+            $("#range1").css("opacity", "0.4");
+        }
+    });
+
+    // 投注金额区域
+    $("#maximum").click(function () {
+        $("#inputBox").val(100);
+        $("#maximum").css({
+            "background": "-webkit-linear-gradient(left, #FF564F , #FF8523)",
+            "background": "-o-linear-gradient(right, #FF564F, #FF8523)",
+            "background": "-moz-linear-gradient(right, #FF564F, #FF8523)",
+            "background": "linear-gradient(to right, #FF564F , #FF8523)"
+        });
+        $("#divide").css({
+            "background": "#313862"
+        });
+        $("#ride").css({
+            "background": "#313862"
+        });
+        commissions();
+    });
+    $("#ride").click(function () {
+        $("#ride").css({
+            "background": "-webkit-linear-gradient(left, #FF564F , #FF8523)",
+            "background": "-o-linear-gradient(right, #FF564F, #FF8523)",
+            "background": "-moz-linear-gradient(right, #FF564F, #FF8523)",
+            "background": "linear-gradient(to right, #FF564F , #FF8523)"
+        });
+        $("#divide").css({
+            "background": "#313862"
+        });
+        $("#maximum").css({
+            "background": "#313862"
+        });
+        let value = $("#inputBox").val() - 0;
+        let sum = value * 2;
+        $("#inputBox").val(sum);
+        if (sum >= 100) {
+            $("#inputBox").val(100);
+        }
+        commissions();
+    });
+    $("#divide").click(function () {
+        $("#divide").css({
+            "background": "-webkit-linear-gradient(left, #FF564F , #FF8523)",
+            "background": "-o-linear-gradient(right, #FF564F, #FF8523)",
+            "background": "-moz-linear-gradient(right, #FF564F, #FF8523)",
+            "background": "linear-gradient(to right, #FF564F , #FF8523)"
+        });
+        $("#ride").css({
+            "background": "#313862"
+        });
+        $("#maximum").css({
+            "background": "#313862"
+        });
+        let value = $("#inputBox").val() - 0;
+        let sum = (value / 2).toFixed(1) - 0;
+        $("#inputBox").val(sum);
+        if (sum <= 0.1) {
+            $("#inputBox").val(0.1);
+        }
+        commissions();
+    });
+
+    $("#inputBox").on('input propertychange', function () {
+        commissions();
+    });
+
+
+    function commissions() {//获取投注金额，显示预计奖金
+        let inputBoxValue = $("#inputBox").val() - 0;
+        if (inputBoxValue >= 100) {
+            $("#inputBox").val(100);
+            inputBoxValue = 100;
+        } else if (inputBoxValue < 0) {
+            $("#inputBox").val(0.1);
+            inputBoxValue = 0.1;
+        }
+        //  else if (inputBoxValue == 0) {
+        //     $("#inputBox").val(0.1);
+        //     inputBoxValue = 0.1;
+        // }
+
+        let odds = $("#odds").text() - 0;
+        let bonus = (inputBoxValue * odds).toFixed(3) - 0;
+        $("#bonus").text(bonus);
+    };
+
+
+    // 函数接口区域
+
+    function accountStatus(name) {//用户账号状态
+        $.ajax({//投注请求
+            type: "get",
+            url: `${ip}/lottery/checkUserStatus`,
+            async: false,
+            data: {
+                userName: name,
+                gameType: "dice"
+            },
+            success: function (data) {
+                console.log(data)
+                status = data.status;
+                accountInformation = data.msg;
+            }
+        })
+    }
+
+
+    function privateKeyLogin(key, code) {//私钥登录向服务器发送的参数
+        let obj = {
+            code: 1110,
+            data: {
+                privateKey: key,
+                userCode: code,
+                type: 1
+            }
+        }
+        let stringObj = JSON.stringify(obj);
+        ws.send(stringObj);
+    }
+
+
+
+
+
+    // 最新开奖结果
+    function theLotteryResults() {
+        $("#newBlockChainNo").html("");
+        text_msg = JSON.parse(received_msg.text);
+        // 区块时间
+        dateAndTime = text_msg.header.timestamp;
+        time = dateAndTime.split("T");
+        time = time[1].slice(1, 10);
+        $("#newTime").text(time);
+        // 区块链号
+        id = text_msg.id;
+        id = id.split('').reverse();
+
+        let content = "";
+        let count = 0;
+        let num = "";
+        for (let i = 0; i < 21; i++) {//判断中奖号
+            // console.log(id)
+            if (count < 2) {
+                if (!isNaN(id[i])) {
+                    count++;
+                    num += id[i]
+                    $("#newBlockChainNo").prepend(`<span style="color: #FF564F">${id[i]}</span>`);
+
+                } else {
+                    $("#newBlockChainNo").prepend(`<span>${id[i]}</span>`)
+                }
+            }
+            else {
+                $("#newBlockChainNo").prepend(`<span>${id[i]}</span>`)
+            }
+
+        }
+        num = num.split('').reverse().join("");
+        $("#newWinningNumbers").text(num);
+        $("#winningNum").text(num);
+        // $("#newBlockChainNo").html(content);
+        // console.log(content)
+
+        // 最新开奖期数
+        $("#newPeriods").text(text_msg.block_num);
+        // 最新开奖期数的大小对子显示
+        number = num.split("");
+        if (number[0] == number[1]) {
+            $("#result").text("对子");
+
+        } else {
+            number = parseInt(number.join(""));
+            if (number >= 50) {
+                $("#result").text("大");
+            } else {
+                $("#result").text("小");
+            }
+        }
+
+    }
+
+    //开奖滚动区域
+    function theLotteryList() {
+        let content = [];
+        let content1 = [];
+        let count = 0;
+        let num = "";
+        let bigColor = "";
+        let smallColor = "";
+        let pairColor = "";
+        let blockId = id.join("");
+        blockId = blockId.split('').reverse().join('');
+        for (let i = 0; i < 21; i++) {//判断中奖号
+            if (count < 2) {
+                if (!isNaN(id[i])) {
+                    count++;
+                    num += id[i]
+                    content += `<span style="color: #FF564F">${id[i]}</span>~`;
+
+                } else {
+                    content += `<span>${id[i]}</span>~`
+                }
+            }
+            else {
+                content += `<span>${id[i]}</span>~`
+            }
+
+        }
+        content = content.split('~').reverse().join();
+
+        content = content.split(',');
+        for (let n = 0; n < content.length; n++) {
+            content1.push(content[n])
+        }
+        num = num.split('').reverse().join("");
+        content1 = content1.join("");
+        let carouselObj = {
+            "periods": text_msg.block_num,
+            "blockChainNo": content1,
+            "winningNumbers": num,
+            "theLotteryTime": time,
+            "bigColor": bigColor,
+            "smallColor": smallColor,
+            "pairColor": pairColor,
+            "blockId": blockId
+        }
+
+        if (carouselAry.length <= 8) {
+            carouselAry.unshift(carouselObj);
+        } else {
+            carouselAry.pop();
+            carouselAry.unshift(carouselObj);
+        }
+        let carouselContent = "";
+
+        let buyIn = userBettingPeriods + 10 - 0;
+        for (let item of carouselAry) {
+            if (item.periods == userBettingPeriods) {
+                carouselContent += `
+                <ul class="TheLotteryData" style="background:#313862" data-num=${item.blockId}>
+                            <li>${item.periods}</li>
+                            <li>
+                                <p>...</p>
+                                <p class="content">${item.blockChainNo}</p>
+                            </li>
+                            <li>${item.theLotteryTime}</li>
+                            
+                        </ul>
+                `
+
+            }
+            else if (item.periods == buyIn) {
+                carouselContent += `
+                <ul class="TheLotteryData" style="background:#316240" data-num=${item.blockId}>
+                            <li>${item.periods}</li>
+                            <li>
+                                <p>...</p>
+                                <p class="content">${item.blockChainNo}</p>
+                            </li>
+                            <li>${item.theLotteryTime}</li>
+                            
+                        </ul>
+                `
+                $("#betNum").text(item.winningNumbers);
+                $("#betNum").css({
+                    "display": "block",
+                    "color": "#1dff22"
+                });
+                $("#winningNum").css("display", "none");
+                setTimeout(function () {
+                    $("#winningNum").css("display", "block");
+                    $("#betNum").css("display", "none");
+                }, 5000);
+
+            }
+            else {
+                carouselContent += `
+            <ul class="TheLotteryData" data-num=${item.blockId}>
+                        <li>${item.periods}</li>
+                        <li>
+                            <p>...</p>
+                            <p class="content">${item.blockChainNo}</p>
+                        </li>
+                        <li>${item.theLotteryTime}</li>
+                        
+                    </ul>
+            `
+            }
+
+        }
+        $("#carousel").html(carouselContent);
+        $("#carousel>ul:nth-of-type(1)").animate({ marginTop: ".22rem" });
+    }
+
+
+    //中奖投注表格内容
+    function allPrizeRecord() {
+        $("#allPrizeTable").html("");
+        allPrize = JSON.parse(received_msg.text);
+        let allPrizeRecordContent = "";//中奖投注信息
+        let myType = "";//中奖投注内容
+        let time = "";//时间
+        let oTime = "";//日期
+        let hours = "";//小时
+        let minutes = "";//分钟
+        let dateTime = "";
+        if (TheWinningBetsAry.length < 15) {
+            TheWinningBetsAry.unshift(allPrize);
+            for (let item of TheWinningBetsAry) {
+                time = new Date(item.time.time);
+                hours = time.getHours(); //获取当前小时数(0-23)
+                minutes = time.getMinutes(); //获取当前分钟数(0-59)
+                let oMonth = time.getMonth() + 1;
+                let oDay = time.getDate();
+                oTime = oMonth + '/' + oDay;//最后拼接时间
+                dateTime = oTime + " " + hours + ":" + minutes;
+                if (item.type == 1) {
+                    myType = item.prizenumber + ">" + item.forecast;
+                }
+                else if (item.type == 2) {
+                    myType = item.prizenumber + "<" + item.forecast;
+                }
+                else if (item.type == 3) {
+                    myType = "大";
+                }
+                else if (item.type == 4) {
+                    myType = "小";
+                }
+                else if (item.type == 5) {
+                    myType = "对子";
+                }
+                allPrizeRecordContent += `
+                <ul class="theWinningBetsTable">
+                                <li>${dateTime}</li>
+                                <li>${item.termnumber}</li>
+                                <li>${item.account}</li>
+                                <li>${myType}</li>
+                                <li style="color: #BF4B56">+${item.prizeEOS}</li>
+                            </ul>
+                `
+
+            }
+        } else {
+            TheWinningBetsAry.unshift(allPrize);
+            TheWinningBetsAry.pop();
+            for (let item of TheWinningBetsAry) {
+                time = new Date(item.time.time);
+                hours = time.getHours(); //获取当前小时数(0-23)
+                minutes = time.getMinutes(); //获取当前分钟数(0-59)
+                let oMonth = time.getMonth() + 1;
+                let oDay = time.getDate();
+                oTime = oMonth + '/' + oDay;//最后拼接时间
+                dateTime = oTime + " " + hours + ":" + minutes;
+                if (item.type == 1) {
+                    myType = item.prizenumber + ">" + item.forecast;
+                }
+                else if (item.type == 2) {
+                    myType = item.prizenumber + "<" + item.forecast;
+                }
+                else if (item.type == 3) {
+                    myType = "大";
+                }
+                else if (item.type == 4) {
+                    myType = "小";
+                }
+                else if (item.type == 5) {
+                    myType = "对子";
+                }
+                allPrizeRecordContent += `
+                <ul class="theWinningBetsTable">
+                                <li>${dateTime}</li>
+                                <li>${item.termnumber}</li>
+                                <li>${item.account}</li>
+                                <li>${myType}</li>
+                                <li style="color: #BF4B56">+${item.prizeEOS}</li>
+                            </ul>
+                `
+
+            }
+
+        }
+        $("#allPrizeTable").html(allPrizeRecordContent);
+    }
+
+    //我的投注表格内容
+    function iBetThe() {
+        $("#loginBtn").attr("data-state", "2");
+        DevoteTheResults = JSON.parse(received_msg.text);
+        console.log(DevoteTheResults)
+        let myType = "";//我的投注内容
+        let myMoney = "";//奖金
+        let myMoneyStyle = "";//金额样式
+        let myWinStyle = "";//中奖样式
+        let time = "";//时间
+        let oTime = "";//日期
+        let hours = "";//小时
+        let minutes = "";//分钟
+        let dateTime = "";
+        if (DevoteTheResults.type == 1) {
+            myType = DevoteTheResults.prizenumber + ">" + DevoteTheResults.forecast;
+        }
+        else if (DevoteTheResults.type == 2) {
+            myType = DevoteTheResults.prizenumber + "<" + DevoteTheResults.forecast;
+        }
+        else if (DevoteTheResults.type == 3) {
+            myType = "大";
+        }
+        else if (DevoteTheResults.type == 4) {
+            myType = "小";
+        }
+        else if (DevoteTheResults.type == 5) {
+            myType = "对子";
+        }
+        if (DevoteTheResults.state == 0) {
+            myMoney = "-" + DevoteTheResults.bettingEOS;
+            myMoneyStyle = "#3097ff";
+            popup({ type: 'tip', msg: "很遗憾！未中奖", delay: 1000 });
+        } else {
+            // myWinStyle = "myWinStyle";
+            myMoney = "+" + DevoteTheResults.prizeEOS;
+            myMoneyStyle = "#BF4B56";
+            popup({ type: 'tip', msg: `恭喜您！中奖${DevoteTheResults.prizeEOS}`, delay: 1000 });
+        }
+        time = new Date(DevoteTheResults.time.time);
+        hours = time.getHours(); //获取当前小时数(0-23)
+        minutes = time.getMinutes(); //获取当前分钟数(0-59)
+        let oMonth = time.getMonth() + 1;
+        let oDay = time.getDate();
+        oTime = oMonth + '/' + oDay;//最后拼接时间
+        dateTime = oTime + " " + hours + ":" + minutes;
+        let iBetTheContent = "";
+        iBetTheContent = `
+    <ul class="devoteTheResults">
+                    <li>${dateTime}</li>
+                    <li>${DevoteTheResults.termnumber}</li>
+                    <li>${myType}</li>
+                    <li>${DevoteTheResults.bettingEOS}</li>
+                    <li  style="color: ${myMoneyStyle}">${myMoney}</li>
+                </ul>
+    `
+        $("#iBetThe").prepend(iBetTheContent);
+
+
+    }
+
+
+    function bettingPage(page) {//点击我的投注，从服务器获取投注记录
+        $.ajax({
+            type: "get",
+            url: `${ip}/lottery/getAccountDice`,
+            async: false,
+            data: {
+                account: userName,
+                begin: page,
+                limit: 20
+            },
+            success: function (data) {
+                let myType = "";//我的投注内容
+                let myMoney = "";//奖金
+                let myMoneyStyle = "";//金额样式
+                let iBetTheContent = "";
+                let time = "";//时间
+                let oTime = "";//日期
+                let hours = "";//小时
+                let minutes = "";//分钟
+                let dateTime = "";
+                for (let item of data.accountDice) {
+                    if (item.type == 1) {
+                        myType = item.prizenumber + ">" + item.forecast;
+                    }
+                    else if (item.type == 2) {
+                        myType = item.prizenumber + "<" + item.forecast;
+                    }
+                    else if (item.type == 3) {
+                        myType = "大";
+                    }
+                    else if (item.type == 4) {
+                        myType = "小";
+                    }
+                    else if (item.type == 5) {
+                        myType = "对子";
+                    }
+                    if (item.state == 0) {
+                        myMoney = "-" + item.bettingEOS;
+                        myMoneyStyle = "#3097ff";
+                    } else {
+                        myMoney = "+" + item.prizeEOS;
+                        myMoneyStyle = "#BF4B56";
+                    }
+                    time = new Date(item.time);
+                    hours = time.getHours(); //获取当前小时数(0-23)
+                    minutes = time.getMinutes(); //获取当前分钟数(0-59)
+                    let oMonth = time.getMonth() + 1;
+                    let oDay = time.getDate();
+                    oTime = oMonth + '/' + oDay;//最后拼接时间
+                    dateTime = oTime + " " + hours + ":" + minutes;
+                    iBetTheContent += `
+                    <ul class="devoteTheResults">
+                                    <li>${dateTime}</li>
+                                    <li>${item.termnumber}</li>
+                                    <li>${myType}</li>
+                                    <li>${item.bettingEOS}</li>
+                                    <li  style="color: ${myMoneyStyle}">${myMoney}</li>
+                                </ul>
+                    `
+
+                }
+                $("#iBetThe").prepend(iBetTheContent);
+            }
+        });
+    }
+
+    // 获取数据（参数说明：key --> 要获取的属性名）
+    function getStorage(key) {
+        let data = sessionStorage[key];
+        if (!data) {
+            return [];
+        }
+        return JSON.parse(data);
+    }
+
+    // 存储数据（参数说明：key --> 要存储的属性名，data：要存储的属性值）
+    function saveStorage(key, data) {
+        sessionStorage[key] = JSON.stringify(data);
+    }
+});
+function clearNoNum(obj) {//投注金额输入框的正则
+    obj.value = obj.value.replace(/[^\d.]/g, "");
+    obj.value = obj.value.replace(/^\./g, "");
+    obj.value = obj.value.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".");
+    obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d).*$/, '$1$2.$3');
+}

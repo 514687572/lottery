@@ -1,0 +1,199 @@
+package com.stip.net.controller;
+
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.socket.TextMessage;
+
+import com.dima.pay.enums.PayTypeEnum;
+import com.dima.pay.util.Base;
+import com.dima.pay.util.EncryptUtils;
+import com.dima.pay.util.SignUtils;
+import com.lottery.net.utils.Constants;
+import com.lottery.net.utils.JsonUtil;
+import com.stip.net.entity.LotteryUser;
+import com.stip.net.entity.UserRechargeRecords;
+import com.stip.net.imessage.IMWebSocketHandler;
+import com.stip.net.main.MsgCode;
+import com.stip.net.service.AccountService;
+import com.stip.net.service.LotteryUserService;
+import com.stip.net.service.RedisService;
+import com.stip.net.service.UserRechargeRecordsService;
+
+import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.http.HttpUtil;
+import io.eblock.eos4j.Rpc;
+import io.eblock.eos4j.api.vo.transaction.Transaction;
+
+/**
+ * 支付操作
+ * @author yc
+ */
+@Scope("request")
+@RequestMapping("/pay")
+@RestController
+public class PayController {
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	@Autowired
+    private UserRechargeRecordsService userRechargeRecordsService;
+	@Autowired
+    private LotteryUserService lotteryUserService;
+	@Autowired
+    private IMWebSocketHandler handler;
+	@Autowired
+    private AccountService accountService;
+	
+	/**
+	 * * 跳转支付链接
+	 * @param faceMoney		交易金额（保留两位小数）
+	 * @param name			签名
+	 * @param isPC			0：移动端，1：PC端
+	 * @param type			支付类型（0：注册，1：充值，2：其他）
+	 * @param account		用户名
+	 * @param orderId		订单号
+	 * @return
+	 */
+	@GetMapping("/getPayLink")
+	public Map<String, Object> getPayLink(@RequestParam String faceMoney,@RequestParam String type,@RequestParam String isPC,
+			@RequestParam String account, @RequestParam long orderId,@RequestParam String name,HttpServletRequest request){
+		Map<String, Object> response = new HashMap<String, Object>(1);
+		// 支付方式类型
+        String payTypeId = PayTypeEnum.UNI_EXP_PAY.getCode();
+        Map<String, String> param = new HashMap<String, String>(16);
+        param.put("payFromAccount", Base.payService.getConfig().getMchId());
+        //  支付金额 精确小数点后两位
+        param.put("faceMoney", faceMoney);
+        param.put("name", name);
+        long timestamp=System.currentTimeMillis();
+        param.put("timestamp", timestamp+"");
+        param.put("inOrderId", orderId+"");
+        param.put("payTypeId", payTypeId);
+        // 交易跳转地址
+        param.put("inJumpUrl", Base.GATEWAY_URL);
+        // 交易通知地址
+        param.put("inNotifyUrl", Base.GAME_URL);
+        EncryptUtils encryptUtils = new EncryptUtils();
+        String sign = encryptUtils.signMD5ForDes(param, Base.payService.getConfig().getMchKey());
+        System.out.println("签名源:" + param + ",md5=" + sign);
+        // 签名数据
+        param.put("sign", sign);
+        // wap true 终端是移动端， false 是PC 端
+        if(isPC.equals("1")){
+        	param.put("wap", "false");
+        }
+        param.put("wap", "true");
+        // 对特殊中文做url编码 -签名完成后做编码
+        param.put("name", HttpUtil.encode(name, CharsetUtil.UTF_8));
+        LotteryUser lotteryUser=new LotteryUser();
+        lotteryUser.setUserName(account);
+        LotteryUser user=lotteryUserService.getlotteryUser(lotteryUser);
+        if(user==null){
+        	response.put("mag", "未找到用户");
+        	return response;
+        }
+        UserRechargeRecords record=new UserRechargeRecords();
+        if(type.equals("0")){//注册
+        	record.setRecharge_type(0);
+        }else{//充值
+        	record.setRecharge_type(1);
+        	record.setEos_price(new BigDecimal(request.getParameter("eosPrice")));
+        }
+        record.setInOrderId(new BigDecimal(orderId));
+        record.setTime(new Date(timestamp));
+        record.setUid(user.getUserId());
+        BigDecimal recharge_num=new BigDecimal(faceMoney).multiply(new BigDecimal(100));
+        record.setRecharge_num(recharge_num.intValue());
+        userRechargeRecordsService.addRechargeRecords(record);
+        System.out.println("生成请求交易支付链接：");
+        System.out.println(Base.BASE_URL + "pgw.shtml?" + SignUtils.map2LinkString(param));
+        response.put("url", Base.BASE_URL + "pgw.shtml?" + SignUtils.map2LinkString(param));
+		return response;
+    }
+
+	/**
+	 * 接收交易信息
+	 * @throws UnsupportedEncodingException 
+	 */
+	@PostMapping("/tradeNotice")
+	public String tradeNotice(HttpServletRequest request) throws UnsupportedEncodingException{
+		System.out.println("已收到交易通知");
+//		userRechargeRecordsService.
+		String orderId=request.getParameter("orderId");//订单号
+		String results=request.getParameter("result");//支付状态
+		String timestamp=request.getParameter("timestamp");
+		UserRechargeRecords record=userRechargeRecordsService.getRechargeRecordinOrderId(new BigDecimal(orderId));
+		if(record!=null && results.equals("710010") && timestamp.equals(record.getTime().getTime()+"")){
+			userRechargeRecordsService.updateRechargeRecordin(new BigDecimal(orderId), 1);
+			record.setRecharge_status(1);
+			LotteryUser lotteryUser=new LotteryUser();
+	        lotteryUser.setUserId(record.getUid());
+	        LotteryUser user=lotteryUserService.getlotteryUser(lotteryUser);
+	        Map<String, Object> map2 = new HashMap<>();
+			map2.put("results", results);
+			String json1 = JsonUtil.buildJson(MsgCode.USER_PAY_results, map2);
+			handler.sendMessageToUser(user.getUserName(), new TextMessage(json1));
+			try {
+	            Rpc rpc = new Rpc("https://proxy.eosnode.tools");
+	            Transaction t2 = rpc.createAccount(Constants.add_caccount_prive_key,Constants.add_account,
+	            		user.getUserName(), user.getUserKey(), user.getUserKey(),5120l,"0.0000 EOS","0.3000 EOS", 0l);
+	            if(t2.getTransactionId()!=null){
+	            	String msg="创建成功";
+	            	if(!accountService.delegatebw(Constants.add_caccount_prive_key,Constants.add_account, "5.0000 EOS")){
+	            		msg=msg+",抵押失败";
+	            	}
+	                //  激活用户状态
+	            	LotteryUser record1 =new LotteryUser();
+	            	record1.setUserId(user.getUserId());
+	            	record1.setUserStatus("1");
+	            	lotteryUserService.updateByPrimaryKeySelective(record1);
+	            }
+	        }catch(Exception ex) {
+	        	logger.error(ex.toString());
+	        }
+			return "success";
+		}
+		return "";
+//		Map<String, String[]> map = request.getParameterMap();
+//		for (Entry<String, String[]> entry : map.entrySet()) {
+//			String key = entry.getKey();
+//			String[] value = entry.getValue();
+//			System.out.println("key:" + key);
+//			for (String str : value) {
+//				System.out.print(str);
+//				System.out.print(" ");
+//			}
+//			System.out.println();
+//		}
+//		String notifyResult = "result=710010&orderId=20180240040930&payCardType=DE&sign=4cae8710ccc5b23863a2aebf41975460&beginTime=2018-02-24 16:00:35&endTime=2018-02-24 16:00:56&transactionId=161112018022416003551303305&requestMoney=800.00&successMoney=800.00&timestamp=1519459256086";
+//        Map<String, String> result = ConvertUtils.getRequestDataMap(notifyResult);
+//        String remoteSign = result.remove("sign");
+//        Map<String, String> param = new HashMap<String, String>(6);
+//        param.put("result", result.get("result"));
+//        param.put("orderId", result.get("orderId"));
+//        param.put("transactionId", result.get("transactionId"));
+//        param.put("requestMoney", result.get("requestMoney"));
+//        param.put("successMoney", result.get("successMoney"));
+//        param.put("timestamp", result.get("timestamp"));
+//        String mySign = SignUtils.sign(param, "MD5", Base.payService.getConfig().getMchKey(), "UTF-8");
+//        boolean signIsValid = remoteSign.equalsIgnoreCase(mySign);
+//        if (signIsValid) {
+//        	// 支付成功，给用户发道具，订单状态修改
+//        } else {
+//        	// 支付有问题，订单状态修改
+//        }
+	}
+}

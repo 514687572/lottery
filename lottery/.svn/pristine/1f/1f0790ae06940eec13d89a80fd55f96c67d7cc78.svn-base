@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.LotteryConfirmDao">
+  <resultMap id="BaseResultMap" type="com.stip.net.entity.LotteryConfirm">
+    <id column="lotteryConfirm_confirm_id" jdbcType="VARCHAR" property="confirmId" />
+    <result column="lotteryConfirm_transaction_id" jdbcType="VARCHAR" property="transactionId" />
+    <result column="lotteryConfirm_user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="lotteryConfirm_game_type" jdbcType="VARCHAR" property="gameType" />
+    <result column="lotteryConfirm_confirm_ext" jdbcType="VARCHAR" property="confirmExt" />
+    <result column="lotteryConfirm_remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    lotteryConfirm.confirm_id as lotteryConfirm_confirm_id, lotteryConfirm.transaction_id as lotteryConfirm_transaction_id, 
+    lotteryConfirm.user_name as lotteryConfirm_user_name, lotteryConfirm.game_type as lotteryConfirm_game_type, 
+    lotteryConfirm.confirm_ext as lotteryConfirm_confirm_ext, lotteryConfirm.remark as lotteryConfirm_remark
+  </sql>
+  <select id="selectByExample" parameterType="com.stip.net.example.LotteryConfirmExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_lottery_confirm lotteryConfirm
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="fromRowNum != null and toRowNum >= 0">
+      limit #{fromRowNum}, #{toRowNum}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_lottery_confirm lotteryConfirm
+    where lotteryConfirm.confirm_id = #{confirmId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_lottery_confirm
+    where confirm_id = #{confirmId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.stip.net.example.LotteryConfirmExample">
+    delete lotteryConfirm from t_lottery_confirm lotteryConfirm
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.stip.net.entity.LotteryConfirm">
+    insert into t_lottery_confirm (confirm_id, transaction_id, user_name, 
+      game_type, confirm_ext, remark
+      )
+    values (#{confirmId,jdbcType=VARCHAR}, #{transactionId,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, 
+      #{gameType,jdbcType=VARCHAR}, #{confirmExt,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.stip.net.entity.LotteryConfirm">
+    insert into t_lottery_confirm
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="confirmId != null">
+        confirm_id,
+      </if>
+      <if test="transactionId != null">
+        transaction_id,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="gameType != null">
+        game_type,
+      </if>
+      <if test="confirmExt != null">
+        confirm_ext,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="confirmId != null">
+        #{confirmId,jdbcType=VARCHAR},
+      </if>
+      <if test="transactionId != null">
+        #{transactionId,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="gameType != null">
+        #{gameType,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmExt != null">
+        #{confirmExt,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.stip.net.example.LotteryConfirmExample" resultType="java.lang.Integer">
+    select count(*) from t_lottery_confirm lotteryConfirm
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_lottery_confirm lotteryConfirm
+    <set>
+      <if test="record.confirmId != null">
+        lotteryConfirm.confirm_id = #{record.confirmId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.transactionId != null">
+        lotteryConfirm.transaction_id = #{record.transactionId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userName != null">
+        lotteryConfirm.user_name = #{record.userName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gameType != null">
+        lotteryConfirm.game_type = #{record.gameType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.confirmExt != null">
+        lotteryConfirm.confirm_ext = #{record.confirmExt,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null">
+        lotteryConfirm.remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_lottery_confirm lotteryConfirm
+    set lotteryConfirm.confirm_id = #{record.confirmId,jdbcType=VARCHAR},
+      lotteryConfirm.transaction_id = #{record.transactionId,jdbcType=VARCHAR},
+      lotteryConfirm.user_name = #{record.userName,jdbcType=VARCHAR},
+      lotteryConfirm.game_type = #{record.gameType,jdbcType=VARCHAR},
+      lotteryConfirm.confirm_ext = #{record.confirmExt,jdbcType=VARCHAR},
+      lotteryConfirm.remark = #{record.remark,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.stip.net.entity.LotteryConfirm">
+    update t_lottery_confirm
+    <set>
+      <if test="transactionId != null">
+        transaction_id = #{transactionId,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="gameType != null">
+        game_type = #{gameType,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmExt != null">
+        confirm_ext = #{confirmExt,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where confirm_id = #{confirmId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.stip.net.entity.LotteryConfirm">
+    update t_lottery_confirm
+    set transaction_id = #{transactionId,jdbcType=VARCHAR},
+      user_name = #{userName,jdbcType=VARCHAR},
+      game_type = #{gameType,jdbcType=VARCHAR},
+      confirm_ext = #{confirmExt,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR}
+    where confirm_id = #{confirmId,jdbcType=VARCHAR}
+  </update>
+</mapper>

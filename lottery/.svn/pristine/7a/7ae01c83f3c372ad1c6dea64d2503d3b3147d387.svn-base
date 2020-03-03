@@ -1,0 +1,43 @@
+package com.stip.net.service;
+
+import java.io.IOException;
+import java.util.Map;
+
+import io.eblock.eos4j.api.vo.account.Account;
+
+public interface AccountService {
+    boolean plusBalance(String account, String quantity) throws InterruptedException;
+    
+    boolean plusBalance(String pirveKey,String bonusAccount,String account,String quantity) throws InterruptedException;
+
+    /**
+	 * 从龙虎斗奖池给玩家发EOS
+	 */
+    String plusBalanceFromTiger(String account, String quantity) throws InterruptedException;
+
+    boolean minusBalance(String account,String quantity,String private_key,String remark) throws InterruptedException;
+    
+    boolean minusBalance(String bonusAccount,String account,String quantity,String private_key,String remark) throws InterruptedException;
+    
+    /**扣除玩家EOS到骰子奖池
+     */
+    String minusBalanceToDice(String account,String quantity,String private_key,String remark) throws InterruptedException;
+    
+    /**
+	 * 从骰子奖池给玩家发EOS
+	 */
+    boolean plusBalanceFromDice(String account, String quantity) throws InterruptedException;
+
+    /**
+	 * 扣除玩家EOS到龙虎斗奖池
+	 */
+    String minusBalanceToTiger(String account,String quantity,String private_key,String remark) throws InterruptedException;
+
+    Account getAccount(String account) throws InterruptedException;
+    
+    String getPublicKey(String privateKey) throws InterruptedException;
+    
+    String getUserName(String publicKey) throws IOException;
+    
+    Map<String, Object> getUserNameByPk(String privateKey) throws Exception;
+}

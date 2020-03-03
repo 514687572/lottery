@@ -1,0 +1,24 @@
+package com.stip.net.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Select;
+
+import com.stip.mybatis.generator.plugin.GenericMapper;
+import com.stip.net.entity.UserBetRecords;
+import com.stip.net.example.UserBetRecordsExample;
+
+/**
+ * ������Զ����ѯ��䣬���������չ
+ **/
+public interface UserBetRecordsDao extends GenericMapper<UserBetRecords, UserBetRecordsExample, Integer> {
+    List<UserBetRecords> getMyChildsData(Map<String, Object> map);
+
+    int getMyChildsDataCount(Map<String, Object> map);
+    
+    int getUserAllBetByRecord(String userName);
+    
+    @Select("SELECT COUNT(*) FROM t_user_bet_dice dice WHERE dice.account = #{userName}")
+    int getUserDiceByRecord(String userName);
+}

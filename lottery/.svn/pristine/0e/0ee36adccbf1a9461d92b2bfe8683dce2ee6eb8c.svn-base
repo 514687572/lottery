@@ -1,0 +1,231 @@
+package com.stip.net.entity;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import com.stip.mybatis.generator.plugin.BaseModel;
+
+public class LotteryRecords extends BaseModel<Integer> implements Serializable {
+    private Long recordsId;
+
+    private Long betNum;
+
+    private Integer lotteryOne;
+
+    private Integer lotteryTwo;
+
+    private Integer lotteryThree;
+
+    private Integer lotteryFour;
+
+    private Integer lotteryFive;
+
+    private String largeNum;
+
+    private String lotterySingle;
+
+    private String hashOne;
+
+    private String hashTwo;
+
+    private String hashThree;
+
+    private String hashFour;
+
+    private String hashFive;
+
+    private Date createTime;
+
+    private Date updateTime;
+
+    private String remark;
+
+    private static final long serialVersionUID = 1L;
+
+    public Long getRecordsId() {
+        return recordsId;
+    }
+
+    public void setRecordsId(Long recordsId) {
+        this.recordsId = recordsId;
+    }
+
+    public Long getBetNum() {
+        return betNum;
+    }
+
+    public void setBetNum(Long betNum) {
+        this.betNum = betNum;
+    }
+
+    public Integer getLotteryOne() {
+        return lotteryOne;
+    }
+
+    public void setLotteryOne(Integer lotteryOne) {
+        this.lotteryOne = lotteryOne;
+    }
+
+    public Integer getLotteryTwo() {
+        return lotteryTwo;
+    }
+
+    public void setLotteryTwo(Integer lotteryTwo) {
+        this.lotteryTwo = lotteryTwo;
+    }
+
+    public Integer getLotteryThree() {
+        return lotteryThree;
+    }
+
+    public void setLotteryThree(Integer lotteryThree) {
+        this.lotteryThree = lotteryThree;
+    }
+
+    public Integer getLotteryFour() {
+        return lotteryFour;
+    }
+
+    public void setLotteryFour(Integer lotteryFour) {
+        this.lotteryFour = lotteryFour;
+    }
+
+    public Integer getLotteryFive() {
+        return lotteryFive;
+    }
+
+    public void setLotteryFive(Integer lotteryFive) {
+        this.lotteryFive = lotteryFive;
+    }
+
+    public String getLargeNum() {
+        return largeNum;
+    }
+
+    public void setLargeNum(String largeNum) {
+        this.largeNum = largeNum;
+    }
+
+    public String getLotterySingle() {
+        return lotterySingle;
+    }
+
+    public void setLotterySingle(String lotterySingle) {
+        this.lotterySingle = lotterySingle;
+    }
+
+    public String getHashOne() {
+        return hashOne;
+    }
+
+    public void setHashOne(String hashOne) {
+        this.hashOne = hashOne;
+    }
+
+    public String getHashTwo() {
+        return hashTwo;
+    }
+
+    public void setHashTwo(String hashTwo) {
+        this.hashTwo = hashTwo;
+    }
+
+    public String getHashThree() {
+        return hashThree;
+    }
+
+    public void setHashThree(String hashThree) {
+        this.hashThree = hashThree;
+    }
+
+    public String getHashFour() {
+        return hashFour;
+    }
+
+    public void setHashFour(String hashFour) {
+        this.hashFour = hashFour;
+    }
+
+    public String getHashFive() {
+        return hashFive;
+    }
+
+    public void setHashFive(String hashFive) {
+        this.hashFive = hashFive;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append(" [");
+        sb.append("Hash = ").append(hashCode());
+        sb.append(", recordsId=").append(recordsId);
+        sb.append(", betNum=").append(betNum);
+        sb.append(", lotteryOne=").append(lotteryOne);
+        sb.append(", lotteryTwo=").append(lotteryTwo);
+        sb.append(", lotteryThree=").append(lotteryThree);
+        sb.append(", lotteryFour=").append(lotteryFour);
+        sb.append(", lotteryFive=").append(lotteryFive);
+        sb.append(", largeNum=").append(largeNum);
+        sb.append(", lotterySingle=").append(lotterySingle);
+        sb.append(", hashOne=").append(hashOne);
+        sb.append(", hashTwo=").append(hashTwo);
+        sb.append(", hashThree=").append(hashThree);
+        sb.append(", hashFour=").append(hashFour);
+        sb.append(", hashFive=").append(hashFive);
+        sb.append(", createTime=").append(createTime);
+        sb.append(", updateTime=").append(updateTime);
+        sb.append(", remark=").append(remark);
+        sb.append(", serialVersionUID=").append(serialVersionUID);
+        sb.append("]");
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        }
+        if (that == null) {
+            return false;
+        }
+        if (getClass() != that.getClass()) {
+            return false;
+        }
+        LotteryRecords other = (LotteryRecords) that;
+        return (this.getRecordsId() == null ? other.getRecordsId() == null : this.getRecordsId().equals(other.getRecordsId()));
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getRecordsId() == null) ? 0 : getRecordsId().hashCode());
+        return result;
+    }
+}

@@ -1,0 +1,40 @@
+package com.stip.net.job;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import org.springframework.web.socket.TextMessage;
+
+import com.lottery.net.utils.JsonUtil;
+import com.stip.net.entity.LotteryUserScore;
+import com.stip.net.imessage.IMWebSocketHandler;
+import com.stip.net.main.MsgCode;
+import com.stip.net.service.LotteryUserService;
+import com.stip.net.service.RedisService;
+import com.stip.net.service.UserService;
+
+import net.sf.json.JSONObject;
+
+public class UserPayJob extends AbstractJob {
+
+	@Override
+	public void runImpl(IMWebSocketHandler handler, String userId, JSONObject params, Object... object) {
+		LotteryUserService lotteryUserService = (LotteryUserService) object[0];
+		RedisService redisService = (RedisService) object[1];
+		LotteryUserScore lotteryUserScore = null;//用户信息
+		Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+		//判断是否是纯数字
+		if(pattern.matcher(userId).matches()){
+			lotteryUserScore=lotteryUserService.getLotteryUserScoreTel(userId);
+		}else{
+			lotteryUserScore=lotteryUserService.getLotteryUserScoreEmil(userId);
+		}
+//		Map<String, Object> map2 = new HashMap<>();
+//		map2.put("pu", lotteryUserService.getUserByName(userId).getUserKey());
+//		map2.put("pk", redisService.getCache(userId));
+//		String json1 = JsonUtil.buildJson(MsgCode.USER_PAY, map2);
+//		handler.sendMessageToUser(userId, new TextMessage(json1));
+	}
+
+}

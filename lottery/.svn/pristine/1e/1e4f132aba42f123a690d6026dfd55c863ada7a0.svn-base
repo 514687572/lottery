@@ -1,0 +1,183 @@
+package com.stip.net.kafka.consumer;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import com.stip.net.service.*;
+import org.apache.commons.lang.StringUtils;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.listener.MessageListener;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.socket.TextMessage;
+
+import com.google.gson.GsonBuilder;
+import com.lottery.net.utils.CoinUtil;
+import com.lottery.net.utils.Constants;
+import com.lottery.net.utils.DBCache;
+import com.stip.net.entity.DBDiceBetting;
+import com.stip.net.entity.LotteryConfirm;
+import com.stip.net.entity.UserBetRecords;
+import com.stip.net.entity.tiger.TigerPutRecord;
+import com.stip.net.imessage.IMWebSocketHandler;
+import com.stip.net.kafka.dto.SampleMessage;
+import com.stip.net.kafka.utils.PublicMethod;
+import com.stip.net.vo.Message;
+
+import net.sf.json.JSONObject;
+
+/**
+ *
+ * @Title:下注确认消息
+ * @date：2018年11月14日-下午1:33:32
+ * @author：cja
+ *
+ */
+@Transactional(propagation = Propagation.REQUIRED, rollbackFor = {RuntimeException.class, Exception.class})
+@Component
+public class BetConsumer implements MessageListener<String, SampleMessage> {
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	@Autowired
+	private UserBetService userBetService;
+	@Autowired
+	private ConfirmService confirmService;
+	@Autowired
+	private TigerService tigerService;
+	@Autowired
+	private IMWebSocketHandler handler;
+	@Autowired
+	private RedisService redisService;
+	@Autowired
+	private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+	@Autowired
+	private LotteryUserService lotteryUserService;
+	@Autowired
+	private AccountService accountService;
+	@Autowired
+	private UserTransactionRecordsService userTransactionRecordsService;
+
+	public void onMessage(ConsumerRecord<String, SampleMessage> data) {
+		JSONObject jsonObject = JSONObject.fromObject(data.value());
+		String transactionId = jsonObject.getString("transaction_id");
+		String quantity = jsonObject.getString("quantity");
+		if (!quantity.endsWith("EOS")) {
+			return;
+		}
+		BigDecimal realMoney = new BigDecimal(CoinUtil.getFromQuantity(quantity));
+		JSONObject memo = JSONObject.fromObject(jsonObject.get("memo"));
+		String userName=memo.getString("userName");
+		String gameType=memo.getString("gameType");
+
+		logger.error("收到消息" + jsonObject.toString());
+		
+		if (StringUtils.isEmpty(transactionId)) {
+			logger.error("更新下注状态消息错误" + jsonObject.toString());
+			return;
+		}
+		
+		if(Constants.LOTTERY_TYPE.equals(gameType)) {// 大乐透
+			String sid=memo.getString("id");// 大乐透特有
+
+			UserBetRecords record = new UserBetRecords();
+			record.setLotteryStatus("1");
+			record.setTransactionId(transactionId);
+			int count=userBetService.updateByBetRecordsExample(record, sid);
+			
+			List<UserBetRecords> list=userBetService.getUserBetHistry(1,userName , 1, sid);
+			
+			if(count>0) {
+				if(list!=null&&list.size()>0) {
+					UserBetRecords currentRecord=list.get(0);
+					BigDecimal b = new BigDecimal(currentRecord.getNoteMoney()*(count-1));
+					double dvalue=b.setScale(4,BigDecimal.ROUND_HALF_DOWN).doubleValue();
+					redisService.setNx(currentRecord.getBetNum().toString(), "0", 60*2*1000l);
+					double newLong=Double.parseDouble(redisService.getCache(currentRecord.getBetNum().toString()).toString())+dvalue;
+					redisService.setCache(currentRecord.getBetNum().toString(), newLong);
+					threadPoolTaskExecutor.execute(new Runnable() {
+						public void run() {
+							sendBetRecords(userName,dvalue+"",currentRecord.getCreateTime(),currentRecord.getBetNum().toString());
+							//  新用户奖励
+							PublicMethod.newUser(userName, userBetService, lotteryUserService, accountService, logger,currentRecord.getBetNum(),
+									Constants.GAME_TYPE_LOTTERY,userTransactionRecordsService);
+							//  邀请奖励发放
+							PublicMethod.invitationAward(b,userName, lotteryUserService, accountService, logger,currentRecord.getBetNum(),
+									Constants.GAME_TYPE_LOTTERY,userTransactionRecordsService);
+						}
+					});
+				}
+			}else {
+				LotteryConfirm confirm=new LotteryConfirm();
+				confirm.setConfirmId(sid);
+				confirm.setGameType(gameType);
+				confirm.setTransactionId(transactionId);
+				confirm.setUserName(userName);
+				
+				confirmService.addConfirm(confirm);
+			}
+		}else if(Constants.DICE_TYPE.equals(gameType)) {// 骰子
+			DBDiceBetting dice = DBCache.getInstance().getDiceBettingTransaction_id(transactionId);
+			if (dice != null) {
+				dice.setDice_state(1);
+			}else{
+				DBDiceBetting ddb=new DBDiceBetting();
+				ddb.setAccount(userName);
+				ddb.setState(3);
+				ddb.setDice_state(1);
+				ddb.setTransaction_id(transactionId);
+				DBCache.getInstance().getDiceBettings().add(ddb);
+			}
+		}else if(Constants.TIGER_TYPE.equals(gameType)) {// 龙虎斗
+			TigerPutRecord record = tigerService.getRecordByTxId(transactionId);
+			if (record != null) {
+				BigDecimal putMoney = record.getPutMoney();
+				// 如果确认金额比投注金额小，以确认金额为准
+				if (realMoney.compareTo(putMoney) < 0) {
+					record.setPutMoney(realMoney);
+				}
+				record.setTxStatus(1);
+				tigerService.updateRecord(record);
+				threadPoolTaskExecutor.execute(new Runnable() {
+					public void run() {
+						//  新用户奖励
+						PublicMethod.newUser(userName, userBetService, lotteryUserService, accountService, logger,(long)record.getQid(),
+								Constants.GAME_TYPE_TIGER,userTransactionRecordsService);
+						//  邀请奖励发放
+						PublicMethod.invitationAward(record.getPutMoney(), userName, lotteryUserService, accountService, logger,(long)record.getQid(),
+								Constants.GAME_TYPE_TIGER,userTransactionRecordsService);
+					}
+				});
+			} else {// 走到这里，说明这里的消息比客户端投注还快
+				tigerService.insertConfirm(transactionId);
+			}
+		}
+	}
+
+	/**
+	 * 发送用户下注记录
+	 * @return
+	 */
+	public void sendBetRecords(String userName,String count,Date date,String num) {
+		Message msg = new Message();
+		JSONObject obj=new JSONObject();
+
+		obj.put("userName", userName);
+		obj.put("count",count);
+		obj.put("date", date);
+		obj.put("num", num);
+		BigDecimal b = new BigDecimal(redisService.getCache(num).toString());
+		obj.put("limit", b.setScale(4,BigDecimal.ROUND_HALF_DOWN).doubleValue());
+
+		msg.setDate(new Date());
+		msg.setFrom("bet");
+		msg.setFromName("");
+		msg.setText(obj.toString());
+		String bulder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create().toJson(msg);
+		handler.broadcast(new TextMessage(bulder), Constants.LOTTERY_TYPE);
+	}
+}

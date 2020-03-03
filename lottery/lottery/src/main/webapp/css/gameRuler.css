@@ -1,0 +1,322 @@
+body{
+    background-color: #212540;
+}
+#rulerContainer{
+    display:none;
+}
+/* 头部 */
+/* #guid{
+    width: 100%;
+    height: 62px;
+    background-color: #333a60;
+}
+#head{
+    display: flex;
+    justify-content: space-between;
+    width: 1000px;
+    height: 62px;
+    color: white;
+    line-height: 62px;
+    font-size: 20px;
+    margin: auto;
+}
+#headLeft{
+    display: flex;
+    justify-content: space-between;
+    width: 301px;
+    height: 62px;
+}
+#headLeft>span:hover{
+    cursor: pointer;
+    color: #3083de;
+}
+img[alt="logo"]{
+    width:98px;
+    height: 36px;
+    margin-top: 14px;
+}
+#headRight{
+    display: flex;
+    justify-content: space-between;
+    width: 183px;
+    height: 62px;
+}
+#loginBtn{
+    width:63px;
+    height: 23px;
+    font-size: 14px;
+    background-color: #3c436e; 
+    line-height: 23px;
+    text-align: center;
+    margin-top: 19px;
+}
+#loginBtn:hover{
+    cursor: pointer;
+    color: #3083de;
+}
+#inputBox{
+    width: 80px;
+    height: 23px;
+    font-size: 12px;
+}
+#guoqiBox{
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+#language{
+    width: 80px;
+    height: 80px;
+    font-size: 12px;
+    color: white;
+    margin-top: 10px;
+    background-color: #313862;
+    display: none; 
+}
+#LanguageBox{
+    width: 80px;
+    height: 69px;
+    z-index: 999;
+}
+#language>li{
+    width: 80px;
+    height: 23px;
+}
+#language>li:nth-of-type(2){
+    margin-top: 8px;
+}
+#language>li:nth-of-type(1)>i{
+    background-image: url("../images/guoqi.png");
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+#language>li:nth-of-type(2)>i{
+    background-image: url("../images/guoqi02.png");
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+img[alt="down"]{
+    width: 20px;
+    height: 20px;
+    margin-top: 22px;
+} */
+/* 内容区域 */
+#rulerContainer{
+    width: 1000px;
+    height: auto;
+    background-color: #252a48;
+    box-shadow: 4px 4px 2px 1px #20223b;
+    margin: auto;
+    margin-top:19px;
+    margin-bottom:69px; 
+}
+/* 标题头 */
+#rulerTitle{
+    width: 942px;
+    height:81px;
+    line-height: 81px;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 29px; 
+    background-color: #282e50;
+    color: white;
+}
+#rulerTitle>h1{
+    font-size: 34px;
+    font-weight: normal;
+}
+#rulerTitle>span{
+    font-size: 16px;
+}
+#rulerTitle>span:hover{
+    cursor: pointer;
+}
+/* 开奖号码详解 */
+#awardNumberI{
+    width:942px;
+    height:344px;
+    margin: auto;
+    margin-top: 28px;
+    border-bottom: 1px dotted #3c436e;
+}
+#awardNumberI>p{
+    color: white;
+    width: 843px;
+    height: 43px;
+    line-height: 43px;
+    font-size: 14px;
+}
+#awardNumberI>p:nth-child(1)>i{
+    width: 40px;
+    height: 40px;
+    background-color:#3b405b;
+    border-radius: 40px;
+    background-image: url("../images/img01.png");
+    display: inline-block;
+    background-size: cover;
+    vertical-align: middle;
+    margin-right: 9px;
+}
+#awardNumberI>p:nth-child(1){
+    font-size: 16px;
+}
+#awardNumberI>p:nth-child(2){
+    font-size: 14px;
+    margin-left: 47px;
+}
+#awardNumberI>p:nth-child(3){
+    margin-left: 47px;
+    color: #7786d9;
+}
+#awardNumberI>p:nth-child(4){
+    font-size: 14px;
+    margin-left: 47px;
+    margin-top: 30px;
+}
+#awardNumberI>p:nth-child(5){
+    margin-left: 47px;
+    color: #7786d9;
+    margin-bottom: 50px;
+}
+/* 游戏玩法 */
+/* 游戏时间 */
+#gameTimeI{
+    width:942px;
+    height:113px;
+    margin: auto;
+    margin-top: 28px;
+    border-bottom: 1px dotted #3c436e;
+    padding-top: 38px;
+}
+#gameTimeI>h3{
+    color: white;
+    font-size: 16px;
+}
+#gameTimeI>p:nth-of-type(1){
+    color: #7786d9;
+    font-size: 14px;
+    margin-left: 47px;
+}
+#gameTimeI>h3>i{
+    background-image: url("../images/img03.png");
+    width: 40px;
+    height: 40px;
+    background-color:#3b405b;
+    border-radius: 40px;
+    display: inline-block;
+    background-size: cover;
+    vertical-align: middle;
+    margin-right: 9px;
+}
+/* 投注规则 */
+#gameRule{
+    width:942px;
+    height:404px;
+    margin: auto;
+    margin-top: 28px;
+    border-bottom: 1px dotted #3c436e;
+    padding-top: 38px;
+}
+#gameRule>h3{
+    color: white;
+    font-size: 16px;
+}
+#gameRule>h3>i{
+    background-image: url("../images/img04.png");
+    width: 40px;
+    height: 40px;
+    background-color:#3b405b;
+    border-radius: 40px;
+    display: inline-block;
+    background-size: cover;
+    vertical-align: middle;
+    margin-right: 9px;
+}
+#gameRule>h5{
+    color: white;
+    font-size: 14px;
+    margin-left: 47px;
+    margin-top:30px; 
+}
+#gameRule>p:nth-of-type(1){
+    color: #7786d9;
+    font-size: 14px;
+    margin-left: 47px;
+    margin-top: 8px;
+}
+#gameRule>p:nth-of-type(2){
+    color: #7786d9;
+    font-size: 14px;
+    margin-left: 47px;
+    margin-top: 8px;
+}
+#gameRule>p:nth-of-type(3){
+    color: #7786d9;
+    font-size: 14px;
+    margin-left: 47px;
+    margin-top: 8px;
+}
+#gameRule>p:nth-of-type(4){
+    color: #7786d9;
+    font-size: 14px;
+    margin-left: 47px;
+    margin-top: 8px;
+}
+#gameRule>p:nth-of-type(5){
+    color: #7786d9;
+    font-size: 14px;
+    margin-left: 47px;
+    margin-top: 8px;
+}
+#gameRule>p:nth-of-type(5)>span{
+    color: white;
+}
+#gameRule>p:nth-of-type(6){
+    color: #7786d9;
+    font-size: 14px;
+    margin-left: 47px;
+    margin-top: 8px;
+}
+#gameRule>p:nth-of-type(6)>span{
+    color: white;
+}
+#howToPlay{
+    width:942px;
+    height:600px;
+    margin: auto;
+    margin-top: 28px;
+    padding-top: 38px;
+}
+#howToPlay>h3{
+    color: white;
+    font-size: 16px;
+}
+#howToPlay>h3>i{
+    background-image: url("../images/img04.png");
+    width: 40px;
+    height: 40px;
+    background-color:#3b405b;
+    border-radius: 40px;
+    display: inline-block;
+    background-size: cover;
+    vertical-align: middle;
+    margin-right: 9px;
+}
+#howToPlay>h5{
+    color: white;
+    font-size: 14px;
+    margin-left: 47px;
+    margin-top:20px; 
+}
+#howToPlay>p{
+    color: #7786d9;
+    font-size: 14px;
+    margin-left: 47px;
+    margin-top: 8px;
+}

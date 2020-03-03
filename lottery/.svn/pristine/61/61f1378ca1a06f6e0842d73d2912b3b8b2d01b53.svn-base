@@ -1,0 +1,15 @@
+package com.stip.net.service;
+
+import com.stip.net.entity.LotteryUserInfo;
+
+public interface LotteryUserInfoService {
+    void insertUserInfo(LotteryUserInfo record);
+    
+    void updateLotteryUserInfo(LotteryUserInfo record);
+    
+    LotteryUserInfo selectLotteryUserInfoTel(String tel);
+    
+    LotteryUserInfo selectLotteryUserInfoEmail(String email);
+    
+	LotteryUserInfo selectLotteryUserInfo(int uid);
+}

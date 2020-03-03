@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="lottery-i18n" />
+        <module name="lottery-redis" />
+        <module name="lottery-chat" />
+        <module name="lottery-account" />
+        <module name="lottery-kafka" />
+        <module name="lottery-common" />
+        <module name="lottery" />
+        <module name="lottery-oauth" />
+        <module name="lottery-security" />
+        <module name="lottery-pay" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="lottery" target="1.8" />
+      <module name="lottery-account" target="1.8" />
+      <module name="lottery-chat" target="1.8" />
+      <module name="lottery-common" target="1.8" />
+      <module name="lottery-i18n" target="1.8" />
+      <module name="lottery-kafka" target="1.8" />
+      <module name="lottery-oauth" target="1.8" />
+      <module name="lottery-parent" target="1.8" />
+      <module name="lottery-pay" target="1.8" />
+      <module name="lottery-redis" target="1.8" />
+      <module name="lottery-security" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

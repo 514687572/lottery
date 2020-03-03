@@ -1,0 +1,39 @@
+package com.stip.net.service;
+
+import java.util.Map;
+
+import com.stip.net.entity.LotteryUser;
+
+public interface LotteryUserService {
+    void addLottery(LotteryUser user);
+
+    void updateByPrimaryKeySelective(LotteryUser record);
+
+    LotteryUser getlotteryUser(LotteryUser record);
+
+    /**
+     * 根据用户名获取邀请人
+     */
+    LotteryUser getLotteryByInviter(LotteryUser lotteryUser);
+
+
+    /**
+     * 用户下注接受邀请 绑定关系
+     * @param userName 当前用户
+     * @param userCode 邀请人推荐码
+     */
+    LotteryUser updateRelatioin(String userName,String userCode);
+
+    /**
+     * 我的下级列表
+     * @return
+     */
+    Map<String, Object> getMyChilds(String userName, int pageNum,int records);
+
+    /**
+     * 检查用户冻结状态
+     * @param userName
+     * @return
+     */
+    boolean getUserStatus(String userName);
+}

@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.lottery.dao.TigerDao">
+	<select id="queryConfirm" parameterType="map" resultType="com.bootdo.lottery.domain.TigerConfirmDO">
+		SELECT * FROM t_tiger_confirm
+		ORDER BY block_time DESC
+		<if test="offset != null and limit != null">
+			limit ${offset}, ${limit}
+		</if>
+	</select>
+
+ 	<select id="countConfirm" parameterType="map" resultType="_int">
+		SELECT COUNT(*) FROM t_tiger_confirm
+	</select>
+
+	<select id="queryRoom" parameterType="map" resultType="com.bootdo.lottery.domain.TigerRoomDO">
+		SELECT * FROM t_tiger_room
+		ORDER BY id
+		<if test="offset != null and limit != null">
+			limit ${offset}, ${limit}
+		</if>
+	</select>
+
+ 	<select id="countRoom" parameterType="map" resultType="_int">
+		SELECT COUNT(*) FROM t_tiger_room
+	</select>
+
+	<select id="queryHistory" parameterType="map" resultType="com.bootdo.lottery.domain.TigerHistoryDO">
+		SELECT * FROM t_tiger_history
+		<include refid="where4History" />
+		ORDER BY openTimeSpt DESC
+		<if test="offset != null and limit != null">
+			limit ${offset}, ${limit}
+		</if>
+	</select>
+
+ 	<select id="countHistory" parameterType="map" resultType="_int">
+		SELECT COUNT(*) FROM t_tiger_history
+		<include refid="where4History" />
+	</select>
+
+	<sql id="where4History">
+		<where>
+			<if test="roomId != null and roomId != ''">
+				roomId = #{roomId}
+			</if>
+			<if test="qid != null and qid != ''">
+				AND qid = #{qid}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				AND openTimeSpt &gt; #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND openTimeSpt &lt; #{endTime}
+			</if>
+		</where>
+	</sql>
+
+	<select id="selectQueryRecord" parameterType="map" resultType="com.bootdo.lottery.domain.TigerPutRecordDO">
+		SELECT * FROM t_tiger_records
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+ 	<select id="countRecord" parameterType="map" resultType="_int">
+		SELECT COUNT(*) FROM t_tiger_records
+		<include refid="where4Record" />
+	</select>
+
+	<sql id="where4Record">
+		<where>
+			<if test="roomId != null and roomId != ''">
+				roomId = #{roomId}
+			</if>
+			<if test="userId != null and userId != ''">
+				AND userId LIKE CONCAT('%', #{userId}, '%')
+			</if>
+			<if test="putMoney != null and putMoney != ''">
+				AND putMoney &gt; #{putMoney}
+			</if>
+			<if test="gainMoney != null and gainMoney != ''">
+				AND gainMoney &gt; #{gainMoney}
+			</if>
+			<if test="txStatus != null and txStatus != ''">
+				AND txStatus = #{txStatus}
+			</if>
+			<if test="status != null and status != ''">
+				AND status = #{status}
+			</if>
+			<if test="topStatus != null and topStatus != ''">
+				AND topStatus = #{topStatus}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				AND putTimeSpt &gt; #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND putTimeSpt &lt; #{endTime}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 按天统计用户下注 -->
+	<select id="statsPutByDay" parameterType="map" resultType="map">
+		SELECT rr.times AS times,rr.putSum AS putSum,rr.sendSum AS sendSum, rr.d AS dt
+		FROM
+		(SELECT IFNULL(m.times,0) AS times,
+						IFNULL(m.putSum,0) AS putSum,
+						IFNULL(n.sendSum,0) AS sendSum,
+						FROM_UNIXTIME(r.putTimeSpt / 1000,'%Y-%m-%d') AS d
+		FROM t_tiger_records r
+		LEFT JOIN
+			(SELECT COUNT(userId) times,SUM(putMoney) putSum,FROM_UNIXTIME(putTimeSpt / 1000,'%Y-%m-%d') AS d
+			FROM t_tiger_records
+			WHERE txStatus = 1
+			AND status != -2
+			GROUP BY d) m
+		ON FROM_UNIXTIME(r.putTimeSpt / 1000,'%Y-%m-%d')=m.d
+		LEFT JOIN
+			(SELECT SUM(putMoney + gainMoney) sendSum,FROM_UNIXTIME(putTimeSpt / 1000,'%Y-%m-%d') AS d
+			FROM t_tiger_records
+			WHERE status=3 OR status=-1
+			GROUP BY d) n
+		ON FROM_UNIXTIME(r.putTimeSpt / 1000,'%Y-%m-%d')=n.d
+		WHERE FROM_UNIXTIME(r.putTimeSpt / 1000,'%Y-%m-%d') IN
+			<foreach collection="dateList" item="list" open="(" separator="," close=")">
+				#{list}
+			</foreach>
+		GROUP BY d
+		<foreach collection="dateList" item="list">
+			UNION (SELECT 0,0,0, #{list})
+		</foreach>
+		) rr
+		GROUP BY rr.d
+		ORDER BY rr.d
+	</select>
+
+	<!-- 按小时统计用户下注 -->
+	<select id="statsPutByHour" parameterType="map" resultType="map">
+		SELECT rr.times AS times,rr.putSum AS putSum,rr.sendSum AS sendSum, rr.d AS dt
+		FROM
+		(SELECT IFNULL(m.times,0) AS times,
+						IFNULL(m.putSum,0) AS putSum,
+						IFNULL(n.sendSum,0) AS sendSum,
+						FROM_UNIXTIME(r.putTimeSpt / 1000,'%Y-%m-%d %H:00:00') AS d
+		FROM t_tiger_records r
+		LEFT JOIN
+			(SELECT COUNT(userId) times,SUM(putMoney) putSum,FROM_UNIXTIME(putTimeSpt / 1000,'%Y-%m-%d %H:00:00') AS d
+			FROM t_tiger_records
+			WHERE txStatus = 1
+			AND status != -2
+			GROUP BY d) m
+		ON FROM_UNIXTIME(r.putTimeSpt / 1000,'%Y-%m-%d %H:00:00')=m.d
+		LEFT JOIN
+			(SELECT SUM(putMoney + gainMoney) sendSum,FROM_UNIXTIME(putTimeSpt / 1000,'%Y-%m-%d %H:00:00') AS d
+			FROM t_tiger_records
+			WHERE status=3 OR status=-1
+			GROUP BY d) n
+		ON FROM_UNIXTIME(r.putTimeSpt / 1000,'%Y-%m-%d %H:00:00')=n.d
+		WHERE FROM_UNIXTIME(r.putTimeSpt / 1000,'%Y-%m-%d %H:00:00') IN
+			<foreach collection="dateList" item="list" open="(" separator="," close=")">
+				#{list}
+			</foreach>
+		GROUP BY d
+		<foreach collection="dateList" item="list">
+			UNION (SELECT 0,0,0, #{list})
+		</foreach>
+		) rr
+		GROUP BY rr.d
+		ORDER BY rr.d
+	</select>
+
+	<!-- 按天统计活跃用户 -->
+	<select id="statsActiveByDay" parameterType="map" resultType="map">
+		SELECT rr.users AS users, rr.dt AS dt
+		FROM (
+			SELECT COUNT(od.dt) AS users, od.dt
+			FROM (
+				SELECT FROM_UNIXTIME(putTimeSpt / 1000, '%Y-%m-%d') AS dt
+				FROM t_tiger_records
+				WHERE FROM_UNIXTIME(putTimeSpt / 1000, '%Y-%m-%d') IN
+				<foreach collection="dateList" item="list" open="(" separator="," close=")">
+					#{list}
+				</foreach>
+				GROUP BY FROM_UNIXTIME(putTimeSpt / 1000, '%Y-%m-%d'), userId
+			) od
+			GROUP BY od.dt
+			<foreach collection="dateList" item="list">
+				UNION (SELECT 0, #{list})
+			</foreach>
+		) rr
+		GROUP BY rr.dt
+		ORDER BY rr.dt
+	</select>
+
+	<!-- 按小时统计活跃用户 -->
+	<select id="statsActiveByHour" parameterType="map" resultType="map">
+		SELECT rr.users AS users, rr.dt AS dt
+		FROM (
+			SELECT COUNT(od.dt) AS users, od.dt
+			FROM (
+				SELECT FROM_UNIXTIME(putTimeSpt / 1000, '%Y-%m-%d %H:00:00') AS dt
+				FROM t_tiger_records
+				WHERE FROM_UNIXTIME(putTimeSpt / 1000, '%Y-%m-%d %H:00:00') IN
+				<foreach collection="dateList" item="list" open="(" separator="," close=")">
+					#{list}
+				</foreach>
+				GROUP BY FROM_UNIXTIME(putTimeSpt / 1000, '%Y-%m-%d %H:00:00'), userId
+			) od
+			GROUP BY od.dt
+			<foreach collection="dateList" item="list">
+				UNION (SELECT 0, #{list})
+			</foreach>
+		) rr
+		GROUP BY rr.dt
+		ORDER BY rr.dt
+		
+	</select>
+
+	<!-- 按天统计利润 -->
+	<select id="statsProfitByDay" parameterType="map" resultType="map">
+		SELECT (rr.sendSum - rr.putSum) AS profit, rr.dt AS dt
+		FROM (
+			SELECT IFNULL(m.putSum, 0) AS putSum,
+					IFNULL(n.sendSum, 0) AS sendSum,
+					FROM_UNIXTIME(r.putTimeSpt / 1000, '%Y-%m-%d') AS dt
+			FROM t_tiger_records r
+				LEFT JOIN (
+					SELECT SUM(putMoney) AS putSum
+						, FROM_UNIXTIME(putTimeSpt / 1000, '%Y-%m-%d') AS dt
+					FROM t_tiger_records
+					WHERE txStatus = 1
+						AND status != -2
+					GROUP BY dt
+				) m
+				ON FROM_UNIXTIME(r.putTimeSpt / 1000, '%Y-%m-%d') = m.dt
+				LEFT JOIN (
+					SELECT SUM(putMoney + gainMoney) AS sendSum
+						, FROM_UNIXTIME(putTimeSpt / 1000, '%Y-%m-%d') AS dt
+					FROM t_tiger_records
+					WHERE status = 3
+						OR status = -1
+					GROUP BY dt
+				) n
+				ON FROM_UNIXTIME(r.putTimeSpt / 1000, '%Y-%m-%d') = n.dt
+			WHERE FROM_UNIXTIME(r.putTimeSpt / 1000, '%Y-%m-%d') IN
+			<foreach collection="dateList" item="list" open="(" separator="," close=")">
+				#{list}
+			</foreach>
+			GROUP BY dt
+			<foreach collection="dateList" item="list">
+				UNION (SELECT 0, 0, #{list})
+			</foreach>
+		) rr
+		GROUP BY rr.dt
+		ORDER BY rr.dt;
+	</select>
+
+	<!-- 按小时统计利润 -->
+	<select id="statsProfitByHour" parameterType="map" resultType="map">
+		SELECT (rr.sendSum - rr.putSum) AS profit, rr.dt AS dt
+		FROM (
+			SELECT IFNULL(m.putSum, 0) AS putSum,
+					IFNULL(n.sendSum, 0) AS sendSum,
+					FROM_UNIXTIME(r.putTimeSpt / 1000, '%Y-%m-%d %H:00:00') AS dt
+			FROM t_tiger_records r
+				LEFT JOIN (
+					SELECT SUM(putMoney) AS putSum
+						, FROM_UNIXTIME(putTimeSpt / 1000, '%Y-%m-%d %H:00:00') AS dt
+					FROM t_tiger_records
+					WHERE txStatus = 1
+						AND status != -2
+					GROUP BY dt
+				) m
+				ON FROM_UNIXTIME(r.putTimeSpt / 1000, '%Y-%m-%d %H:00:00') = m.dt
+				LEFT JOIN (
+					SELECT SUM(putMoney + gainMoney) AS sendSum
+						, FROM_UNIXTIME(putTimeSpt / 1000, '%Y-%m-%d %H:00:00') AS dt
+					FROM t_tiger_records
+					WHERE status = 3
+						OR status = -1
+					GROUP BY dt
+				) n
+				ON FROM_UNIXTIME(r.putTimeSpt / 1000, '%Y-%m-%d %H:00:00') = n.dt
+			WHERE FROM_UNIXTIME(r.putTimeSpt / 1000, '%Y-%m-%d %H:00:00') IN
+			<foreach collection="dateList" item="list" open="(" separator="," close=")">
+				#{list}
+			</foreach>
+			GROUP BY dt
+			<foreach collection="dateList" item="list">
+				UNION (SELECT 0, 0, #{list})
+			</foreach>
+		) rr
+		GROUP BY rr.dt
+		ORDER BY rr.dt;
+	</select>
+
+	<!-- 计算投注总金额 -->
+	<select id="getTotalPutMoney" resultType="BigDecimal">
+		SELECT IFNULL(SUM(putMoney), 0)
+		FROM t_tiger_records
+		WHERE txStatus = 1
+		AND status != -2
+	</select>
+
+	<select id="queryUser" parameterType="map" resultType="com.bootdo.lottery.domain.TigerUserDO">
+		SELECT DISTINCT r.userId AS userId,
+				u.user_status AS status
+		FROM t_tiger_records r
+		LEFT JOIN t_lottery_user u
+		ON r.userId = u.user_name
+		WHERE r.txStatus = 1
+		<if test="userId != null and userId != ''">
+			AND r.userId LIKE CONCAT('%', #{userId}, '%')
+		</if>
+		ORDER BY r.userId
+		<if test="offset != null and limit != null">
+			limit ${offset}, ${limit}
+		</if>
+	</select>
+
+	<select id="countUser" parameterType="map" resultType="_int">
+		SELECT COUNT(DISTINCT userId) AS users
+		FROM t_tiger_records
+		WHERE txStatus = 1
+	</select>
+
+	<select id="calWins" parameterType="string" resultType="map">
+		SELECT p.putMoney, w.winMoney, w.wins, f.fails
+		FROM (
+			SELECT userId, SUM(putMoney) AS putMoney
+			FROM t_tiger_records
+			WHERE userId = #{userId}
+				AND txStatus = 1
+		) p
+			LEFT JOIN (
+				SELECT userId, SUM(putMoney) + SUM(gainMoney) AS winMoney
+					, COUNT(userId) AS wins
+				FROM t_tiger_records
+				WHERE userId = #{userId}
+					AND status = 3
+			) w
+			ON p.userId = w.userId
+			LEFT JOIN (
+				SELECT userId, COUNT(userId) AS fails
+				FROM t_tiger_records
+				WHERE userId = #{userId}
+					AND status = 1
+					AND txStatus = 1
+			) f
+			ON p.userId = f.userId
+	</select>
+
+	<select id="updateUserStatus" parameterType="string">
+		UPDATE t_lottery_user
+		SET user_status =  (
+		CASE
+		  WHEN user_status = '1' THEN '0'
+		  WHEN user_status = '0' THEN '1'
+		end),
+		update_time = NOW()
+		WHERE user_name = #{userId}
+	</select>
+
+	<select id="queryChild" parameterType="map" resultType="map">
+		SELECT u.username AS userId,
+				IFNULL(p.eos, 0) AS putMoney,
+				IFNULL(y.eos, 0) AS yj
+		FROM (
+			SELECT DISTINCT user_name AS username
+			FROM t_lottery_user
+			WHERE referrer = (
+				SELECT user_id
+				FROM t_lottery_user
+				WHERE user_name = #{userId}
+			)
+		) u
+			LEFT JOIN (
+				SELECT username, SUM(eos) AS eos
+				FROM t_eos_flow
+				WHERE source = 0
+					AND io = 0
+				GROUP BY username
+			) p
+			ON u.username = p.username
+			LEFT JOIN (
+				SELECT childName, SUM(eos) AS eos
+				FROM t_eos_flow
+				WHERE source = 4
+					AND io = 1
+					AND childName IS NOT NULL
+				GROUP BY childName
+			) y
+			ON u.username = y.childName
+		ORDER BY putMoney DESC
+		<if test="offset != null and limit != null">
+			limit ${offset}, ${limit}
+		</if>
+	</select>
+
+ 	<select id="countChild" parameterType="map" resultType="_int">
+		SELECT COUNT(DISTINCT user_name)
+		FROM t_lottery_user
+		WHERE referrer = (
+			SELECT user_id
+			FROM t_lottery_user
+			WHERE user_name = #{userId}
+		)
+	</select>
+</mapper>

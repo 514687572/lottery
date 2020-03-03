@@ -1,0 +1,78 @@
+// 导航的跳转
+$("#more").click(function() {
+    $("#navContainer").css("display", "block");
+    $(this).css("display", "none");
+    $("#close").css("display", "block");
+  });
+$("#close").click(function() {
+$("#navContainer").css("display", "none");
+$(this).css("display", "none");
+$("#more").css("display", "block");
+});
+
+// 点击导航图标回到主页
+$("#navLeft").click(function(){
+    $("#App").css("display","block");
+    $("#gameRuler").css("display","none");
+    $("#inviteFriends").css("display","none");
+    $("#more").css("display", "block");
+    $("#close").css("display", "none");
+})
+
+// 游戏规则跳转
+$("#TogameRuler").click(function(){
+    $("#App").css("display","none");
+    $("#gameRuler").css("display","block");
+    $("#inviteFriends").css("display","none");
+    $("#navContainer").css("display","none");
+    $("#more").css("display", "block");
+    $("#close").css("display", "none");
+})
+
+// 邀请好友跳转
+$("#ToinviteFriends").click(function(){
+    $("#App").css("display","none");
+    $("#gameRuler").css("display","none");
+    $("#inviteFriends").css("display","block");
+    $("#navContainer").css("display","none");
+    $("#more").css("display", "block");
+    $("#close").css("display", "none");
+})
+
+//开奖记录和投注记录之间的切换
+$("#hisBets").click(function(){
+    $("#myHisbets").css("display","block");
+    $("#myHisAward").css("display","none");
+    $(this).css("color","white");
+    $("#hisAward").css("color","#6a727d");
+    getHisBets();
+  })
+$("#hisAward").click(function(){
+    $("#myHisAward").css("display","block");
+    $("#myHisbets").css("display","none");
+    $(this).css("color","white");
+    $("#hisBets").css("color","#6a727d");
+    getHisAwardTen();
+})
+
+//点击切换基础模式
+$(".baseBetsBtn").click(function () {
+    console.log(00)
+    modelBollen = "0";
+    $(".baseBetsBtn").css("background", "#ff8523");
+    $("#baseModelBox").css("display", "block");
+    $("#higherModelBox").css("display", "none");
+    $(".higherBetsBtn").css("background", "#252a48");
+    modelBollen="0";
+});
+  
+//点击切换高阶模式
+$(".higherBetsBtn").click(function () {
+    console.log(11)
+    modelBollen = "1";
+    $(".higherBetsBtn").css("background", "#ff8523");
+    $("#baseModelBox").css("display", "none");
+    $("#higherModelBox").css("display", "block");
+    $(".baseBetsBtn").css("background", "#252a48");
+    modelBollen="1";
+});

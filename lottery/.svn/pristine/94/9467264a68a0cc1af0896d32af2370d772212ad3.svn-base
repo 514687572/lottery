@@ -1,0 +1,455 @@
+package com.stip.net.service.impl;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.lottery.net.utils.BeanUtils;
+import com.lottery.net.utils.TimeUtils;
+import com.stip.net.dao.UserBetRecordsDao;
+import com.stip.net.dto.BetDto;
+import com.stip.net.dto.HightBetDto;
+import com.stip.net.entity.LotteryRecords;
+import com.stip.net.entity.UserBetRecords;
+import com.stip.net.example.UserBetRecordsExample;
+import com.stip.net.example.UserBetRecordsExample.Criteria;
+import com.stip.net.service.UserBetService;
+/**
+ * 用户下注逻辑
+ * @author cja
+ *
+ */
+@Service
+public class UserBetServiceimpl implements UserBetService{
+	@Autowired
+	public UserBetRecordsDao userBetRecordsDao;
+	
+	/**
+	 * 用户下注
+	 * @return
+	 */
+	public boolean addBet(UserBetRecords record) {
+		userBetRecordsDao.insert(record);
+		
+		return false;
+	}
+	
+	/**
+	 * 更新用户下注记录
+	 * @return
+	 */
+	public boolean updateByPrimaryKey(UserBetRecords record) {
+		record.setUpdateTime(new Date());
+		userBetRecordsDao.updateByPrimaryKey(record);
+		
+		return false;
+	}
+	
+	/**
+	 * 用户批量下注
+	 * @return
+	 */
+	public int batchInsert(List<UserBetRecords> records) {
+		return userBetRecordsDao.batchInsert(records);
+	}
+	
+	/**
+	 * 查询用户下注历史
+	 * @param pageNum
+	 * @return
+	 */
+	public List<UserBetRecords> getUserBetHistry(int pageNum,String userName) {
+		UserBetRecordsExample example=new UserBetRecordsExample();
+		example.createCriteria().andUserNameEqualTo(userName).andLotteryStatusEqualTo("1").andSuccessOrTotal();
+		example.setOrderByClause(" UserBetRecords.update_time desc,UserBetRecords.bet_id desc");
+		example.setPager(pageNum, 10);
+		
+		List<UserBetRecords> list=userBetRecordsDao.selectByExample(example);
+		
+		return list;
+	}
+	
+	/**
+	 * 查询用户下注历史
+	 * @param pageNum
+	 * @return
+	 */
+	public List<UserBetRecords> getUserBetByRecordId(String recordId) {
+		UserBetRecordsExample example=new UserBetRecordsExample();
+		example.createCriteria().andRecordsIdEqualTo(recordId).andBetJsonIsNull();
+		
+		List<UserBetRecords> list=userBetRecordsDao.selectByExample(example);
+		
+		if(list!=null&&list.size()>0) {
+			return list;
+		}else {
+			return null;
+		}
+		
+	}
+	
+	/**
+	 * 查询用户一小时之前的下注拆分未中奖信息
+	 * @param pageNum
+	 * @return
+	 */
+	public int getUserUnPrizeRecords() {
+		Date date=TimeUtils.setDateHour(new Date(), -1);
+		UserBetRecordsExample example=new UserBetRecordsExample();
+		example.createCriteria().andBetJsonIsNull().andLotteryBonusIsNull().andCreateTimeLessThan(date);
+		
+		int count=userBetRecordsDao.deleteByExample(example);
+		
+		return count;
+	}
+	
+	/**
+	 * 查询用户下注历史
+	 * @param pageNum
+	 * @return
+	 */
+	public List<UserBetRecords> getUserBetHistry(int pageNum,String userName,int records,String recordsId) {
+		UserBetRecordsExample example=new UserBetRecordsExample();
+		example.createCriteria().andUserNameEqualTo(userName).andRecordsIdEqualTo(recordsId).andBetJsonIsNull();
+		example.setOrderByClause(" UserBetRecords.create_time desc");
+		example.setPager(pageNum, records);
+		
+		List<UserBetRecords> list=userBetRecordsDao.selectByExample(example);
+		
+		return list;
+	}
+	
+	/**
+	 * 查询一个时间段的用户中奖记录
+	 * @param datetime
+	 * @return
+	 */
+	public List<UserBetRecords> getBetRecordsByTime(Date datetime,LotteryRecords records) {
+		UserBetRecordsExample example=new UserBetRecordsExample();
+		Criteria criteria=example.createCriteria();
+		criteria.andCreateTimeLessThanOrEqualTo(datetime);
+		criteria.andCreateTimeGreaterThanOrEqualTo(TimeUtils.setDateMinute(datetime,-1));
+		criteria.andLotteryStatusEqualTo("1");
+		criteria.andLotteryBonusIsNull();
+		criteria.andBetJsonIsNull();
+		criteria.getPrize(records.getLargeNum(), records.getLotterySingle(), records.getLotteryOne(), records.getLotteryTwo(), records.getLotteryThree(), records.getLotteryFour(), records.getLotteryFive());
+		
+		example.setOrderByClause(" UserBetRecords.user_name desc");
+		
+		List<UserBetRecords> list=userBetRecordsDao.selectByExample(example);
+		
+		return list;
+	}
+	
+	/**
+	 * 基础下注下注
+	 * @param datetime
+	 * @return
+	 */
+	public int goBet(LotteryRecords lotteryRecords,BetDto betDto,List<UserBetRecords> list,String sid) {
+		if(!betDto.getLarge().equals("-1")) {//选择大小
+			UserBetRecords record =new UserBetRecords();
+			record.setUserName(betDto.getUserName());
+			record.setHighClass(betDto.getModel());
+			record.setLotteryFive(null);
+			record.setLargeNum(betDto.getLarge());
+			record.setLotterySingle(null);
+			record.setCreateTime(betDto.getDate());
+			record.setNoteMoney(betDto.getLongBets());
+			record.setBetNum(Long.parseLong(lotteryRecords.getRecordsId().toString()));
+			record.setRecordsId(sid);
+			record.setLotteryStatus("0");
+			
+			list.add(record);
+		}
+		
+		if(!betDto.getSingle().equals("-1")) {//选择单双
+			UserBetRecords record =new UserBetRecords();
+			record.setUserName(betDto.getUserName());
+			record.setHighClass(betDto.getModel());
+			record.setLotteryFive(null);
+			record.setLargeNum(null);
+			record.setLotterySingle(betDto.getSingle());
+			record.setCreateTime(betDto.getDate());
+			record.setNoteMoney(betDto.getLongBets());
+			record.setBetNum(Long.parseLong(lotteryRecords.getRecordsId().toString()));
+			record.setRecordsId(sid);
+			record.setLotteryStatus("0");
+			
+			list.add(record);
+		}
+		
+		if(null!=betDto.getBaseNum()&&StringUtils.isNoneBlank(betDto.getBaseNum())) {
+			String[] lotteryNum=betDto.getBaseNum().split(",");
+			UserBetRecords record=null;
+			
+			for(String num:lotteryNum) {
+				record=new UserBetRecords();
+				record.setUserName(betDto.getUserName());
+				record.setHighClass(betDto.getModel());
+				record.setLotteryOne(num);
+				record.setLargeNum(null);
+				record.setLotterySingle(null);
+				record.setCreateTime(betDto.getDate());
+				record.setNoteMoney(betDto.getLongBets());
+				record.setBetNum(Long.parseLong(lotteryRecords.getRecordsId()+""));
+				record.setRecordsId(sid);
+				record.setLotteryStatus("0");
+				
+				list.add(record);
+			}
+		}
+		
+		list.add(addBetTotalRecords(lotteryRecords,betDto,list,sid));
+		
+		return batchInsert(list);
+	}
+	
+	/**
+	 * 简单模式下注总记录
+	 * @param datetime
+	 * @return
+	 */
+	public UserBetRecords addBetTotalRecords(LotteryRecords lotteryRecords,BetDto betDto,List<UserBetRecords> list,String sid) {
+		StringBuffer result=new StringBuffer();
+		UserBetRecords baseRecord =new UserBetRecords();
+		baseRecord.setUserName(betDto.getUserName());
+		baseRecord.setHighClass(betDto.getModel());
+		baseRecord.setCreateTime(betDto.getDate());
+		baseRecord.setUpdateTime(new Date());
+		baseRecord.setBetNum(Long.parseLong(lotteryRecords.getRecordsId().toString()));
+		baseRecord.setRecordsId(sid);
+		baseRecord.setLotteryStatus("0");
+		BigDecimal b = new BigDecimal(betDto.getLongBets());
+		baseRecord.setNoteMoney(b.setScale(4,BigDecimal.ROUND_HALF_DOWN).doubleValue()*list.size());
+		
+		if(!betDto.getLarge().equals("-1")) {//选择大小
+			if("1".equals(betDto.getLarge())) {
+				result.append("[");
+				result.append("大");
+				result.append("]");
+			}else {
+				result.append("[");
+				result.append("小");
+				result.append("]");
+			}
+		}
+		
+		if(!betDto.getSingle().equals("-1")) {//选择单双
+			if("1".equals(betDto.getSingle())) {
+				result.append("[");
+				result.append("单");
+				result.append("]");
+			}else {
+				result.append("[");
+				result.append("双");
+				result.append("]");
+			}
+		}
+		
+		if(null!=betDto.getBaseNum()&&StringUtils.isNoneBlank(betDto.getBaseNum())) {
+			result.append("[");
+			result.append(betDto.getBaseNum());
+			result.append("]");
+		}
+		
+		baseRecord.setBetJson(result.toString());
+		
+		return baseRecord;
+	}
+	
+	/**
+	 * 高级选项星级下注
+	 * @param datetime
+	 * @return
+	 * @throws Exception 
+	 */
+	public int goBetHight(LotteryRecords lotteryRecords,HightBetDto hightBetDto,String sid) throws Exception {
+		String[] lo=hightBetDto.getFirstNums().split(",");
+		int count=0;
+		
+		for(String o:lo) {
+			List<UserBetRecords> list=new ArrayList<UserBetRecords>();
+			UserBetRecords record=new UserBetRecords();
+			record.setUserName(hightBetDto.getUserName());
+			record.setHighClass(hightBetDto.getModel());
+			record.setLargeNum(null);
+			record.setLotterySingle(null);
+			record.setCreateTime(hightBetDto.getDate());
+			
+			record.setLotteryOne(o);
+			record.setNoteMoney(hightBetDto.getLongBets());
+			record.setNoteNum(Integer.parseInt(hightBetDto.getStarRank()));
+			record.setBetNum(Long.parseLong(lotteryRecords.getRecordsId()+""));
+			record.setRecordsId(sid);
+			record.setLotteryStatus("0");
+			
+			if(null!=hightBetDto.getSecondNums()) {
+				String[] ls=hightBetDto.getSecondNums().split(",");
+				for(String s:ls) {
+					record.setLotteryTwo(s);
+					if(null!=hightBetDto.getThirdNums()) {
+						String[] lt=hightBetDto.getThirdNums().split(",");
+						for(String t:lt) {
+							record.setLotteryThree(t);
+							if(null!=hightBetDto.getForthNums()) {
+								String[] lf=hightBetDto.getForthNums().split(",");
+								for(String f:lf) {
+									record.setLotteryFour(f);
+									if(null!=hightBetDto.getFifthNums()) {
+										String[] lfi=hightBetDto.getFifthNums().split(",");
+										for(String fi:lfi) {
+											record.setLotteryFive(fi);
+											UserBetRecords recordfi=new UserBetRecords();
+											BeanUtils.copyProperties(record, recordfi);
+											list.add(recordfi);
+										}
+									}else {
+										UserBetRecords recordfi=new UserBetRecords();
+										BeanUtils.copyProperties(record, recordfi);
+										list.add(recordfi);
+									}
+								}
+							}else {
+								UserBetRecords recordfi=new UserBetRecords();
+								BeanUtils.copyProperties(record, recordfi);
+								list.add(recordfi);
+							}
+						}
+					}else {
+						UserBetRecords recordfi=new UserBetRecords();
+						BeanUtils.copyProperties(record, recordfi);
+						list.add(recordfi);
+					}
+				}
+			}else {
+				UserBetRecords recordfi=new UserBetRecords();
+				BeanUtils.copyProperties(record, recordfi);
+				list.add(recordfi);
+			}
+			
+			count=batchInsert(list);
+		}
+		addBetTotalRecords(lotteryRecords,hightBetDto,sid);
+		
+		return count;
+	}
+	
+	public UserBetRecords addBetTotalRecords(LotteryRecords lotteryRecords,HightBetDto hightBetDto,String sid) throws Exception {
+		StringBuffer result=new StringBuffer();
+		UserBetRecords baseRecord =new UserBetRecords();
+		baseRecord.setUserName(hightBetDto.getUserName());
+		baseRecord.setHighClass(hightBetDto.getModel());
+		baseRecord.setCreateTime(hightBetDto.getDate());
+		baseRecord.setUpdateTime(new Date());
+		baseRecord.setBetNum(Long.parseLong(lotteryRecords.getRecordsId().toString()));
+		baseRecord.setRecordsId(sid);
+		baseRecord.setLotteryStatus("0");
+		BigDecimal b = new BigDecimal(hightBetDto.getLongBets());
+		AtomicLong totalBet = new AtomicLong(1l);
+		
+		if(null!=hightBetDto.getFirstNums()&&StringUtils.isNotBlank(hightBetDto.getFirstNums())) {
+			String[] ls=hightBetDto.getFirstNums().split(",");
+			result.append("[");
+			result.append(hightBetDto.getFirstNums());
+			result.append("]");
+			totalBet.compareAndSet(totalBet.get(), totalBet.get()*ls.length);
+		}
+		
+		if(null!=hightBetDto.getSecondNums()&&StringUtils.isNotBlank(hightBetDto.getSecondNums())) {
+			String[] ls=hightBetDto.getSecondNums().split(",");
+			result.append("[");
+			result.append(hightBetDto.getSecondNums());
+			result.append("]");
+			totalBet.compareAndSet(totalBet.get(), totalBet.get()*ls.length);
+		}
+		
+		if(null!=hightBetDto.getThirdNums()&&StringUtils.isNotBlank(hightBetDto.getThirdNums())) {
+			String[] ls=hightBetDto.getThirdNums().split(",");
+			result.append("[");
+			result.append(hightBetDto.getThirdNums());
+			result.append("]");
+			totalBet.compareAndSet(totalBet.get(), totalBet.get()*ls.length);
+		}
+		
+		if(null!=hightBetDto.getForthNums()&&StringUtils.isNotBlank(hightBetDto.getForthNums())) {
+			String[] ls=hightBetDto.getForthNums().split(",");
+			result.append("[");
+			result.append(hightBetDto.getForthNums());
+			result.append("]");
+			totalBet.compareAndSet(totalBet.get(), totalBet.get()*ls.length);
+		}
+		
+		if(null!=hightBetDto.getFifthNums()&&StringUtils.isNotBlank(hightBetDto.getFifthNums())) {
+			String[] ls=hightBetDto.getFifthNums().split(",");
+			result.append("[");
+			result.append(hightBetDto.getFifthNums());
+			result.append("]");
+			totalBet.compareAndSet(totalBet.get(), totalBet.get()*ls.length);
+		}
+		
+		baseRecord.setNoteMoney(b.setScale(4,BigDecimal.ROUND_HALF_DOWN).doubleValue()*totalBet.get());
+		baseRecord.setBetJson(result.toString());
+		
+		addBet(baseRecord);
+		
+		return baseRecord;
+		
+	}
+
+	/**
+	 * 更新用户下注状态
+	 * @param record
+	 * @param transactionId
+	 * @return
+	 */
+	public int updateByBetRecordsExample(UserBetRecords record,String id) {
+		UserBetRecordsExample example=new UserBetRecordsExample();
+		Criteria criteria=example.createCriteria();
+		criteria.andLotteryStatusEqualTo("0");
+		criteria.andRecordsIdEqualTo(id);
+		
+		return userBetRecordsDao.updateByExampleSelective(record, example);
+	}
+
+	/**
+	 * 根据交易ID查询下注记录
+	 * @param transactionId
+	 * @return
+	 */
+	public List<UserBetRecords> getRecordsBytransactionId(String transactionId) {
+		UserBetRecordsExample example=new UserBetRecordsExample();
+		Criteria criteria=example.createCriteria();
+		criteria.andTransactionIdIsNotNull();
+		criteria.andLotteryStatusEqualTo("0");
+		criteria.andTransactionIdEqualTo(transactionId);
+		
+		return userBetRecordsDao.selectByExample(example);
+	}
+
+	@Override
+	public int countByUser(String userName,Long betNum) {
+		UserBetRecordsExample example=new UserBetRecordsExample();
+		Criteria criteria=example.createCriteria();
+		criteria.andUserNameEqualTo(userName);
+		criteria.andBetNumNotEqualTo(betNum);
+		return userBetRecordsDao.countByExample(example);
+	}
+
+	@Override
+	public int countAllByUser(String userName,Long betNum) {
+		return userBetRecordsDao.getUserAllBetByRecord(userName, betNum);
+	}
+
+	@Override
+	public int getUserDiceByRecord(String userName) {
+		return userBetRecordsDao.getUserDiceByRecord(userName);
+	}
+
+}

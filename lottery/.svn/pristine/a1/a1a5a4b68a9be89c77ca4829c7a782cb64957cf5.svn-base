@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.UserBetRecordsDao">
+  <!--
+    文件的生成时间： 2018-12-03 13:10:33.
+    你应该把Mapper类的扩展方法的sql语句放在这个文件里面
+  -->
+  
+  <insert id="batchInsert" parameterType="java.util.List">
+    insert into t_user_bet_records (bet_id, records_id, transaction_id, 
+      bet_num, user_id, user_name, bet_json, lottery_one, lottery_two, 
+      lottery_three, lottery_four, lottery_five, high_class, large_num, 
+      lottery_single, note_num, note_money, lottery_bonus, lottery_status, 
+      create_time, update_time, remark) values 
+    <foreach item='item' collection='list' separator=','  index=''>
+     (#{item.betId,jdbcType=INTEGER}, #{item.recordsId,jdbcType=VARCHAR}, 
+      #{item.transactionId,jdbcType=VARCHAR}, #{item.betNum,jdbcType=BIGINT}, 
+      #{item.userId,jdbcType=BIGINT}, #{item.userName,jdbcType=VARCHAR}, 
+      #{item.betJson,jdbcType=VARCHAR}, #{item.lotteryOne,jdbcType=VARCHAR}, 
+      #{item.lotteryTwo,jdbcType=VARCHAR}, #{item.lotteryThree,jdbcType=VARCHAR}, 
+      #{item.lotteryFour,jdbcType=VARCHAR}, #{item.lotteryFive,jdbcType=VARCHAR}, 
+      #{item.highClass,jdbcType=VARCHAR}, #{item.largeNum,jdbcType=VARCHAR}, 
+      #{item.lotterySingle,jdbcType=VARCHAR}, #{item.noteNum,jdbcType=INTEGER}, 
+      #{item.noteMoney,jdbcType=DOUBLE}, #{item.lotteryBonus,jdbcType=DOUBLE}, 
+      #{item.lotteryStatus,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+      #{item.updateTime,jdbcType=TIMESTAMP}, #{item.remark,jdbcType=VARCHAR}) 
+    </foreach>
+  </insert>
+
+	<sql id="cs">
+		bet_id AS betId,
+		records_id AS recordsId,
+		transaction_id AS transactionId,
+		bet_num AS betNum,
+		user_id AS userId,
+		user_name AS userName,
+		bet_json AS betJson,
+		lottery_one AS lotteryOne,
+		lottery_two AS lotteryTwo,
+		lottery_three AS lotteryThree,
+		lottery_four AS lotteryFour,
+		lottery_five AS lotteryFive,
+		high_class AS highClass,
+		large_num AS largeNum,
+		lottery_single AS lotterySingle,
+		note_num AS noteNum,
+		note_money AS noteMoney,
+		lottery_bonus AS lotteryBonus,
+		lottery_status AS lotteryStatus,
+		create_time AS createTime,
+		update_time AS updateTime,
+		remark AS remark
+	</sql>
+
+	<select id="getRecordsToSendTop" resultType="com.stip.net.entity.UserBetRecords">
+		SELECT
+			<include refid="cs" />	
+		FROM t_user_bet_records
+		WHERE (user_id = 0 OR user_id IS NULL)
+		AND bet_json IS NOT NULL
+		AND lottery_status = '1'
+	</select>
+
+    <select id="getMyChildCount" parameterType="map" resultType="_long">
+    	SELECT COUNT(DISTINCT(user_name)) FROM t_lottery_user
+		WHERE referrer = #{userId}
+    </select>
+
+	<select id="getMyChildsData" parameterType="map" resultType="com.stip.net.entity.UserBetRecords">
+	    SELECT u.username AS userName,
+	    		IFNULL(p.eos, 0) AS noteMoney,
+	    		IFNULL(w.eos, 0) AS lotteryBonus,
+	    		IFNULL(y.eos, 0) AS money
+		FROM (
+			SELECT DISTINCT user_name AS username
+			FROM t_lottery_user
+			WHERE referrer = #{userId}
+		) u
+			LEFT JOIN (
+				SELECT username, SUM(eos) AS eos
+				FROM t_eos_flow
+				WHERE source = 0
+					AND io = 0
+				GROUP BY username
+			) p
+			ON u.username = p.username
+			LEFT JOIN (
+				SELECT username, SUM(eos) AS eos
+				FROM t_eos_flow
+				WHERE source = 1
+					AND io = 1
+				GROUP BY username
+			) w
+			ON u.username = w.username
+			LEFT JOIN (
+				SELECT childName, SUM(eos) AS eos
+				FROM t_eos_flow
+				WHERE source = 4
+					AND io = 1
+					AND childName IS NOT NULL
+				GROUP BY childName
+			) y
+			ON u.username = y.childName
+		ORDER BY noteMoney DESC
+		LIMIT #{fromRowNum}, #{toRowNum}
+	</select>
+
+	<select id="getMyChildCount2" parameterType="map" resultType="_long">
+    	SELECT COUNT((id)) FROM t_lottery_score_user
+		WHERE referrer = #{id}
+    </select>
+
+	<select id="getMyChildsData2" parameterType="map" resultType="map">
+	    SELECT u.id, u.userId,
+	    		IFNULL(p.money, 0) AS put,
+	    		IFNULL(w.money, 0) AS bonus,
+	    		IFNULL(y.money, 0) AS yj
+		FROM (
+			SELECT id, IFNULL(mobilePhone,email) AS userId
+			FROM t_lottery_score_user
+			WHERE referrer = #{id}
+		) u
+			LEFT JOIN (
+				SELECT user_id, SUM(money) AS money
+				FROM t_user_transaction_records_score
+				WHERE source = 0
+					AND payments_type = 0
+				GROUP BY user_id
+			) p
+			ON u.id = p.user_id
+			LEFT JOIN (
+				SELECT user_id, SUM(money) AS money
+				FROM t_user_transaction_records_score
+				WHERE source = 1
+					AND payments_type = 1
+				GROUP BY user_id
+			) w
+			ON u.id = w.user_id
+			LEFT JOIN (
+				SELECT child_id, SUM(money) AS money
+				FROM t_user_transaction_records_score
+				WHERE source = 4
+					AND payments_type = 1
+					AND child_id IS NOT NULL
+				GROUP BY child_id
+			) y
+			ON u.id = y.child_id
+		ORDER BY put DESC
+		LIMIT #{start}, #{pageSize}
+	</select>
+
+	<select id="getRecordsBySid" parameterType="string" resultType="com.stip.net.entity.UserBetRecords">
+		SELECT
+			<include refid="cs" />	
+		FROM t_user_bet_records
+	    WHERE records_id = #{sid}
+	</select>
+</mapper>

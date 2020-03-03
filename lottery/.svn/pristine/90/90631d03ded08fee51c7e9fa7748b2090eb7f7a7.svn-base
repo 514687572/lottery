@@ -1,0 +1,60 @@
+package com.stip.net.job;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
+import org.springframework.web.socket.TextMessage;
+import com.lottery.net.utils.JsonUtil;
+import com.lottery.net.utils.MD5Utils;
+import com.stip.net.entity.LotteryUserScore;
+import com.stip.net.entity.tiger.TigerRoom;
+import com.stip.net.imessage.IMWebSocketHandler;
+import com.stip.net.main.MainData;
+import com.stip.net.main.MsgCode;
+import com.stip.net.main.Notice;
+import com.stip.net.service.LotteryUserService;
+import net.sf.json.JSONObject;
+
+public class UserLoginJob extends AbstractJob {
+
+	@Override
+	public void runImpl(IMWebSocketHandler handler, String userId, JSONObject params, Object... object) {
+		LotteryUserService lotteryUserService = (LotteryUserService) object[0];
+		String data =params.getString("data");
+		String password =params.getString("password");
+		LotteryUserScore lotteryUserScore = null;//用户信息
+		Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+		//判断是否是纯数字
+		if(pattern.matcher(data).matches()){
+			lotteryUserScore=lotteryUserService.getLotteryUserScoreTel(data);
+		}else{
+			lotteryUserScore=lotteryUserService.getLotteryUserScoreEmil(data);
+		}
+		if(lotteryUserScore==null){//未查到用户
+			handler.sendNoticeToUser(userId, Notice.USER_NOT_FOUND);
+			return;
+		}
+		if(!lotteryUserScore.getPassword().equals(MD5Utils.getPwd(password))){//密码错误
+			handler.sendNoticeToUser(userId, Notice.PASSWORD_ERR);
+			return;
+		}
+		// 如果游客在龙虎斗房间，那么替换userId
+		TigerRoom room = MainData.removeUserInRoom(userId);
+		if (room != null) {
+			Set<String> heads = room.getHeads();
+			synchronized (heads) {
+				heads.add(data);
+			}
+		}
+		// 给客户端响应
+		Map<String, Object> map = new HashMap<>();
+		map.put("score", lotteryUserScore.getScore());
+		map.put("status", lotteryUserScore.getStatus());
+		map.put("data", data);
+		String json = JsonUtil.buildJson(MsgCode.USER_LOGIN, map);
+		handler.sendMessageToUser(data, new TextMessage(json));
+	}
+
+}

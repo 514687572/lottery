@@ -1,0 +1,578 @@
+package com.stip.net.example;
+
+import com.stip.mybatis.generator.plugin.BaseCriteria;
+import com.stip.mybatis.generator.plugin.BaseModelExample;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+public class LotteryUserInfoExample extends BaseModelExample {
+    protected List<Criteria> oredCriteria;
+
+    public LotteryUserInfoExample() {
+        oredCriteria = new ArrayList<Criteria>();
+    }
+
+    public List<Criteria> getOredCriteria() {
+        return oredCriteria;
+    }
+
+    public void or(Criteria criteria) {
+        oredCriteria.add(criteria);
+    }
+
+    public Criteria or() {
+        Criteria criteria = createCriteriaInternal();
+        oredCriteria.add(criteria);
+        return criteria;
+    }
+
+    public Criteria createCriteria() {
+        Criteria criteria = createCriteriaInternal();
+        if (oredCriteria.size() == 0) {
+            oredCriteria.add(criteria);
+        }
+        return criteria;
+    }
+
+    protected Criteria createCriteriaInternal() {
+        Criteria criteria = new Criteria();
+        return criteria;
+    }
+
+    public void clear() {
+        super.clear();
+        oredCriteria.clear();
+    }
+
+    protected abstract static class GeneratedCriteria extends BaseCriteria {
+
+        public Criteria andIdIsNull() {
+            addCriterion("LotteryUserInfo.id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIdIsNotNull() {
+            addCriterion("LotteryUserInfo.id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIdEqualTo(Long value) {
+            addCriterion("LotteryUserInfo.id =", value, "id");
+            return (Criteria) this;
+        }
+
+        public Criteria andIdNotEqualTo(Long value) {
+            addCriterion("LotteryUserInfo.id <>", value, "id");
+            return (Criteria) this;
+        }
+
+        public Criteria andIdGreaterThan(Long value) {
+            addCriterion("LotteryUserInfo.id >", value, "id");
+            return (Criteria) this;
+        }
+
+        public Criteria andIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("LotteryUserInfo.id >=", value, "id");
+            return (Criteria) this;
+        }
+
+        public Criteria andIdLessThan(Long value) {
+            addCriterion("LotteryUserInfo.id <", value, "id");
+            return (Criteria) this;
+        }
+
+        public Criteria andIdLessThanOrEqualTo(Long value) {
+            addCriterion("LotteryUserInfo.id <=", value, "id");
+            return (Criteria) this;
+        }
+
+        public Criteria andIdIn(List<Long> values) {
+            addCriterion("LotteryUserInfo.id in", values, "id");
+            return (Criteria) this;
+        }
+
+        public Criteria andIdNotIn(List<Long> values) {
+            addCriterion("LotteryUserInfo.id not in", values, "id");
+            return (Criteria) this;
+        }
+
+        public Criteria andIdBetween(Long value1, Long value2) {
+            addCriterion("LotteryUserInfo.id between", value1, value2, "id");
+            return (Criteria) this;
+        }
+
+        public Criteria andIdNotBetween(Long value1, Long value2) {
+            addCriterion("LotteryUserInfo.id not between", value1, value2, "id");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdIsNull() {
+            addCriterion("LotteryUserInfo.user_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdIsNotNull() {
+            addCriterion("LotteryUserInfo.user_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdEqualTo(Integer value) {
+            addCriterion("LotteryUserInfo.user_id =", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdNotEqualTo(Integer value) {
+            addCriterion("LotteryUserInfo.user_id <>", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdGreaterThan(Integer value) {
+            addCriterion("LotteryUserInfo.user_id >", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("LotteryUserInfo.user_id >=", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdLessThan(Integer value) {
+            addCriterion("LotteryUserInfo.user_id <", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdLessThanOrEqualTo(Integer value) {
+            addCriterion("LotteryUserInfo.user_id <=", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdIn(List<Integer> values) {
+            addCriterion("LotteryUserInfo.user_id in", values, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdNotIn(List<Integer> values) {
+            addCriterion("LotteryUserInfo.user_id not in", values, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdBetween(Integer value1, Integer value2) {
+            addCriterion("LotteryUserInfo.user_id between", value1, value2, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("LotteryUserInfo.user_id not between", value1, value2, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobilePhoneIsNull() {
+            addCriterion("LotteryUserInfo.mobile_phone is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobilePhoneIsNotNull() {
+            addCriterion("LotteryUserInfo.mobile_phone is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobilePhoneEqualTo(String value) {
+            addCriterion("LotteryUserInfo.mobile_phone =", value, "mobilePhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobilePhoneNotEqualTo(String value) {
+            addCriterion("LotteryUserInfo.mobile_phone <>", value, "mobilePhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobilePhoneGreaterThan(String value) {
+            addCriterion("LotteryUserInfo.mobile_phone >", value, "mobilePhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobilePhoneGreaterThanOrEqualTo(String value) {
+            addCriterion("LotteryUserInfo.mobile_phone >=", value, "mobilePhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobilePhoneLessThan(String value) {
+            addCriterion("LotteryUserInfo.mobile_phone <", value, "mobilePhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobilePhoneLessThanOrEqualTo(String value) {
+            addCriterion("LotteryUserInfo.mobile_phone <=", value, "mobilePhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobilePhoneLike(String value) {
+            addCriterion("LotteryUserInfo.mobile_phone like", value, "mobilePhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobilePhoneNotLike(String value) {
+            addCriterion("LotteryUserInfo.mobile_phone not like", value, "mobilePhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobilePhoneIn(List<String> values) {
+            addCriterion("LotteryUserInfo.mobile_phone in", values, "mobilePhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobilePhoneNotIn(List<String> values) {
+            addCriterion("LotteryUserInfo.mobile_phone not in", values, "mobilePhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobilePhoneBetween(String value1, String value2) {
+            addCriterion("LotteryUserInfo.mobile_phone between", value1, value2, "mobilePhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andMobilePhoneNotBetween(String value1, String value2) {
+            addCriterion("LotteryUserInfo.mobile_phone not between", value1, value2, "mobilePhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailIsNull() {
+            addCriterion("LotteryUserInfo.email is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailIsNotNull() {
+            addCriterion("LotteryUserInfo.email is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailEqualTo(String value) {
+            addCriterion("LotteryUserInfo.email =", value, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailNotEqualTo(String value) {
+            addCriterion("LotteryUserInfo.email <>", value, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailGreaterThan(String value) {
+            addCriterion("LotteryUserInfo.email >", value, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailGreaterThanOrEqualTo(String value) {
+            addCriterion("LotteryUserInfo.email >=", value, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailLessThan(String value) {
+            addCriterion("LotteryUserInfo.email <", value, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailLessThanOrEqualTo(String value) {
+            addCriterion("LotteryUserInfo.email <=", value, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailLike(String value) {
+            addCriterion("LotteryUserInfo.email like", value, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailNotLike(String value) {
+            addCriterion("LotteryUserInfo.email not like", value, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailIn(List<String> values) {
+            addCriterion("LotteryUserInfo.email in", values, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailNotIn(List<String> values) {
+            addCriterion("LotteryUserInfo.email not in", values, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailBetween(String value1, String value2) {
+            addCriterion("LotteryUserInfo.email between", value1, value2, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailNotBetween(String value1, String value2) {
+            addCriterion("LotteryUserInfo.email not between", value1, value2, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andPasswordIsNull() {
+            addCriterion("LotteryUserInfo.password is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPasswordIsNotNull() {
+            addCriterion("LotteryUserInfo.password is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPasswordEqualTo(String value) {
+            addCriterion("LotteryUserInfo.password =", value, "password");
+            return (Criteria) this;
+        }
+
+        public Criteria andPasswordNotEqualTo(String value) {
+            addCriterion("LotteryUserInfo.password <>", value, "password");
+            return (Criteria) this;
+        }
+
+        public Criteria andPasswordGreaterThan(String value) {
+            addCriterion("LotteryUserInfo.password >", value, "password");
+            return (Criteria) this;
+        }
+
+        public Criteria andPasswordGreaterThanOrEqualTo(String value) {
+            addCriterion("LotteryUserInfo.password >=", value, "password");
+            return (Criteria) this;
+        }
+
+        public Criteria andPasswordLessThan(String value) {
+            addCriterion("LotteryUserInfo.password <", value, "password");
+            return (Criteria) this;
+        }
+
+        public Criteria andPasswordLessThanOrEqualTo(String value) {
+            addCriterion("LotteryUserInfo.password <=", value, "password");
+            return (Criteria) this;
+        }
+
+        public Criteria andPasswordLike(String value) {
+            addCriterion("LotteryUserInfo.password like", value, "password");
+            return (Criteria) this;
+        }
+
+        public Criteria andPasswordNotLike(String value) {
+            addCriterion("LotteryUserInfo.password not like", value, "password");
+            return (Criteria) this;
+        }
+
+        public Criteria andPasswordIn(List<String> values) {
+            addCriterion("LotteryUserInfo.password in", values, "password");
+            return (Criteria) this;
+        }
+
+        public Criteria andPasswordNotIn(List<String> values) {
+            addCriterion("LotteryUserInfo.password not in", values, "password");
+            return (Criteria) this;
+        }
+
+        public Criteria andPasswordBetween(String value1, String value2) {
+            addCriterion("LotteryUserInfo.password between", value1, value2, "password");
+            return (Criteria) this;
+        }
+
+        public Criteria andPasswordNotBetween(String value1, String value2) {
+            addCriterion("LotteryUserInfo.password not between", value1, value2, "password");
+            return (Criteria) this;
+        }
+
+        public Criteria andPrivateKeyIsNull() {
+            addCriterion("LotteryUserInfo.private_key is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPrivateKeyIsNotNull() {
+            addCriterion("LotteryUserInfo.private_key is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPrivateKeyEqualTo(String value) {
+            addCriterion("LotteryUserInfo.private_key =", value, "privateKey");
+            return (Criteria) this;
+        }
+
+        public Criteria andPrivateKeyNotEqualTo(String value) {
+            addCriterion("LotteryUserInfo.private_key <>", value, "privateKey");
+            return (Criteria) this;
+        }
+
+        public Criteria andPrivateKeyGreaterThan(String value) {
+            addCriterion("LotteryUserInfo.private_key >", value, "privateKey");
+            return (Criteria) this;
+        }
+
+        public Criteria andPrivateKeyGreaterThanOrEqualTo(String value) {
+            addCriterion("LotteryUserInfo.private_key >=", value, "privateKey");
+            return (Criteria) this;
+        }
+
+        public Criteria andPrivateKeyLessThan(String value) {
+            addCriterion("LotteryUserInfo.private_key <", value, "privateKey");
+            return (Criteria) this;
+        }
+
+        public Criteria andPrivateKeyLessThanOrEqualTo(String value) {
+            addCriterion("LotteryUserInfo.private_key <=", value, "privateKey");
+            return (Criteria) this;
+        }
+
+        public Criteria andPrivateKeyLike(String value) {
+            addCriterion("LotteryUserInfo.private_key like", value, "privateKey");
+            return (Criteria) this;
+        }
+
+        public Criteria andPrivateKeyNotLike(String value) {
+            addCriterion("LotteryUserInfo.private_key not like", value, "privateKey");
+            return (Criteria) this;
+        }
+
+        public Criteria andPrivateKeyIn(List<String> values) {
+            addCriterion("LotteryUserInfo.private_key in", values, "privateKey");
+            return (Criteria) this;
+        }
+
+        public Criteria andPrivateKeyNotIn(List<String> values) {
+            addCriterion("LotteryUserInfo.private_key not in", values, "privateKey");
+            return (Criteria) this;
+        }
+
+        public Criteria andPrivateKeyBetween(String value1, String value2) {
+            addCriterion("LotteryUserInfo.private_key between", value1, value2, "privateKey");
+            return (Criteria) this;
+        }
+
+        public Criteria andPrivateKeyNotBetween(String value1, String value2) {
+            addCriterion("LotteryUserInfo.private_key not between", value1, value2, "privateKey");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeIsNull() {
+            addCriterion("LotteryUserInfo.create_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeIsNotNull() {
+            addCriterion("LotteryUserInfo.create_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeEqualTo(Date value) {
+            addCriterion("LotteryUserInfo.create_time =", value, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeNotEqualTo(Date value) {
+            addCriterion("LotteryUserInfo.create_time <>", value, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeGreaterThan(Date value) {
+            addCriterion("LotteryUserInfo.create_time >", value, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("LotteryUserInfo.create_time >=", value, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeLessThan(Date value) {
+            addCriterion("LotteryUserInfo.create_time <", value, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeLessThanOrEqualTo(Date value) {
+            addCriterion("LotteryUserInfo.create_time <=", value, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeIn(List<Date> values) {
+            addCriterion("LotteryUserInfo.create_time in", values, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeNotIn(List<Date> values) {
+            addCriterion("LotteryUserInfo.create_time not in", values, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeBetween(Date value1, Date value2) {
+            addCriterion("LotteryUserInfo.create_time between", value1, value2, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andCreateTimeNotBetween(Date value1, Date value2) {
+            addCriterion("LotteryUserInfo.create_time not between", value1, value2, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeIsNull() {
+            addCriterion("LotteryUserInfo.update_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeIsNotNull() {
+            addCriterion("LotteryUserInfo.update_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeEqualTo(Date value) {
+            addCriterion("LotteryUserInfo.update_time =", value, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeNotEqualTo(Date value) {
+            addCriterion("LotteryUserInfo.update_time <>", value, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeGreaterThan(Date value) {
+            addCriterion("LotteryUserInfo.update_time >", value, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("LotteryUserInfo.update_time >=", value, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeLessThan(Date value) {
+            addCriterion("LotteryUserInfo.update_time <", value, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeLessThanOrEqualTo(Date value) {
+            addCriterion("LotteryUserInfo.update_time <=", value, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeIn(List<Date> values) {
+            addCriterion("LotteryUserInfo.update_time in", values, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeNotIn(List<Date> values) {
+            addCriterion("LotteryUserInfo.update_time not in", values, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeBetween(Date value1, Date value2) {
+            addCriterion("LotteryUserInfo.update_time between", value1, value2, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeNotBetween(Date value1, Date value2) {
+            addCriterion("LotteryUserInfo.update_time not between", value1, value2, "updateTime");
+            return (Criteria) this;
+        }
+    }
+
+    public static class Criteria extends GeneratedCriteria {
+
+        protected Criteria() {
+            super();
+        }
+    }
+}

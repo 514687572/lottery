@@ -1,0 +1,165 @@
+
+
+
+#loginContainer{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 999;
+}
+img[alt="lotteryLogo"]{
+    width:125px;
+    height: 36px;
+    position: absolute;
+    left:50%;
+    top:50%;
+    margin-left:-62px;
+    margin-top:-18px;
+}
+#loginBox{
+    width:685px;
+    height: 649px;  
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left:-342px;
+    margin-top:-324px; 
+}
+#loginHead{
+    width: 717px;
+    height:80px;
+    background-image: url("../images/title.png");
+    background-size:cover;
+    position: relative;
+    right: 16px;
+}
+#loginClose{
+    width: 13px;
+    height: 13px;
+    background-image: url("../images/titleClose.png");
+    position: absolute;
+    top:45px;
+    right:42px; 
+    display: inline-block;
+}
+#loginStyleContainer{
+    width:683px;
+    height:338px;
+    background:rgba(40,46,80,1);
+    border:1px solid rgba(136, 154, 255, 1);
+}
+#loginStyle{
+    width: 470px;
+    height:20px;
+    margin: auto;
+    margin-top:40px; 
+}
+#loginStyle>div:nth-child(1){
+    width:470px;
+    height:40px;
+    text-align: center;
+    color: white;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+}
+#privateLogin{
+    display: none;
+}
+#privateLogin>input{
+    width:470px;
+    height: 40px;
+    border: none;
+    border-bottom: 1px solid #333a60;
+    background-color: #292d50;
+    margin-top: 20px; 
+    outline: none;
+    color: white;
+}
+#myChainId{
+    width: 235px;
+    height: 40px;
+    line-height: 40px;
+}
+#myChainId:hover{
+    cursor: pointer;
+}
+.scatter_login{
+    width: 232px;
+    height: 41px;
+    border-radius: 4px;
+    background: linear-gradient(to right, #ff5c4a , #ff8325);
+    line-height: 41px;
+    text-align: center; 
+    font-size: 16px;
+    color: white;
+    outline: none;
+    border: none;
+}
+#scatterLogin{
+    width: 235px;
+    line-height: 40px;
+    border-bottom: 1px solid #3083de;
+}
+#scatterLogin:hover{
+    cursor: pointer;
+}
+.scatterLogin:hover{
+    cursor: pointer;
+}
+#loginComfire{
+    background:linear-gradient(to right, #ff5c4a , #ff8325);
+    border: none;
+    width: 74px;
+    height: 28px;
+    color: white;
+    line-height: 28px;
+    margin-top:20px;
+    float: right;   
+}
+#loginComfire:hover{
+    cursor: pointer;
+}
+#scatterLogo{
+    width: 37px;
+    height: 14px;
+    background-image: url("../images/scatter.png");
+    display: inline-block;
+}
+#loadScatter{
+    /* display: none; */
+    width:468px;
+    height:198px;
+    border:1px solid #333853;
+}
+#loadScatterMiidle{
+    width: 128px;
+    height: 126px;
+    margin: auto;
+    margin-top: 40px;
+}
+img[alt="scatterLoad"]{
+    width: 57px;
+    height: 57px;
+    margin-left: 35px;
+}
+#loadScatterMiidle>p{
+    font-size: 12px;
+    color: white;
+    margin-top: 10px;
+}
+#loadScatterMiidle>button{
+    background:linear-gradient(to right, #ff5c4a , #ff8325);
+    width:75px;
+    height: 29px;
+    line-height: 29px;
+    text-align: center;
+    margin-top: 15px;
+    margin-left: 26px;
+    border: none;
+    color: white;
+}

@@ -1,0 +1,207 @@
+/* 投注记录区域 */
+.record{
+    width: 100%;
+    height: 345px;
+    background-color: #252A48;
+    margin-top: 20px;
+    margin-bottom: 48px;
+    padding-left: 15px;
+    padding-right: 8px;
+    box-sizing: border-box;
+}
+.recordNav{
+    width: 100%;
+    height: 48px;
+    border-bottom: 1px solid #313862;
+}
+.recordNav>div{
+    display: flex;
+    justify-content: space-between;
+    width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.recordNav>div>p{
+    color: #ffffff;
+    font-size: 14px;
+    margin-top: 14px;
+    padding-bottom: 6px;
+}
+.recordHeader{
+    display: flex;
+    color: #ffffff;
+    font-size: 12px;
+    height: 40px;
+    line-height: 40px;
+    border-bottom: 1px solid #313862;
+}
+.recordHeader>li:nth-of-type(1){
+    width: 220px;
+    padding-left: 30px;
+    box-sizing: border-box;
+}
+.recordHeader>li:nth-of-type(2){
+    width: 125px;
+    text-align: center;
+    margin-left: 10px;
+}
+.recordHeader>li:nth-of-type(3){
+    width: 115px;
+    text-align: center;
+    margin-left: 50px;
+}
+.recordHeader>li:nth-of-type(4){
+    width: 105px;
+    text-align: center;
+    margin-left: 90px;
+}
+.recordHeader>li:nth-of-type(5){
+    width: 105px;
+    text-align: center;
+    margin-left: 90px;
+}
+.recordHeader>li:nth-of-type(6){
+    width: 125px;
+    text-align: center;
+    margin-left: 50px;
+}
+
+/* 投注结果表格 */
+.devoteTheResults{
+    display: flex;
+    color: #ffffff;
+    font-size: 12px;
+    height: 40px;
+    line-height: 40px;
+    border-bottom: 1px solid #313862;
+}
+
+.devoteTheResults>li:nth-of-type(1){
+    width: 220px;
+    padding-left: 30px;
+    box-sizing: border-box;
+}
+.devoteTheResults>li:nth-of-type(2){
+    width: 125px;
+    text-align: center;
+    margin-left: 10px;
+}
+.devoteTheResults>li:nth-of-type(3){
+    width: 115px;
+    text-align: center;
+    margin-left: 50px;
+}
+.devoteTheResults>li:nth-of-type(4){
+    width: 105px;
+    text-align: center;
+    margin-left: 90px;
+}
+.devoteTheResults>li:nth-of-type(5){
+    width: 105px;
+    text-align: center;
+    margin-left: 90px;
+}
+.devoteTheResults>li:nth-of-type(6){
+    width: 125px;
+    text-align: center;
+    margin-left: 50px;
+}
+
+.theWinningBets{
+    display: flex;
+    color: #ffffff;
+    font-size: 12px;
+    height: 40px;
+    line-height: 40px;
+    border-bottom: 1px solid #313862;
+    justify-content: space-around;
+}
+.theWinningBets>li:nth-of-type(1){
+    width: 180px;
+    padding-left: 30px;
+    box-sizing: border-box;
+}
+.theWinningBets>li:nth-of-type(2){
+    width: 125px;
+    text-align: center;
+}
+.theWinningBets>li:nth-of-type(3){
+    width: 125px;
+    text-align: center;
+}
+.theWinningBets>li:nth-of-type(4){
+    width: 100px;
+    text-align: center;
+}
+.theWinningBets>li:nth-of-type(5){
+    width: 125px;
+    text-align: center;
+}
+.theWinningBets>li:nth-of-type(6){
+    width: 100px;
+    text-align: center;
+}
+.theWinningBets>li:nth-of-type(7){
+    width: 145px;
+    text-align: center;
+}
+
+.theWinningBetsTable{
+    width: 100%;
+    display: flex;
+    color: #ffffff;
+    font-size: 12px;
+    height: 40px;
+    line-height: 40px;
+    border-bottom: 1px solid #313862;
+    justify-content: space-around;
+}
+.theWinningBetsTable>li:nth-of-type(1){
+    width: 180px;
+}
+.theWinningBetsTable>li:nth-of-type(2){
+    width: 125px;
+    text-align: center;
+}
+.theWinningBetsTable>li:nth-of-type(3){
+    width: 125px;
+    text-align: center;
+}
+.theWinningBetsTable>li:nth-of-type(4){
+    width: 100px;
+    text-align: center;
+}
+.theWinningBetsTable>li:nth-of-type(5){
+    width: 125px;
+    text-align: center;
+}
+.theWinningBetsTable>li:nth-of-type(6){
+    width: 100px;
+    text-align: center;
+}
+.theWinningBetsTable>li:nth-of-type(7){
+    width: 145px;
+    text-align: center;
+}
+.myWinStyle{
+    color: #BF4B56;
+}
+.recordTable{
+    position: relative;
+}
+#theWinningTable{
+    /* position: absolute;
+    width: 100%;
+    top: 0; */
+    height: 290px;
+    overflow: auto;
+}
+#theWinningBetsFont{
+    color: #3097ff;
+    border-bottom: 2px solid #3097ff;
+}
+#iBetTheTable{
+    height: 290px;
+    display: none;
+    overflow: auto;
+}

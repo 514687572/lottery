@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.LotteryUserInfoDao">
+  <!--
+    文件的生成时间： 2019-01-08 14:24:28.
+    你应该把Mapper类的扩展方法的sql语句放在这个文件里面
+  -->
+  
+  <insert id="batchInsert" parameterType="java.util.List">
+    insert into t_lottery_user_info (id, user_id, mobile_phone, email, 
+      password, private_key, create_time, update_time) values 
+    <foreach item='item' collection='list' separator=','  index=''>
+     (#{item.id,jdbcType=BIGINT}, #{item.userId,jdbcType=INTEGER}, 
+      #{item.mobilePhone,jdbcType=VARCHAR}, #{item.email,jdbcType=VARCHAR}, 
+      #{item.password,jdbcType=VARCHAR}, #{item.privateKey,jdbcType=VARCHAR}, 
+      #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}) 
+    </foreach>
+  </insert>
+</mapper>

@@ -1,0 +1,120 @@
+package com.stip.net.service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.lottery.net.utils.Constants;
+import com.stip.net.entity.tiger.TigerConfirm;
+import com.stip.net.entity.tiger.TigerRoom;
+import com.stip.net.main.MainData;
+
+@Component
+public class InitService {
+	private final Logger _log = LoggerFactory.getLogger(this.getClass());
+
+	private static boolean inited;
+
+	@Autowired
+	private TigerService tigerService;
+	@Autowired
+	private AccountService accountService;
+	@Autowired
+	private GameService gameService;
+
+	/**
+	 * 初始化操作，开服会执行
+	 */
+	@PostConstruct
+	public void initData() {
+		if (inited) {
+			return;
+		}
+		initTigerRoom();
+		initTigerConfirm();
+		loadPoolBalance();
+		loadScorePoolBalance();
+		initTotalTop();
+		inited = true;
+	}
+
+	/**
+	 * 从数据库加载房间数据
+	 */
+	private void initTigerRoom() {
+		try {
+			if (MainData.tigerRooms.size() > 0) {
+				return;
+			}
+			List<TigerRoom> rooms = tigerService.getAllTigerRooms();
+			for (TigerRoom room : rooms) {
+				// 防止关闭服务器时期号未存储，导致开奖历史记录主键冲突
+				room.setQid(room.getQid() + 2);
+				room.setLastUpdate(System.currentTimeMillis());
+			}
+			MainData.tigerRooms.addAll(rooms);
+		} catch (Exception e) {
+			_log.error(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * 从数据库加载龙虎斗区块确认消息
+	 */
+	private void initTigerConfirm() {
+		try {
+			if (MainData.tigerConfirms.size() > 0) {
+				return;
+			}
+			List<TigerConfirm> confirms = tigerService.getAllConfirms();
+			MainData.tigerConfirms.addAll(confirms);
+		} catch (Exception e) {
+			_log.error(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * 查询奖池余额
+	 */
+	private void loadPoolBalance() {
+		try {
+			MainData.poolBalance.put(Constants.TIGER_TYPE, accountService.getBalance(Constants.account_tiger));
+			MainData.poolBalance.put(Constants.DICE_TYPE, accountService.getBalance(Constants.account_dice));
+		} catch (Exception e) {
+			_log.error(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * 加载积分奖池余额
+	 */
+	private void loadScorePoolBalance() {
+		try {
+			Map<String, BigDecimal> map = MainData.scorePoolBalance;
+			map.put(Constants.LOTTERY_TYPE, gameService.getPoolScore(Constants.VK_LOTTERY_POOL_SCORE));
+			map.put(Constants.TIGER_TYPE, gameService.getPoolScore(Constants.VK_TIGER_POOL_SCORE));
+			map.put(Constants.DICE_TYPE, gameService.getPoolScore(Constants.VK_DICE_POOL_SCORE));
+		} catch (Exception e) {
+			_log.error(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * 计算已返TOP币总量
+	 */
+	private void initTotalTop() {
+		try {
+			BigDecimal total = tigerService.getTotalTop();
+			MainData.totalTop = total;
+		} catch (Exception e) {
+			_log.error(e.getMessage(), e);
+		}
+	}
+}

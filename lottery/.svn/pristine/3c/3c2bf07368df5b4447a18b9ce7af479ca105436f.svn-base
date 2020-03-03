@@ -1,0 +1,88 @@
+package com.stip.net.scheduled;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
+
+import com.stip.net.entity.LotteryConfirm;
+import com.stip.net.entity.LotteryRecords;
+import com.stip.net.entity.UserBetRecords;
+import com.stip.net.imessage.IMWebSocketHandler;
+import com.stip.net.kafka.utils.PublicMethod;
+import com.stip.net.service.AccountService;
+import com.stip.net.service.ConfirmService;
+import com.stip.net.service.LotteryService;
+import com.stip.net.service.LotteryUserService;
+import com.stip.net.service.UserBetService;
+
+@Component
+@Lazy(false)
+public class TaskScheduledController {
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	@Autowired
+	private ConfirmService confirmService;
+	@Autowired
+	private IMWebSocketHandler handler;
+	@Autowired
+	private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+	@Autowired
+	private UserBetService userBetService;
+	@Autowired
+	private AccountService accountService;
+	@Autowired 
+	private LotteryService lotteryService;
+	@Autowired
+	private LotteryUserService lotteryUserService;
+
+	@Scheduled(cron = "0 0/1 * * * ?")
+	public void updateUserBetRecords() throws Exception {
+		logger.info("执行补发奖操作");
+		List<LotteryConfirm> list=confirmService.selectByExample();
+		
+		if(list==null) {
+			return;
+		}
+		
+		for(LotteryConfirm confirm:list) {
+			List<UserBetRecords> records=userBetService.getUserBetByRecordId(confirm.getConfirmId());
+			
+			if(records!=null) {
+				UserBetRecords currentRecord=records.get(0);
+				LotteryRecords lotteryRecord=lotteryService.getLotteryById(currentRecord.getBetNum());
+				
+				threadPoolTaskExecutor.execute(new Runnable() {
+					public void run() {
+						PublicMethod.senPrizeMsg(lotteryRecord,new Date(), userBetService, accountService, logger, handler);
+						//  新用户奖励
+						PublicMethod.newUser(currentRecord.getUserName(), userBetService, lotteryUserService, accountService, logger);
+						//  邀请奖励发放
+						BigDecimal b = new BigDecimal(currentRecord.getNoteMoney());
+						PublicMethod.invitationAward(b, currentRecord.getUserName(), lotteryUserService, accountService, logger);
+						confirmService.deleteByPrimaryKey(confirm.getConfirmId());
+					}
+				});
+			}else {
+				continue;
+			}
+		}
+	}
+	
+	@Scheduled(cron = "0 0 0/1 * * ?")
+	public void deleteUnPrize() throws Exception {
+		logger.info("执行删除未中奖的投注记录拆分信息");
+		
+		int count=userBetService.getUserUnPrizeRecords();
+		
+		if(count>0) {
+			logger.info("清理数据结束");
+		}
+	}
+}

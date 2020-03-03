@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh_CN" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="col-sm-12">
+			<div class="ibox">
+				<div class="ibox-body">
+					<div class="fixed-table-toolbar">
+						<div class="columns pull-right">
+							<button class="btn btn-success" onclick="reLoad()">查询</button>
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<input id="endTime" type="date" class="form-control" placeholder="结束时间" />
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<input id="startTime" type="date" class="form-control" placeholder="起始时间" />
+						</div>
+						<div class="columns pull-right col-md-1 nopadding">
+							<input id="qid" type="number" class="form-control" placeholder="期号" />
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<select id="roomId" class="form-control">
+								<option value="">---  房间号  ---</option>
+								<option value="1001">1001</option>
+								<option value="1002">1002</option>
+								<option value="1003">1003</option>
+							</select>
+						</div>
+					</div>
+					<table id="exampleTable" data-mobile-responsive="true"></table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div th:include="include :: footer"></div>
+	<script type="text/javascript" src="/js/appjs/tiger/history/list.js"></script>
+</body>
+</html>

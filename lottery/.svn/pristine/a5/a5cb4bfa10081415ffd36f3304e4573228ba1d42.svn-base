@@ -1,0 +1,267 @@
+package com.stip.net.main;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.stip.net.entity.tiger.TigerConfirm;
+import com.stip.net.entity.tiger.TigerOption;
+import com.stip.net.entity.tiger.TigerRoom;
+import com.stip.net.entity.tiger.TigerTimeState;
+import com.stip.net.service.TigerService;
+
+public class MainData {
+	// 发放TOP币总量缓存
+	public static BigDecimal totalTop;
+	// 缓存奖池余额
+	public static final Map<String, String> poolBalance = new HashMap<>();
+	// 龙虎斗房间数据，要保存
+	public static final List<TigerRoom> tigerRooms = new ArrayList<>();
+	// 龙虎斗投注确认信息，要保存
+	public static final List<TigerConfirm> tigerConfirms = new ArrayList<>();
+
+	private MainData() {
+		super();
+	}
+
+	/**
+	 * 根据房间id拿房间对象
+	 */
+	public static TigerRoom getRoomById(int roomId) {
+		for (TigerRoom room : tigerRooms) {
+			if (room.getId() == roomId) {
+				return room;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 从所有房间中删除某用户
+	 */
+	public static TigerRoom removeUserInRoom(String userId) {
+		for (TigerRoom room : tigerRooms) {
+			Set<String> heads = room.getHeads();
+			if (heads.contains(userId)) {
+				synchronized (heads) {
+					heads.remove(userId);
+				}
+				return room;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 添加房间信息Json
+	 */
+	public static void addRoomInfo(Map<String, Object> map, TigerRoom room) {
+		map.put("roomId", room.getId());
+		map.put("state", room.getState());
+		map.put("road", room.getRoads());
+
+		List<Map<String, Object>> allBet = new ArrayList<>();
+		map.put("allBet", allBet);
+
+		Map<String, Object> put_long0 = new HashMap<>();
+		put_long0.put("op", TigerOption.long0.getId());
+		put_long0.put("m", room.getPut_long0());
+		allBet.add(put_long0);
+
+		Map<String, Object> put_long1 = new HashMap<>();
+		put_long1.put("op", TigerOption.long1.getId());
+		put_long1.put("m", room.getPut_long1());
+		allBet.add(put_long1);
+
+		Map<String, Object> put_long2 = new HashMap<>();
+		put_long2.put("op", TigerOption.long2.getId());
+		put_long2.put("m", room.getPut_long2());
+		allBet.add(put_long2);
+
+		Map<String, Object> put_hu0 = new HashMap<>();
+		put_hu0.put("op", TigerOption.hu0.getId());
+		put_hu0.put("m", room.getPut_hu0());
+		allBet.add(put_hu0);
+
+		Map<String, Object> put_hu1 = new HashMap<>();
+		put_hu1.put("op", TigerOption.hu1.getId());
+		put_hu1.put("m", room.getPut_hu1());
+		allBet.add(put_hu1);
+
+		Map<String, Object> put_hu2 = new HashMap<>();
+		put_hu2.put("op", TigerOption.hu2.getId());
+		put_hu2.put("m", room.getPut_hu2());
+		allBet.add(put_hu2);
+
+		Map<String, Object> put_he = new HashMap<>();
+		put_he.put("op", TigerOption.he.getId());
+		put_he.put("m", room.getPut_he());
+		allBet.add(put_he);
+
+		// 开奖信息
+		List<Map<String, Object>> open = new ArrayList<>();
+		map.put("open", open);
+		// 只有开奖阶段才有开奖信息
+		if (room.getState() == TigerTimeState.open.getId()) {
+			if (room.getBlockLong() != null && room.getCardLong() != null) {
+				Map<String, Object> lo = new HashMap<>();
+				open.add(lo);
+
+				lo.put("type", 0);// 0表示龙牌
+				lo.put("hash", room.getBlockLong().getHash());
+				lo.put("index", room.getCardLong()[0]);
+				lo.put("hua", room.getCardLong()[1]);
+				lo.put("p", room.getCardLong()[2]);
+			}
+			if (room.getBlockHu() != null && room.getCardHu() != null) {
+				Map<String, Object> ho = new HashMap<>();
+				open.add(ho);
+
+				ho.put("type", 1);// 1表示龙牌
+				ho.put("hash", room.getBlockHu().getHash());
+				ho.put("index", room.getCardHu()[0]);
+				ho.put("hua", room.getCardHu()[1]);
+				ho.put("p", room.getCardHu()[2]);
+			}
+		}
+	}
+
+	/**
+	 * 添加房间内个人投注信息
+	 */
+	public static void addMyInfoInRoom(Map<String, Object> map, String userId, int roomId, int qid,
+			TigerService tigerService) {
+		BigDecimal long0_my = tigerService.getMyPutMoney(userId, roomId, qid, TigerOption.long0.getId());
+		BigDecimal long1_my = tigerService.getMyPutMoney(userId, roomId, qid, TigerOption.long1.getId());
+		BigDecimal long2_my = tigerService.getMyPutMoney(userId, roomId, qid, TigerOption.long2.getId());
+		BigDecimal hu0_my = tigerService.getMyPutMoney(userId, roomId, qid, TigerOption.hu0.getId());
+		BigDecimal hu1_my = tigerService.getMyPutMoney(userId, roomId, qid, TigerOption.hu1.getId());
+		BigDecimal hu2_my = tigerService.getMyPutMoney(userId, roomId, qid, TigerOption.hu2.getId());
+		BigDecimal he_my = tigerService.getMyPutMoney(userId, roomId, qid, TigerOption.he.getId());
+
+		List<Map<String, Object>> myBet = new ArrayList<>();
+		map.put("myBet", myBet);
+
+		Map<String, Object> put_long0 = new HashMap<>();
+		put_long0.put("op", TigerOption.long0.getId());
+		put_long0.put("m", long0_my);
+		myBet.add(put_long0);
+
+		Map<String, Object> put_long1 = new HashMap<>();
+		put_long1.put("op", TigerOption.long1.getId());
+		put_long1.put("m", long1_my);
+		myBet.add(put_long1);
+
+		Map<String, Object> put_long2 = new HashMap<>();
+		put_long2.put("op", TigerOption.long2.getId());
+		put_long2.put("m", long2_my);
+		myBet.add(put_long2);
+
+		Map<String, Object> put_hu0 = new HashMap<>();
+		put_hu0.put("op", TigerOption.hu0.getId());
+		put_hu0.put("m", hu0_my);
+		myBet.add(put_hu0);
+
+		Map<String, Object> put_hu1 = new HashMap<>();
+		put_hu1.put("op", TigerOption.hu1.getId());
+		put_hu1.put("m", hu1_my);
+		myBet.add(put_hu1);
+
+		Map<String, Object> put_hu2 = new HashMap<>();
+		put_hu2.put("op", TigerOption.hu2.getId());
+		put_hu2.put("m", hu2_my);
+		myBet.add(put_hu2);
+
+		Map<String, Object> put_he = new HashMap<>();
+		put_he.put("op", TigerOption.he.getId());
+		put_he.put("m", he_my);
+		myBet.add(put_he);
+	}
+
+	/**
+	 * 从后往前取合法数字，遇def跳过
+	 * 
+	 * @param hash
+	 *            十六进制字符串
+	 * @param skip
+	 *            本来是从后往前取合法数字，skip表示强制跳过几位合法数字，0为不跳过
+	 * @return 数组，第一个元素为从后往前的索引，从0开始，第二个元素为取到的合法数字，转换为1到13
+	 */
+	public static int[] getNumInHash(String hash, int skip) {
+		int index = -1;
+		char num = 0;
+		int[] result = null;
+		in: for (int i = 0; i < hash.length(); i++) {
+			char c = hash.charAt(hash.length() - 1 - i);
+			switch (c) {
+			case 'd':
+			case 'D':
+			case 'e':
+			case 'E':
+			case 'f':
+			case 'F':
+				continue;
+			default:
+				if (skip-- > 0) {
+					continue;
+				}
+				index = i;
+				num = c;
+				break in;
+			}
+		}
+		if (index != -1) {
+			int point = -1;
+			switch (num) {
+			case '0':
+				point = 10;
+				break;
+			case 'a':
+			case 'A':
+				point = 11;
+				break;
+			case 'b':
+			case 'B':
+				point = 12;
+				break;
+			case 'c':
+			case 'C':
+				point = 13;
+				break;
+			default:
+				point = Integer.parseInt("" + num);
+				break;
+			}
+			result = new int[] { index, point };
+		}
+		return result;
+	}
+
+	/**
+	 * 根据龙虎牌点数，获取中奖的投注项集合（枚举id）
+	 */
+	public static List<Integer> getGoodOpts(int left, int right) {
+		List<Integer> list = new ArrayList<>();
+		if (left > right) {// 龙
+			list.add(TigerOption.long0.getId());
+		} else if (left < right) {// 虎
+			list.add(TigerOption.hu0.getId());
+		} else {// 和
+			list.add(TigerOption.he.getId());
+		}
+		if (left % 2 == 0) {// 龙双
+			list.add(TigerOption.long2.getId());
+		} else {// 龙单
+			list.add(TigerOption.long1.getId());
+		}
+		if (right % 2 == 0) {// 虎双
+			list.add(TigerOption.hu2.getId());
+		} else {// 虎单
+			list.add(TigerOption.hu1.getId());
+		}
+		return list;
+	}
+}

@@ -1,0 +1,74 @@
+package com.stip.net.dao;
+
+import java.math.BigDecimal;
+
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+
+import com.stip.mybatis.generator.plugin.GenericMapper;
+import com.stip.net.entity.LotteryUser;
+import com.stip.net.entity.LotteryUserScore;
+import com.stip.net.example.LotteryUserExample;
+
+/**
+* 可添加自定义查询语句，方便后续扩展
+**/
+public interface LotteryUserDao extends GenericMapper<LotteryUser, LotteryUserExample, Integer> {
+	/**
+     * 添加积分用户
+     * @param lotteryUserScore
+     */
+	@Insert("insert into t_lottery_score_user (user_name,mobile_phone,email,password,status,score,create_time,update_time,referrer) values (#{userName},#{mobilePhone},#{email},#{password},#{status},#{score},#{createTime},#{updateTime},#{referrer})")
+    int addLotteryUserScore(LotteryUserScore lotteryUserScore);
+    
+    /**
+     * 根据用户名查询积分用户
+     * @param userName
+     * @return
+     */
+	@Select("select * from t_lottery_score_user where user_name = #{userName}")
+    LotteryUserScore getLotteryUserScoreName(String userName);
+
+    /**
+     * 根据电话号码查询积分用户
+     * @param userName
+     * @return
+     */
+	@Select("select * from t_lottery_score_user where mobile_phone = #{tel}")
+    LotteryUserScore getLotteryUserScoreTel(String tel);
+
+	/**
+	 * 根据邮箱查询积分用户
+	 * @param userName
+	 * @return
+	 */
+	@Select("select * from t_lottery_score_user where email = #{emil}")
+	LotteryUserScore getLotteryUserScoreEmil(String emil);
+
+	/**
+	 * 根据id查询积分用户
+	 * @param userName
+	 * @return
+	 */
+	@Select("select * from t_lottery_score_user where id = #{id}")
+	LotteryUserScore getLotteryUserScoreId(long id);
+	
+	/**
+	 * 添加积分
+	 * @param id
+	 * @param score
+	 * @return
+	 */
+	@Update("update t_lottery_score_user set score = score + #{score} where id = #{id}")
+	int updateLotteryUserScoreTeljia(long id , BigDecimal score);
+	
+	/**
+	 * 减积分
+	 * @param id
+	 * @param score
+	 * @return
+	 */
+	@Update("update t_lottery_score_user set score = score - #{score} where id = #{id}")
+	int updateLotteryUserScoreTeljian(long id , BigDecimal score);
+}

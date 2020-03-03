@@ -1,0 +1,37 @@
+package com.stip.net.main;
+
+/**
+ * 与客户端交互的上下行消息号
+ */
+public class MsgCode {
+
+	public static final int MSG_NULL = 0;// 用户心跳
+	public static final int NOTICE = 10;// 错误提示
+	public static final int TIGER_LOGIN = 1110;// 龙虎斗，用户登录
+	public static final int TIGER_ROOM_ENTER = 1111;// 龙虎斗，进入房间
+	public static final int TIGER_ROOM_LEAVE = 1112;// 龙虎斗，离开房间
+	public static final int TIGER_PUT = 1113;// 龙虎斗，投注
+	public static final int TIGER_ROOM_STATE_CHANGE = 1114;// 龙虎斗，房间状态变更
+	public static final int TIGER_ROOM_DJS = 1115;// 龙虎斗，房间倒计时
+	public static final int TIGER_OPEN_INFO = 1116;// 龙虎斗，开奖信息
+	public static final int TIGER_ROOM_MONEY_CHANGE = 1117;// 龙虎斗，投注引起房间金额变动
+	public static final int TIGER_ROOM_INFO = 1118;// 龙虎斗，房间信息
+	public static final int TIGER_PUT_SHOW = 1119;// 龙虎斗，投注直播
+	public static final int TIGER_MY_PUT_PUSH = 1120;// 龙虎斗，我的投注实时推送
+	public static final int TIGER_MY_PUT_QUERY = 1121;// 龙虎斗，我的投注查询
+	public static final int TIGER_ROOM_BLOCK_PUSH = 1122;// 龙虎斗，房间内区块信息实时推送
+	public static final int TIGER_PUT_GAIN_PUSH = 1123;// 龙虎斗，个人中奖信息推送
+	public static final int TIGER_POOL_BALANCE = 1124;// 龙虎斗，奖池余额
+	public static final int TIGER_USER_BALANCE = 1125;// 龙虎斗，用户余额
+	public static final int TIGER_WASH_INFO = 1126;// 龙虎斗，洗牌结果
+	public static final int TIGER_HALL_INFO = 1127;// 龙虎斗，房间大厅信息
+
+	public static final int DICE_POOL_BALANCE = 1201;// 骰子，EOS奖池余额
+
+	public static final int LOTTERY_POOL_BALANCE = 1301;// 大乐透，EOS奖池余额
+
+	public static final int SCORE_USER_BALANCE = 1401;// 积分用户余额
+	public static final int SCORE_USER_PAY = 1402;// 积分用户充值信息
+	public static final int SCORE_POOL_BALANCE = 1403;// 积分奖金池余额
+	public static final int SCORE_LOGIN = 1404;// 积分用户登录
+}

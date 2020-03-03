@@ -1,0 +1,477 @@
+package com.stip.net.kafka.consumer;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TimeZone;
+
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.listener.MessageListener;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.TextMessage;
+
+import com.lottery.net.utils.Constants;
+import com.lottery.net.utils.JsonUtil;
+import com.stip.net.entity.tiger.BlockInfo;
+import com.stip.net.entity.tiger.TigerHistory;
+import com.stip.net.entity.tiger.TigerOption;
+import com.stip.net.entity.tiger.TigerPutRecord;
+import com.stip.net.entity.tiger.TigerRoom;
+import com.stip.net.entity.tiger.TigerTimeState;
+import com.stip.net.imessage.IMWebSocketHandler;
+import com.stip.net.kafka.dto.SampleMessage;
+import com.stip.net.main.MainData;
+import com.stip.net.main.MsgCode;
+import com.stip.net.service.AccountService;
+import com.stip.net.service.TigerService;
+
+import io.eblock.eos4j.api.vo.account.Account;
+import net.sf.json.JSONObject;
+
+/**
+ * 龙虎斗消息通知
+ */
+@Component
+public class TigerOpenConsumer implements MessageListener<String, SampleMessage> {
+
+	@Autowired
+	private IMWebSocketHandler handler;
+
+	@Autowired
+	private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+
+	@Autowired
+	private TigerService tigerService;
+
+	@Autowired
+	private AccountService accountService;
+
+	/**
+	 * 测试方法
+	 */
+	public void test(JSONObject jsonObject) {
+		try {
+			messageUpdate(jsonObject);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void onMessage(ConsumerRecord<String, SampleMessage> data) {
+		JSONObject jsonObject = JSONObject.fromObject(data.value());
+		try {
+			messageUpdate(jsonObject);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 消息处理
+	 */
+	public void messageUpdate(JSONObject jsonObject) throws ParseException, IOException {
+		// 区块号
+		int block_number = jsonObject.getInt("block_num");
+		// 区块哈希
+		String hash = jsonObject.get("id").toString();
+		// 区块时间
+		JSONObject header = (JSONObject) jsonObject.get("header");
+		String timestamp = header.getString("timestamp");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		df.setTimeZone(TimeZone.getTimeZone("UTC"));
+		Date date = df.parse(timestamp);
+		long block_time = date.getTime();
+		BlockInfo blockNow = new BlockInfo(block_number, hash, block_time);
+
+		// 每局的总时间
+		final long TOTAL_TIME = Constants.TIGER_PUT_TIME + Constants.TIGER_OPEN_TIME;
+		// 游戏时间判断和更新
+		for (TigerRoom room : MainData.tigerRooms) {
+			int roomId = room.getId();
+			int qid = room.getQid();
+			TigerTimeState state = TigerTimeState.getEnumById(room.getState());
+			long now = System.currentTimeMillis();
+			long lastUpdate = room.getLastUpdate();
+
+			// 给客户端实时推送的区块信息
+			Map<String, Object> bd = new HashMap<>();
+			bd.put("num", block_number);
+			bd.put("hash", hash);
+			bd.put("time", block_time);
+			bd.put("roomId", roomId);
+
+			switch (state) {
+			case wash: {
+				if (!room.isDone()) {
+					// 重新洗牌，220到350张
+					int cardNum = new Random().nextInt(131) + 220;
+					room.setCardNum(cardNum);
+					// 上一局已发牌记录清空
+					room.getCards().clear();
+					// 路单记录清空
+					room.getRoads().clear();
+					room.setDone(true);
+
+					// 通知客户端，洗牌结果
+					Map<String, Object> map = new HashMap<>();
+					map.put("roomId", roomId);
+					map.put("cardNum", cardNum);
+					String change = JsonUtil.buildJson(MsgCode.TIGER_WASH_INFO, map);
+					handler.broadcastToSome(room.getHeads(), new TextMessage(change));
+					if (roomId == 1001) {
+						System.out.println("重新洗牌，张数： " + cardNum);
+					}
+				}
+				if (now - lastUpdate >= Constants.TIGER_WASH_TIME) {
+					// 洗牌结束，过渡到投注阶段
+					room.setLastUpdate(now);
+					room.setState(TigerTimeState.put.getId());
+					room.setDone(false);
+					// 通知客户端，房间状态变更
+					Map<String, Object> map = new HashMap<>();
+					map.put("roomId", roomId);
+					map.put("time", TOTAL_TIME / 1000);
+					map.put("state", room.getState());
+					String change = JsonUtil.buildJson(MsgCode.TIGER_ROOM_STATE_CHANGE, map);
+					handler.broadcastToSome(room.getHeads(), new TextMessage(change));
+					if (roomId == 1001) {
+						System.out.println("房间状态变为：" + TigerTimeState.getEnumById(room.getState()));
+					}
+				}
+			}
+				break;
+			case put: {
+				// 投注阶段的初始特定操作，暂无
+				if (!room.isDone()) {
+					room.setDone(true);
+				}
+				// 投注阶段30秒
+				if (now - lastUpdate >= Constants.TIGER_PUT_TIME) {
+					// 投注结束，过渡到开奖阶段
+					room.setLastUpdate(now);
+					room.setState(TigerTimeState.open.getId());
+					room.setBlockOpen(blockNow);
+					room.setDone(false);
+					// 通知客户端，房间状态变更
+					Map<String, Object> map = new HashMap<>();
+					map.put("roomId", roomId);
+					map.put("time", TOTAL_TIME / 1000);
+					map.put("state", room.getState());
+					String change = JsonUtil.buildJson(MsgCode.TIGER_ROOM_STATE_CHANGE, map);
+					handler.broadcastToSome(room.getHeads(), new TextMessage(change));
+					if (roomId == 1001) {
+						System.out.println("房间状态变为：" + TigerTimeState.getEnumById(room.getState()));
+					}
+				}
+			}
+				break;
+			case open: {
+				// 翻牌
+				int x = room.getX();
+				int y = room.getY();
+				if (room.getBlockOpen().getBlock_number() + x == block_number) {// 龙牌区块出现
+					room.setBlockLong(blockNow);
+
+					int[] indexPoint = null;// 龙牌索引、点数
+					int[] card = null;// 龙牌花色、点数
+					for (int i = 0; i < 30; i++) {// 计算龙牌
+						// 索引（从0开始），点数（1到13）
+						indexPoint = MainData.getNumInHash(hash, i);
+						card = room.getRandomCard(indexPoint[1]);
+						if (card == null) {
+							continue;
+						}
+						room.getCards().add(card);
+						break;
+					}
+					room.setCardLong(new int[] { indexPoint[0], card[0], card[1] });
+
+					// 通知客户端，龙牌开奖
+					Map<String, Object> map = new HashMap<>();
+					map.put("roomId", roomId);
+					map.put("type", 0);// 0表示龙牌开奖
+					map.put("hash", hash);
+					map.put("index", indexPoint[0]);
+					map.put("hua", card[0]);
+					map.put("p", card[1]);
+					String json = JsonUtil.buildJson(MsgCode.TIGER_OPEN_INFO, map);
+					handler.broadcastToSome(room.getHeads(), new TextMessage(json));
+					if (roomId == 1001) {
+						System.out.println(roomId + ":" + map);
+					}
+
+					// 开奖区块增加字段
+					Map<String, Object> bo = new HashMap<>();
+					bd.put("open", bo);
+					bo.put("type", 0);// 0表示龙牌开奖
+					bo.put("qid", qid);
+					bo.put("hash", hash);
+					bo.put("index", indexPoint[0]);
+					bo.put("hua", card[0]);
+					bo.put("p", card[1]);
+				} else if (room.getBlockOpen().getBlock_number() + y == block_number) {// 虎牌区块出现
+					room.setBlockHu(blockNow);
+
+					int[] indexPoint = null;// 虎牌索引、点数
+					int[] card = null;// 虎牌花色、点数
+					for (int i = 0; i < 30; i++) {// 计算虎牌
+						indexPoint = MainData.getNumInHash(hash, i);
+						card = room.getRandomCard(indexPoint[1]);
+						if (card == null) {
+							continue;
+						}
+						room.getCards().add(card);
+						break;
+					}
+					room.setCardHu(new int[] { indexPoint[0], card[0], card[1] });
+
+					// 龙虎都开出了，添加路单
+					List<Integer> goodOpts = MainData.getGoodOpts(room.getCardLong()[2], room.getCardHu()[2]);
+					List<List<Integer>> roads = room.getRoads();
+					roads.add(goodOpts);
+					if (roads.size() > 200) {// 缓存数量限制
+						roads.remove(0);
+					}
+
+					// 存储开奖历史记录
+					TigerHistory th = new TigerHistory(roomId, qid, room.getCardLong()[2], room.getCardHu()[2], room.getBlockOpen().getBlock_time());
+					tigerService.insertTigerHistory(th);
+
+					// 通知客户端，虎牌开奖
+					Map<String, Object> map = new HashMap<>();
+					map.put("roomId", roomId);
+					map.put("type", 1);// 1表示虎牌开奖
+					map.put("hash", hash);
+					map.put("index", indexPoint[0]);
+					map.put("hua", card[0]);
+					map.put("p", card[1]);
+					if (room.getCardLong()[2] > room.getCardHu()[2]) {// 龙比虎大
+						map.put("res", TigerOption.long0.getId());
+					} else if (room.getCardLong()[2] < room.getCardHu()[2]) {// 龙比虎小
+						map.put("res", TigerOption.hu0.getId());
+					} else {// 开和
+						map.put("res", TigerOption.he.getId());
+					}
+					map.put("win", goodOpts);
+					String json = JsonUtil.buildJson(MsgCode.TIGER_OPEN_INFO, map);
+					handler.broadcastToSome(room.getHeads(), new TextMessage(json));
+					if (roomId == 1001) {
+						System.out.println(roomId + ":" + map);
+					}
+
+					// 开奖区块增加字段
+					Map<String, Object> bo = new HashMap<>();
+					bd.put("open", bo);
+					bo.put("type", 1);// 1表示龙牌开奖
+					bo.put("qid", qid);
+					bo.put("hash", hash);
+					bo.put("index", indexPoint[0]);
+					bo.put("hua", card[0]);
+					bo.put("p", card[1]);
+
+					// 翻牌后，更新玩家投注记录
+					// 数据库查出本房间本期投注记录
+					List<TigerPutRecord> updateRecords = tigerService.getRecordsWhenOpen(roomId, qid);
+					// 更新玩家投注记录
+					for (int i = 0; i < updateRecords.size(); i++) {
+						TigerPutRecord record = updateRecords.get(i);
+						// 使得每条记录开奖时间不同，便于查询
+						record.setOpenTimeSpt(room.getBlockOpen().getBlock_time() + i);
+						String userId = record.getUserId();
+						// 更新中奖金额
+						if (goodOpts.contains(record.getOpt())) {
+							record.setStatus(2);
+							TigerOption opt = TigerOption.getEnumById(record.getOpt());
+							BigDecimal gainMoney = record.getPutMoney().multiply(new BigDecimal(opt.getPei()))
+									.divide(new BigDecimal(1000));
+							record.setGainMoney(gainMoney);
+
+							// 响应客户端，发给此房间所有人，投注直播
+							Map<String, Object> map2 = new HashMap<>();
+							map2.put("roomId", roomId);
+							map2.put("type", 1);// 1表示中奖
+							map2.put("userId", userId);
+							map2.put("qid", qid);
+							map2.put("money", gainMoney);// 中奖金额
+							map2.put("time", record.getOpenTimeSpt());
+							String json2 = JsonUtil.buildJson(MsgCode.TIGER_PUT_SHOW, map2);
+							handler.broadcastToSome(room.getHeads(), new TextMessage(json2));
+						} else {
+							record.setStatus(1);
+						}
+						// 更新到数据库
+						tigerService.updateRecord(record);
+
+						// 响应客户端，发给中奖者，我的投注
+						Map<String, Object> map3 = new HashMap<>();
+						map3.put("roomId", roomId);
+						map3.put("qid", qid);
+						map3.put("time", record.getOpenTimeSpt());
+						map3.put("opt", record.getOpt());
+						map3.put("put", record.getPutMoney());
+						map3.put("gain", record.getGainMoney());
+						String json3 = JsonUtil.buildJson(MsgCode.TIGER_MY_PUT_PUSH, map3);
+						handler.sendMessageToUser(userId, new TextMessage(json3));
+					}
+
+					// 统计玩家中奖信息
+					Map<String, Map<Integer, List<BigDecimal>>> sendMap = new HashMap<>();
+					Set<String> heads = room.getHeads();
+					for (TigerPutRecord record : updateRecords) {
+						if (record.getStatus() != 2) {// 排除未中奖的记录
+							continue;
+						}
+						String userId = record.getUserId();
+						if (!heads.contains(userId)) {// 不在房间中的，不统计
+							continue;
+						}
+						int opt = record.getOpt();
+						BigDecimal m = record.getGainMoney();
+						if (sendMap.get(userId) == null) {
+							sendMap.put(userId, new HashMap<>());
+						}
+						Map<Integer, List<BigDecimal>> mmp = sendMap.get(userId);
+						if (mmp.get(opt) == null) {
+							mmp.put(opt, new ArrayList<>());
+						}
+						mmp.get(opt).add(m);
+					}
+					// 推送玩家中奖信息
+					for (String userId : sendMap.keySet()) {
+						Map<String, Object> map4 = new HashMap<>();
+						map4.put("roomId", roomId);
+						map4.put("qid", qid);
+						Map<Integer, List<BigDecimal>> mmp = sendMap.get(userId);
+						List<Map<String, Object>> reward = new ArrayList<>();
+						map4.put("reward", reward);
+						for (Integer opt : mmp.keySet()) {
+							List<BigDecimal> mList = mmp.get(opt);
+							Map<String, Object> obj = new HashMap<>();
+							obj.put("opt", opt);
+							obj.put("m", mList);
+							reward.add(obj);
+						}
+						String json4 = JsonUtil.buildJson(MsgCode.TIGER_PUT_GAIN_PUSH, map4);
+						handler.sendMessageToUser(userId, new TextMessage(json4));
+					}
+				}
+
+				// TODO,如果未发奖，并且开奖段已经过去15秒，足够区块链那边投注确认了，准备发奖
+//				if (!room.isDone() && now - lastUpdate >= Constants.TIGER_WAIT_TIME) {
+				// 策划要求开奖后立刻发奖
+				if (!room.isDone() && room.getCardHu() != null) {
+			        // 发奖
+					threadPoolTaskExecutor.execute(new Runnable() {
+						@Override
+						public void run() {
+							// 数据库查出本房间本期需要发奖的投注记录
+							List<TigerPutRecord> updateRecords = tigerService.getRecordsWhenSend(roomId, qid);
+					        for (TigerPutRecord record : updateRecords) {
+					            String userId = record.getUserId();
+					            BigDecimal putMoney = record.getPutMoney();
+					            BigDecimal gainMoney = record.getGainMoney();
+					            try {
+					            	// 发奖转账
+					            	boolean success = accountService.plusBalance(userId, putMoney.add(gainMoney).toPlainString());
+					            	if (success) {
+					            		record.setStatus(3);
+					            		System.out.println("发奖成功！ userId: " + userId + ", money: " + putMoney.add(gainMoney).toPlainString());
+					            	} else {
+					            		record.setStatus(-1);
+					            		System.out.println("发奖失败...");
+					            	}
+					            } catch (InterruptedException e) {
+					            	e.printStackTrace();
+					            }
+					            // 发奖之后，更新投注记录
+					            tigerService.updateRecord(record);
+					            // 通知用户余额变动
+					            if (room.getHeads().contains(userId)) {
+						            try {
+						            	Account account = accountService.getAccount(userId);
+						            	if (account != null) {
+						            		Map<String, Object> map = new HashMap<>();
+						            		map.put("balance", account.getCoreLiquidBalance());
+						            		String json = JsonUtil.buildJson(MsgCode.TIGER_USER_BALANCE, map);
+						            		handler.sendMessageToUser(userId, new TextMessage(json));
+						            	}
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+					            }
+					        }
+					        // 响应客户端，奖池金额
+					        try {
+					        	Map<String, Object> map = new HashMap<>();
+					        	Account pool = accountService.getAccount(Constants.account_tiger);
+					        	if (pool != null) {
+					        		map.put("balance", pool.getCoreLiquidBalance());
+					        		String json4 = JsonUtil.buildJson(MsgCode.TIGER_POOL_BALANCE, map);
+					        		handler.broadcastToSome(room.getHeads(), new TextMessage(json4));
+					        	}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					});
+					// 发奖结束，标记
+					room.setDone(true);
+				}
+
+				// 开奖阶段30秒
+				if (now - lastUpdate >= Constants.TIGER_OPEN_TIME) {
+					// 开奖时间段结束
+					room.setLastUpdate(now);
+					// 清空房间数据，更新房间期号
+					room.newStart();
+					room.setCardNum(room.getCardNum() - 2);
+
+					if (room.getCardNum() < 2) {// 如果房间牌数不够，则重新开一大局，进入洗牌阶段
+						room.setState(TigerTimeState.wash.getId());
+						// 通知客户端，房间状态变更，进入洗牌阶段
+						Map<String, Object> map = new HashMap<>();
+						map.put("roomId", roomId);
+						map.put("time", TOTAL_TIME / 1000);
+						map.put("state", room.getState());
+						String change = JsonUtil.buildJson(MsgCode.TIGER_ROOM_STATE_CHANGE, map);
+						handler.broadcastToSome(room.getHeads(), new TextMessage(change));
+						if (roomId == 1001) {
+							System.out.println("房间状态变为：" + TigerTimeState.getEnumById(room.getState()));
+						}
+					} else {
+						room.setState(TigerTimeState.put.getId());
+						// 通知客户端，房间状态变更，进入投注阶段
+						Map<String, Object> map = new HashMap<>();
+						map.put("roomId", roomId);
+						map.put("time", TOTAL_TIME / 1000);
+						map.put("state", room.getState());
+						String change = JsonUtil.buildJson(MsgCode.TIGER_ROOM_STATE_CHANGE, map);
+						handler.broadcastToSome(room.getHeads(), new TextMessage(change));
+						if (roomId == 1001) {
+							System.out.println("房间状态变为：" + TigerTimeState.getEnumById(room.getState()));
+						}
+					}
+					room.setDone(false);
+				}
+			}
+				break;
+			default:
+				break;
+			}
+			// 给客户端推送区块消息
+			String bj = JsonUtil.buildJson(MsgCode.TIGER_ROOM_BLOCK_PUSH, bd);
+			handler.broadcastToSome(room.getHeads(), new TextMessage(bj));
+		}
+	}
+}

@@ -1,0 +1,328 @@
+package com.stip.net.scheduled;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
+
+import com.lottery.net.utils.Constants;
+import com.stip.net.entity.DBDiceBetting;
+import com.stip.net.entity.UserBetRecords;
+import com.stip.net.entity.UserTransactionRecords;
+import com.stip.net.entity.tiger.TigerHistory;
+import com.stip.net.entity.tiger.TigerOption;
+import com.stip.net.entity.tiger.TigerPutRecord;
+import com.stip.net.entity.tiger.TigerPutRecordUpdater;
+import com.stip.net.kafka.utils.PublicMethod;
+import com.stip.net.main.MainData;
+import com.stip.net.service.AccountService;
+import com.stip.net.service.LotteryService;
+import com.stip.net.service.TigerService;
+import com.stip.net.service.UserBetService;
+import com.stip.net.service.UserTransactionRecordsService;
+
+import io.eblock.eos4j.utils.Constant;
+
+@Component
+public class Min1Task {
+	protected final Logger _log = LoggerFactory.getLogger(this.getClass());
+
+	@Autowired
+	private TigerService tigerService;
+	@Autowired
+	private AccountService accountService;
+	@Autowired
+	private LotteryService lotteryService;
+	@Autowired
+	private UserBetService userBetService;
+	@Autowired
+	private UserTransactionRecordsService userTransactionRecordsService;
+	@Autowired
+	private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+
+	@Scheduled(cron = "0 0/1 * * * ?")
+	public void execute() {
+		updatePoolBalance();
+		reissuePrizeEOS();
+		fixTigerReward();
+		openAndSendLateTiger();
+		sendTopCoin();
+		saveAll();
+	}
+
+	/**
+	 * 定时存储游戏数据
+	 */
+	private void saveAll() {
+		try {
+			_log.info("save All start..................................");
+			tigerService.saveAllRooms(MainData.tigerRooms);
+			tigerService.saveAllConfirms(MainData.tigerConfirms);
+			_log.info("save All over..................................");
+		} catch (Exception e) {
+			_log.error(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * 更新奖池金额缓存
+	 */
+	private void updatePoolBalance() {
+		try {
+			String tigerBalance = accountService.getBalance(Constants.account_tiger);
+			if (tigerBalance != null) {
+				MainData.poolBalance.put(Constants.TIGER_TYPE, tigerBalance);
+			}
+			String diceBalance = accountService.getBalance(Constants.account_dice);
+			if (diceBalance != null) {
+				MainData.poolBalance.put(Constants.DICE_TYPE, diceBalance);
+			}
+		} catch (Exception e) {
+			_log.error(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * 骰子补发奖励
+	 */
+	private void reissuePrizeEOS() {
+		try {
+			if ("xxx".length() > 0) {// 此功能不开启
+				return;
+			}
+			List<DBDiceBetting> diceBettings = lotteryService.getDiceState();
+			if (diceBettings.size() > 0) {
+				_log.info("执行骰子补发奖励操作");
+				for (DBDiceBetting ddb : diceBettings) {
+					if (accountService.plusBalanceFromDice(ddb.getAccount(), ddb.getPrizeEOS())) {
+						lotteryService.updateDiceStateto(ddb.getAccount());
+						//插入骰子流水记录
+						PublicMethod.insertTransaction(new UserTransactionRecords(ddb.getTermnumber(),ddb.getAccount(),
+								Constants.GAME_TYPE_DICE,Constants.GENERAL_ONE,Constants.GENERAL_THREE,new BigDecimal(ddb.getPrizeEOS()),Constants.GENERAL_ONE), userTransactionRecordsService, _log);
+					} else {
+						_log.error("骰子给用户：" + ddb.getAccount() + "补发奖励失败，一分钟后重新补发");
+					}
+				}
+				String poolBalance = accountService.getBalance(Constants.account_dice);
+	        	if (poolBalance != null) {
+	        		MainData.poolBalance.put(Constants.DICE_TYPE, poolBalance);
+	        	}
+			}
+		} catch (Exception e) {
+			_log.error(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * 龙虎斗，补发发奖失败的投注记录
+	 */
+	private void fixTigerReward() {
+		if ("xxx".length() > 0) {// 此功能不开启
+			return;
+		}
+		try {
+			List<TigerPutRecord> records = tigerService.getFailedRecords();
+			for (TigerPutRecord record : records) {
+				TigerPutRecordUpdater updater = new TigerPutRecordUpdater();
+				updater.setTxId(record.getTxId());
+
+				String userId = record.getUserId();
+				BigDecimal putMoney = record.getPutMoney();
+				BigDecimal gainMoney = record.getGainMoney();
+				try {
+					// 补发奖励
+					boolean success = accountService.plusBalanceFromTiger(userId, putMoney.add(gainMoney));
+					if (success) {
+						updater.setStatus(3);
+						tigerService.updateRecord(updater);
+						// 流水记录
+						try {
+							userTransactionRecordsService
+									.insert(new UserTransactionRecords(Long.valueOf(record.getQid()), userId,
+											Constants.GAME_TYPE_TIGER, Constants.GENERAL_ONE, Constants.GENERAL_THREE,
+											putMoney.add(gainMoney), Constants.GENERAL_ONE));
+						} catch (Exception e) {
+							_log.error("用户下注流水记录插入失败，时间{},用户{},期号{}", new Date(), userId, record.getQid());
+						}
+					} else {
+						_log.error("龙虎斗补发奖励失败...txId:" + record.getTxId());
+					}
+				} catch (Exception e) {
+					_log.error(e.getMessage(), e);
+				}
+			}
+		} catch (Exception e) {
+			_log.error(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * 龙虎斗，补发投注过于延迟而错过开奖的奖励
+	 */
+	private void openAndSendLateTiger() {
+		try {
+			// 查询超过2分钟仍未开奖的投注记录
+			List<TigerPutRecord> records = tigerService.getExpiredRecords(System.currentTimeMillis(), 2L * 1000);
+			if (records.size() == 0) {
+				return;
+			}
+			threadPoolTaskExecutor.execute(new Runnable() {
+				@Override
+				public void run() {
+					// 更新开奖标记和开奖时间
+					for (int i = 0; i < records.size(); i++) {
+						TigerPutRecord record = records.get(i);
+						TigerPutRecordUpdater updater = new TigerPutRecordUpdater();
+						updater.setTxId(record.getTxId());
+
+						int qid = record.getQid();
+						int roomId = record.getRoomId();
+						TigerHistory th = tigerService.getTigerHistory(qid, roomId);
+						if (th == null) {
+							_log.error("open expird tiger record failed! history not found! qid: " + qid + ", roomId: " + roomId);
+							continue;
+						}
+						// 使得每条记录开奖时间不同，便于查询
+						updater.setOpenTimeSpt(th.getOpenTimeSpt() + i + 200);
+						List<Integer> goodOpts = MainData.getGoodOpts(th.getLp(), th.getHp());
+						// 更新中奖金额
+						if (goodOpts.contains(record.getOpt())) {
+							updater.setStatus(2);
+							TigerOption opt = TigerOption.getEnumById(record.getOpt());
+							BigDecimal gainMoney = record.getPutMoney().multiply(new BigDecimal(opt.getPei()))
+									.divide(new BigDecimal(1000));
+							updater.setGainMoney(gainMoney);
+						} else {
+							updater.setStatus(1);
+						}
+						// 更新到数据库
+						tigerService.updateRecord(updater);
+					}
+					// 发奖
+					for (TigerPutRecord record : records) {
+						// 排除未中奖和未投注确认的
+						if (record.getStatus() != 2 || record.getTxStatus() != 1) {
+							continue;
+						}
+						TigerPutRecordUpdater updater = new TigerPutRecordUpdater();
+						updater.setTxId(record.getTxId());
+
+						String userId = record.getUserId();
+						BigDecimal putMoney = record.getPutMoney();
+						BigDecimal gainMoney = record.getGainMoney();
+						// 发奖转账
+						boolean success = accountService.plusBalanceFromTiger(userId, putMoney.add(gainMoney));
+						if (success) {
+							updater.setStatus(3);
+							_log.debug("发奖成功！ userId: " + userId + ", money: " + putMoney.add(gainMoney));
+							// 流水记录
+							try {
+								userTransactionRecordsService.insert(new UserTransactionRecords(
+										Long.valueOf(record.getQid()), userId, Constants.GAME_TYPE_TIGER,
+										Constants.GENERAL_ONE, Constants.GENERAL_THREE, putMoney.add(gainMoney),
+										Constants.GENERAL_ONE));
+							} catch (Exception e) {
+								_log.error("用户下注流水记录插入失败，时间{},用户{},期号{}", new Date(), userId, record.getQid());
+							}
+						} else {
+							updater.setStatus(-1);
+							_log.error("发奖失败！ txId: " + record.getTxId());
+						}
+						// 发奖之后，更新投注记录
+						tigerService.updateRecord(updater);
+					}
+					// 更新奖池缓存
+					String poolBalance = accountService.getBalance(Constants.account_tiger);
+		        	if (poolBalance != null) {
+		        		MainData.poolBalance.put(Constants.TIGER_TYPE, poolBalance);
+		        	}
+				}
+			});
+		} catch (Exception e) {
+			_log.error(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * 玩家投注后，给他发代币
+	 */
+	private void sendTopCoin() {
+		if ("xxx".length() > 0) {// 此功能不开启
+			return;
+		}
+		try {
+			List<TigerPutRecord> tigerRecords = tigerService.getRecordsToSendTop();
+			//查询骰子出未发代币的投注记录
+			List<DBDiceBetting> diceRecords = lotteryService.getDiceTopState();
+			// 查询出未发代币的投注记录
+			List<UserBetRecords> lotteryRecords = userBetService.getUserScripIssued();
+			if (tigerRecords.size() + diceRecords.size() + lotteryRecords.size() == 0) {
+				return;
+			}
+
+			threadPoolTaskExecutor.execute(new Runnable() {
+				@Override
+				public void run() {
+					// 龙虎斗发代币
+					for (TigerPutRecord record : tigerRecords) {
+						TigerPutRecordUpdater updater = new TigerPutRecordUpdater();
+						updater.setTxId(record.getTxId());
+
+						String userId = record.getUserId();
+						BigDecimal putMoney = record.getPutMoney();
+						BigDecimal topMoney = putMoney.multiply(new BigDecimal(Constant.top_per));
+						boolean success = accountService.transFromTop(userId, topMoney);
+						if (success) {
+							updater.setTopStatus(1);
+						} else {
+							updater.setTopStatus(-1);
+						}
+						tigerService.updateRecord(updater);
+					}
+					// 骰子发代币
+					for (DBDiceBetting record : diceRecords) {
+						String account = record.getAccount();
+						String bettingEOS = record.getBettingEOS();
+						BigDecimal topMoney = new BigDecimal(bettingEOS).multiply(new BigDecimal(Constant.top_per));
+						boolean success = accountService.transFromTop(account, topMoney);
+						if (success) {
+							// 标记投注记录为已发代币
+							record.setTopStatus(1);
+						} else {
+							// 标记投注记录为发币失败
+							record.setTopStatus(-1);
+						}
+						// 将此记录更新到数据库
+						lotteryService.updateDiceTopState(record);
+					}
+					// 大乐透发代币
+					for (UserBetRecords record : lotteryRecords) {
+						String username = record.getUserName();
+						Double noteMoney = record.getNoteMoney();
+						BigDecimal topMoney = new BigDecimal(noteMoney).multiply(new BigDecimal(Constant.top_per));
+						boolean success = accountService.transFromTop(username, topMoney);
+						UserBetRecords newRecord = new UserBetRecords();
+						newRecord.setBetId(record.getBetId());
+						if (success) {
+							// 标记投注记录为已发代币
+							newRecord.setUserId(1L);
+						} else {
+							// 标记投注记录为发币失败
+							newRecord.setUserId(-1L);
+						}
+						// 将此记录更新到数据库
+						userBetService.updateLotteryBetScripIssued(newRecord);
+					}
+				}
+			});
+		} catch (Exception e) {
+			_log.error(e.getMessage(), e);
+		}
+	}
+}

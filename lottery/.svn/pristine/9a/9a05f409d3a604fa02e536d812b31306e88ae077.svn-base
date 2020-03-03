@@ -1,0 +1,624 @@
+let baseUrl = "https://myeosgame.com";
+let websocketUrl = "myeosgame.com";
+// let baseUrl = "http://172.16.1.37:8081";
+// let websocketUrl = "myeosgame.com";
+
+let getHisAwardPage=1;
+let getHisBetsPage=1;
+let getHisAwardRow=10;
+let modelBollen = "0";  //玩家选择的游戏模式，默认基础模式
+let userPriKey="";  
+let enterLotteryNum=0;
+let perPageFriends=5;
+let pageNumFriends=1;
+let baseBetsNum=0;
+let yBarTop=0;
+
+// let win = "中奖";
+// let lang = "zh";
+// let logOut = "退出登录";
+// let userCode = "111";
+// let ucerror="投注出错";
+// let common="共";
+// let people="人";
+// var englistBig = '大';
+// var englistSmall = '小';
+// var englistOdd = '单';
+// var englistEven = '双';
+// var englistBet = '投注';
+// var period1 = '第';
+// var period2 = '期';
+
+userName=window.sessionStorage.getItem("userName");
+publicKey=window.sessionStorage.getItem("publicKey");
+checkIdentity()
+getHisBets();
+
+
+
+
+
+$("#exitLogin").click(function(){
+  popup({type:'error',msg:"退出登录",delay:1000,bg:true,clickDomCancel:true});
+  $("#userInfo").css("display","none");
+  $(".loginBtnBets").css("display", "block");
+  $(".betsBtn").css("display", "none");
+  $("#myHisBetTab").html("");
+  userName="";
+  userPriKey="";
+  window.sessionStorage.removeItem("userName");
+  window.sessionStorage.removeItem("punlicKey");
+  // getUserInfo();
+})
+
+function getUserInfo(){
+  // console.log(userPriKey)
+  $.ajax({
+    type: "post",
+    url: `${baseUrl}/account/loginWidthPriKey.do`,
+    data: {
+      private_key: userPriKey,
+      userCode: userCode ? userCode : ""
+    },
+    success: function (date) {
+      userName = date.userName;
+      publicKey = date.pubKey;
+      $.ajax({
+        type: "get",
+        url: `${baseUrl}/account/getAccount.do`,
+        data: {
+          account: date.userName
+        },
+        success: function (msg) {
+          // console.log(msg)
+          uid = date.userName;
+          $("#userInfo").css("display", "block");
+          $("#loginContainer").css("display", "none");
+          $(".Pri_login").css("display", "none");
+          $(".betsBtn").css("display", "block");
+          $("#userCpu").css("width",`${parseFloat((msg.cpu.used / msg.cpu.max))*totalCpuWidth/100}rem`);
+          $("#userName").text(`${date.userName}`);
+          $("#userBalance").text(`${msg.balance ? msg.balance.replace("EOS","") : "0"}`);
+          $("#cpu").text(`${parseFloat((msg.cpu.used / msg.cpu.max)*100).toFixed(2)}%`)
+        }
+      });
+    }
+  });
+}
+
+
+$("#loginClose").click(function(){
+  $("#loginContainer").css("display","none");
+})
+
+//获取历史开奖记录函数(3条)
+function getHisAwardThree(){
+  $.ajax({
+    type:"get",
+    url:`${baseUrl}/lottery/getLotteryHis.do`,
+    data:{
+      pageNum:1,
+      rowNum:4
+    },
+    success:function(msg){
+      // console.log(msg)
+      let str="";
+      for(let i=0;i<msg.hisRecords.length; i++){
+      enterLotteryNum=msg.hisRecords[0].recordsId;
+      $("#periods").text(`${period1}${enterLotteryNum+1}${period2}`)       
+      str+=
+      `<div style="height:0.24rem;line-height: 0.24rem;display: flex;justify-content: space-between;">
+        <span style="color:#b44141;font-size:0.12rem;">
+        ${msg.hisRecords[i].lotteryFive}
+        ${msg.hisRecords[i].lotteryFour}
+        ${msg.hisRecords[i].lotteryThree}
+        ${msg.hisRecords[i].lotteryTwo}
+        ${msg.hisRecords[i].lotteryOne}
+        </span>
+        <span style="color:white;font-size:0.12rem;">${datetimeFormat(msg.hisRecords[i].updateTime)}</span>
+      </div>`
+      }
+      $("#awardContainer").html(str);
+    }
+  })
+}
+getHisAwardThree();
+
+//历史开奖(10条)
+function getHisAwardTen(){
+  $("#loading").css("display","block");
+  let a,b,c,d;
+  $.ajax({
+    type:"get",
+    url:`${baseUrl}/lottery/getLotteryHis.do`,
+    data:{
+      pageNum:getHisAwardPage,
+      rowNum:getHisAwardRow
+    },
+    success:function(msg){
+      $("#loading").css("display","none");
+      let str="";
+      for(let item of msg.hisRecords){
+        if (item.largeNum == 0) {
+          a = "resultSmall";
+          b = "resultBig";
+        } else {
+          b = "resultSmall";
+          a = "resultBig";
+        }
+        if (item.lotterySingle == 0) {
+          c = "resultSingle";
+          d = "resultDouble";
+        } else {
+          d = "resultSingle";
+          c = "resultDouble";
+        }
+        let hisTime=datetimeDay(item.updateTime);
+        let month=hisTime.split(" ")[1].split("/");
+        let hour=hisTime.split(" ")[2].split(":");
+        $("#myHisAwardTab").append(
+          ` 
+          <div style="padding:0 0.1rem;height:0.3rem;line-height: 0.3rem;font-size:0.12rem;color:white;text-align: center;display: flex;justify-content: space-between">
+          <div style="width: 0.72rem;">${month[1]}/${month[2]} ${hour[0]}:${hour[1]}</div>
+          <div style="width: 0.68rem;">${item.recordsId}</div>
+          <div style="width: 0.58rem;color:#ff5c4a">${item.lotteryFive}${item.lotteryFour}${item.lotteryThree}${item.lotteryTwo}${item.lotteryOne}</div>
+          <div style="width: 0.70rem;"><span><b class=${a}>${englistBig}</b><b class=${b}>${englistSmall}</b></span><span style="color:#ff5c4a">|</span><span><b class=${d}>${englistOdd}</b><b class=${c}>${englistEven}</b></span></div>
+        </div>`)
+      }
+    }
+  })
+}
+
+function getHisAwardNew(){
+  let a,b,c,d;
+  $.ajax({
+    type:"get",
+    url:`${baseUrl}/lottery/getLotteryHis.do`,
+    data:{
+      pageNum:1,
+      rowNum:1
+    },
+    success:function(msg){
+      let str="";
+      for(let item of msg.hisRecords){
+        if (item.largeNum == 0) {
+          a = "resultSmall";
+          b = "resultBig";
+        } else {
+          b = "resultSmall";
+          a = "resultBig";
+        }
+        if (item.lotterySingle == 0) {
+          c = "resultSingle";
+          d = "resultDouble";
+        } else {
+          d = "resultSingle";
+          c = "resultDouble";
+        }
+        let hisTime=datetimeDay(item.updateTime);
+        let month=hisTime.split(" ")[1].split("/");
+        let hour=hisTime.split(" ")[2].split(":");
+        $("#myHisAwardTab").prepend(
+          ` 
+          <div style="padding:0 0.1rem;height:0.3rem;line-height: 0.3rem;font-size:0.12rem;color:white;text-align: center;display: flex;justify-content: space-between">
+          <div style="width: 0.72rem;">${month[1]}/${month[2]} ${hour[0]}:${hour[1]}</div>
+          <div style="width: 0.68rem;">${item.recordsId}</div>
+          <div style="width: 0.58rem;color:#ff5c4a">${item.lotteryFive}${item.lotteryFour}${item.lotteryThree}${item.lotteryTwo}${item.lotteryOne}</div>
+          <div style="width: 0.70rem;"><span><b class=${a}>${englistBig}</b><b class=${b}>${englistSmall}</b></span><span style="color:#ff5c4a">|</span><span><b class=${d}>${englistOdd}</b><b class=${c}>${englistEven}</b></span></div>
+        </div>`)
+      }
+    }
+  })
+}
+getHisAwardTen();
+let nScrollHight = 0;
+let nScrollTop = 0;
+let nDivHight = $("#myHisAwardTab").height();
+
+$("#myHisAwardTab").on("touchmove",function () {
+  nScrollHight = $(this)[0].scrollHeight;
+  nScrollTop = $(this)[0].scrollTop;
+});
+$("#myHisAwardTab").on("touchend",function(){
+  if(nScrollTop + nDivHight >= nScrollHight){
+    console.log(111)
+    getHisAwardPage++;
+    getHisAwardTen();
+  }
+})
+
+//历史投注记录
+function getHisBets(){
+    $.ajax({
+      type:"get",
+      url:`${baseUrl}/lottery/getUserBetHis.do`,
+      data: {
+        userName:userName,
+        pageNum: getHisBetsPage
+      },
+      success:function(msg){
+         let str="";
+         for(let item of msg.userHis){
+          //  console.log(msg)
+          let hisTime=datetimeDay(item.updateTime);
+          let month=hisTime.split(" ")[1].split("/");
+          let hour=hisTime.split(" ")[2].split(":");
+           if(item.lotteryBonus){
+            str+=`  
+            <div class="myBetsRow" style="padding:0 0.1rem;height:0.3rem;line-height: 0.3rem;font-size:0.12rem;color:white;text-align: center;display: flex;justify-content: space-between">
+              <div style="width: 0.64rem;">${item.betNum}</div>
+              <div style="width: 0.60rem;">
+              ${item.largeNum == "1" && item.largeNum != null? englistBig: ""}
+              ${item.largeNum == "0" && item.largeNum != null? englistSmall: ""}
+              ${item.lotterySingle == "1" && item.lotterySingle != null? englistOdd: ""}
+              ${item.lotterySingle == "0" && item.lotterySingle != null? englistEven: ""}
+              ${item.lotteryFive ? item.lotteryFive : ""}
+              ${item.lotteryFour ? item.lotteryFour : ""}
+              ${item.lotteryThree ? item.lotteryThree : ""}
+              ${item.lotteryTwo ? item.lotteryTwo : ""}
+              ${item.lotteryOne ? item.lotteryOne : ""}
+              </div>
+              <div style="width: 0.28rem;color:#ff5c4a;">中奖</div>
+              <div style="width: 0.60rem;color:#ff5c4a;">+${item.lotteryBonus}</div>
+              <div style="width: 0.68rem;">${month[1]}/${month[2]} ${hour[0]}:${hour[1]}</div>
+            </div>`
+            $("#myHisBetTab").html(str);
+           }else{
+            let betJsonStr = `${item.betJson}`;
+            if (lang == "en_US") {
+              betJsonStr = betJsonStr
+                .replace("大", "B")
+                .replace("小", "S")
+                .replace("单", "O")
+                .replace("双", "E");
+            }
+            str+=`  
+            <div class="myBetsRow" style="padding:0 0.1rem;height:0.3rem;line-height: 0.3rem;font-size:0.12rem;color:white;text-align: center;display: flex;justify-content: space-between">
+              <div style="width: 0.64rem;">${item.betNum}</div>
+              <div  title=${betJsonStr} style="width: 0.60rem;overflow: hidden; text-overflow: ellipsis;">
+              ${betJsonStr}
+              </div>
+              <div style="width: 0.28rem;color:#3083de;">投注</div>
+              <div style="width: 0.60rem;color:#3083de;">-${item.noteMoney}</div>
+              <div style="width: 0.68rem;">${month[1]}/${month[2]} ${hour[0]}:${hour[1]}</div>
+            </div>`
+            $("#myHisBetTab").html(str);
+           }
+         }
+         
+      }
+    })
+}
+
+function getHisBetsAppend(){
+  $("#loading").css("display","block");
+  $.ajax({
+    type:"get",
+    url:`${baseUrl}/lottery/getUserBetHis.do`,
+    data: {
+      userName:userName,
+      pageNum: getHisBetsPage
+    },
+    success:function(msg){
+      $("#loading").css("display","none");
+       let str="";
+       for(let item of msg.userHis){
+        //  console.log(msg)
+        let hisTime=datetimeDay(item.updateTime);
+        let month=hisTime.split(" ")[1].split("/");
+        let hour=hisTime.split(" ")[2].split(":");
+         if(item.lotteryBonus){
+          $("#myHisBetTab").append(`  
+          <div class="myBetsRow" style="padding:0 0.1rem;height:0.3rem;line-height: 0.3rem;font-size:0.12rem;color:white;text-align: center;display: flex;justify-content: space-between">
+            <div style="width: 0.64rem;">${item.betNum}</div>
+            <div style="width: 0.60rem;">
+            ${item.largeNum == "1" && item.largeNum != null? englistBig: ""}
+            ${item.largeNum == "0" && item.largeNum != null? englistSmall: ""}
+            ${item.lotterySingle == "1" && item.lotterySingle != null? englistOdd: ""}
+            ${item.lotterySingle == "0" && item.lotterySingle != null? englistEven: ""}
+            ${item.lotteryFive ? item.lotteryFive : ""}
+            ${item.lotteryFour ? item.lotteryFour : ""}
+            ${item.lotteryThree ? item.lotteryThree : ""}
+            ${item.lotteryTwo ? item.lotteryTwo : ""}
+            ${item.lotteryOne ? item.lotteryOne : ""}
+            </div>
+            <div style="width: 0.28rem;color:#ff5c4a;">中奖</div>
+            <div style="width: 0.60rem;color:#ff5c4a;">+${item.lotteryBonus}</div>
+            <div style="width: 0.68rem;">${month[1]}/${month[2]} ${hour[0]}:${hour[1]}</div>
+          </div>`)
+         }else{
+          let betJsonStr = `${item.betJson}`;
+          if (lang == "en_US") {
+            betJsonStr = betJsonStr
+              .replace("大", "B")
+              .replace("小", "S")
+              .replace("单", "O")
+              .replace("双", "E");
+          }
+          $("#myHisBetTab").append(`  
+          <div class="myBetsRow" style="padding:0 0.1rem;height:0.3rem;line-height: 0.3rem;font-size:0.12rem;color:white;text-align: center;display: flex;justify-content: space-between">
+            <div style="width: 0.64rem;">${item.betNum}</div>
+            <div  title=${betJsonStr} style="width: 0.60rem;overflow: hidden; text-overflow: ellipsis;">
+            ${betJsonStr}
+            </div>
+            <div style="width: 0.28rem;color:#3083de;">投注</div>
+            <div style="width: 0.60rem;color:#3083de;">-${item.noteMoney}</div>
+            <div style="width: 0.68rem;">${month[1]}/${month[2]} ${hour[0]}:${hour[1]}</div>
+          </div>`)
+         }
+       }
+       
+    }
+  })
+}
+
+let HScrollHight = 0;
+let HScrollTop = 0;
+let HDivHight = $("#myHisBetTab").height();
+$("#myHisBetTab").on("touchmove",function(){
+  HScrollHight = $(this)[0].scrollHeight;
+  HScrollTop = $(this)[0].scrollTop;
+});
+$("#myHisBetTab").on("touchend",function(){
+  if(HScrollTop + HDivHight >= HScrollHight){
+    getHisBetsPage++;
+    getHisBetsAppend();
+  } 
+})
+
+
+getBlance();
+
+
+
+let carouselAry = [];
+let awardCount=0;
+let awardStr="";
+function theLotteryList(data) {
+        let blockChainNo = data.block_num;
+        let blockChainHash = data.id.slice(40,data.id.length - 1);
+        let lastNumber=data.id[data.id.length-1]
+        let normalHashNum=`<b>${lastNumber}</b>`
+        let changeColorHashNum=`<b style="color:#ff5c4a">${lastNumber}</b>`
+        let openTime = Date.parse(data.header.timestamp.replace("-", "/").replace("T", "z")); //数据推送的最新时间
+        let hashTime=datetimeFormat(openTime);
+        let timeEnter = datetimeFormat(openTime); //最新数据的推送时间
+        let timeStart = parseInt(timeEnter.split(":")[2]); //最新数据的推送时间只取秒
+        //投注区域时间实时计时
+        betsTime = 60 - timeStart;
+        if (betsTime == 1) {
+          $("#betsUsers").text("0");
+          $("#betsUsers").css({
+            width: "0"
+          });
+          getBlance();
+        }
+        if (betsTime < 10) {
+          $("#timeLeft").text(`0${betsTime}`);
+        } else {
+          $("#timeLeft").text(betsTime);
+        }
+        let carouselObj = {
+            "blockChainNo": blockChainNo,
+            "lastNumber":data.prize_num==true?changeColorHashNum:normalHashNum,
+            "blockChainHash": blockChainHash,
+            "theLotteryTime": hashTime,
+        };
+        if (carouselAry.length <= 10) {
+            carouselAry.unshift(carouselObj);
+        } else {
+            carouselAry.pop();
+            carouselAry.unshift(carouselObj);
+        }
+       
+        let carouselContent = "";
+        for (let item of carouselAry) {
+            carouselContent += `
+            <div class="hashContainer">
+                <span style="color:#6a727d;font-size:0.12rem;">${item.blockChainNo}</span>
+                <a  target="blank" href="https://bloks.io/block/${data.block_num}" style="color:#6a727d;font-size:0.12rem;">...${item.blockChainHash}${item.lastNumber}</a>
+                <span style="color:#6a727d;font-size:0.12rem;">${item.theLotteryTime}</span>
+            </div>
+                `
+        }
+        lastNumbClass="normalLastNum";
+        $("#hashPlay").html(carouselContent);
+        if(data.prize_num==true){
+          awardStr+=`${lastNumber}`;
+          awardCount++;
+        };
+        if(awardCount==5){
+          $("#awardContainer").prepend(
+            `<div style="height:0.24rem;line-height: 0.24rem;display: flex;justify-content: space-between;">
+         <span style="color:#b44141;font-size:0.12rem;">
+        ${awardStr[0]}
+        ${awardStr[1]}
+        ${awardStr[2]}
+        ${awardStr[3]}
+        ${awardStr[4]}
+         </span>
+         <span style="color:white;font-size:0.12rem;">${hashTime}</span>
+       </div>`)
+       getHisAwardNew();
+       $("#awardContainer>div:last").remove();
+       awardCount=0;
+       awardStr="";
+        }
+        $("#hashPlay>div:nth-of-type(1)").animate({marginTop: "0.24rem"});
+}
+
+
+
+// websocket连接获取数据
+let chars = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+let path = baseUrl;
+uid = generateMixed(6);
+let from = uid;
+let fromName = generateMixed(6);
+let tempul = $("#hashPlay"); //整个hash值推送区域li的容器
+var lockReconnect = false;  //避免ws重复连接
+var ws = null;          // 判断当前浏览器是否支持WebSocket
+var wsUrl = `wss://${websocketUrl}/ws?userId=${uid}&gameType=lottery`;
+
+function generateMixed(n) {
+  var res = "";
+  for (var i = 0; i < n; i++) {
+    var id = Math.ceil(Math.random() * 35);
+    res += chars[id];
+  }
+  return res;
+}
+
+
+function generateMixed(n) {
+  var res = "";
+  for (var i = 0; i < n; i++) {
+    var id = Math.ceil(Math.random() * 35);
+    res += chars[id];
+  }
+  return res;
+}
+
+
+function createWebSocket(url) {
+  try{
+      if('WebSocket' in window){
+          ws = new WebSocket(url);
+      }else if('MozWebSocket' in window){  
+          ws = new MozWebSocket(url);
+      }
+      initEventHandle();
+  }catch(e){
+      reconnect(url);
+      console.log(e);
+  }     
+}
+
+// let websocket = new WebSocket(`wss://${websocketUrl}/ws?userId=${uid}`);
+
+createWebSocket(wsUrl);   //连接ws
+
+
+let count = 0;
+let endAwad = false; //判断开奖号码是否出完
+let timeEnter, timeStart;
+
+//wensocket推送信息到前端
+ws.onmessage = function (event) {
+  heartCheck.reset().start();      //拿到任何消息都说明当前连接是正常的
+  // console.log("llws收到消息啦:" +event.data);
+  if(event.data!='pong'){
+      var obj=eval("("+event.data+")");
+  }
+
+
+  let data = JSON.parse(event.data);
+  let dataObj = JSON.parse(data.text);
+  //将等到的信息传入前端显示
+  if (data.from == "block") {
+    theLotteryList(dataObj);
+    if(dataObj.prize_start == true){
+      enterLotteryNum++;
+      // console.log(enterLotteryNum)
+      $("#periods").text(`${period1}${enterLotteryNum}${period2}`)  
+    }
+  };
+  
+  if (data.from == "bet") {
+    getBlance();
+    userBlance = dataObj.limit;
+    if(userBlance>=1000){
+      $("#betsUsers").text(`${parseFloat(userBlance/1000).toFixed(2)}K`);
+    }else{
+      $("#betsUsers").text(`${userBlance}`);
+    }
+    let betLiveTime = datetimeFormat(dataObj.date.time).split(".");
+
+    $("#betsUsers").css({
+      width: `${parseFloat(userBlance / balance).toFixed(2)}px`
+    });
+    let monthDay = data.date.split(" ")[0].split("-");
+    $("#betLiveContainer").prepend(`
+      <div style="height:0.24rem;line-height: 0.24rem;display: flex;justify-content: space-between;">
+      <span style="color:#6a727d;font-size:0.12rem;">${dataObj.userName}</span>
+      <span style="color:purple;font-size:0.12rem;">${parseFloat(dataObj.count).toFixed(4)}</span>
+      <span style="color:#6a727d;font-size:0.12rem;">${betLiveTime[0]}</span>
+   </div>`
+    );
+  }
+  //用户已中奖中奖
+  if (data.from == "prizeMsg") {
+    let prizeTime = datetimeFormat(dataObj.time.time).split(".");
+    
+    if (data.fromName == $("#userName").text()) {
+      // console.log(dataObj);
+      popup({type:'success',msg:`+${parseFloat(dataObj.pri).toFixed(4)}`,delay:1000,callBack:function(){
+        getBlance();
+        checkIdentity();
+        pageNumMybets = 1;
+        getHisBets();
+       }});
+    }
+  
+    let monthDay = data.date.split(" ")[0].split("-");
+    $("#betLiveContainer").prepend(`
+    <div style="height:0.24rem;line-height: 0.24rem;display: flex;justify-content: space-between;">
+        <span style="color:#6a727d;font-size:0.12rem;">${data.fromName}</span>
+        <span style="color:green;font-size:0.12rem;">+${parseFloat(dataObj.pri).toFixed(4)}</span>
+        <span style="color:#6a727d;font-size:0.12rem;">${prizeTime[0]}</span>
+    </div>`
+  );
+  }
+}
+
+
+function initEventHandle(){
+  ws.onopen = function (event) {
+    heartCheck.reset().start();      //心跳检测重置
+    // console.log("llws连接成功!"+new Date().toUTCString());
+  };
+  ws.onerror = function (event) {
+    reconnect(wsUrl);
+    // console.log("llws连接错误!");
+  };
+  ws.onclose = function (event) {
+    reconnect(wsUrl);
+    // console.log("llws连接关闭!"+new Date().toUTCString());
+  };
+  window.onbeforeunload = function() {
+    ws.close();
+  }
+}
+
+function reconnect(url) {
+  if(lockReconnect) return;
+  lockReconnect = true;
+  setTimeout(function () {     //没连接上会一直重连，设置延迟避免请求过多
+    createWebSocket(url);
+    lockReconnect = false;
+  }, 2000);
+}
+
+//心跳检测
+var heartCheck = {
+  timeout: 540000,        //9分钟发一次心跳
+  timeoutObj: null,
+  serverTimeoutObj: null,
+  reset: function(){
+      clearTimeout(this.timeoutObj);
+      clearTimeout(this.serverTimeoutObj);
+      return this;
+  },
+  start: function(){
+      var self = this;
+      this.timeoutObj = setTimeout(function(){
+          //这里发送一个心跳，后端收到后，返回一个心跳消息，
+          //onmessage拿到返回的心跳就说明连接正常
+          ws.send("ping");
+          // console.log("ping!")
+          self.serverTimeoutObj = setTimeout(function(){//如果超过一定时间还没重置，说明后端主动断开了
+            ws.close();     //如果onclose会执行reconnect，我们执行ws.close()就行了.如果直接执行reconnect 会触发onclose导致重连两次
+          }, self.timeout)
+      }, this.timeout)
+  }
+}

@@ -1,0 +1,57 @@
+package com.stip.net.imessage;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.util.StringUtils;
+import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
+
+import com.lottery.net.utils.GrnerateUUID;
+
+/**
+ * 客户端和服务端握手建立通信
+ * 
+ * @author cja 
+ * 20181110
+ */
+public class HandShake extends HttpSessionHandshakeInterceptor {
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	@Override
+	public boolean beforeHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
+		ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) serverHttpRequest;
+		HttpServletRequest request = servletRequest.getServletRequest();
+		String userName = request.getParameter("userId");
+		String gameType = request.getParameter("gameType");
+
+		if (StringUtils.isEmpty(gameType)) {
+			logger.error("connect to socket failed! gameType: " + gameType);
+			return false;
+		}else {
+			attributes.put("gameType", gameType);
+		}
+		
+		if (!StringUtils.isEmpty(userName)) {
+			attributes.put("userId", userName);
+		} else {
+			attributes.put("userId", GrnerateUUID.getUUID());
+		}
+		
+		super.beforeHandshake(serverHttpRequest, serverHttpResponse, wsHandler, attributes);
+		
+		return true;
+	}
+
+	@Override
+	public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception ex) {
+		super.afterHandshake(request, response, wsHandler, ex);
+	}
+
+}

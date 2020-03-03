@@ -1,0 +1,68 @@
+package com.stip.net.entity.tiger;
+
+import java.math.BigDecimal;
+
+/**
+ * 区块确认投注信息
+ */
+public class TigerConfirm {
+	private String txId;// 区块链事务id
+	private String userId;// 用户名
+	private BigDecimal putMoney;// 投注金额
+	private long block_time;// 区块时间
+
+	public TigerConfirm() {
+		super();
+	}
+
+	public TigerConfirm(String txId, String userId, BigDecimal putMoney, long block_time) {
+		this.txId = txId;
+		this.userId = userId;
+		this.putMoney = putMoney;
+		this.block_time = block_time;
+	}
+
+	public String getTxId() {
+		return txId;
+	}
+
+	public void setTxId(String txId) {
+		this.txId = txId;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public BigDecimal getPutMoney() {
+		return putMoney;
+	}
+
+	public void setPutMoney(BigDecimal putMoney) {
+		this.putMoney = putMoney;
+	}
+
+	public long getBlock_time() {
+		return block_time;
+	}
+
+	public void setBlock_time(long block_time) {
+		this.block_time = block_time;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+            return true;
+        }
+        if (obj instanceof TigerConfirm) {
+        	TigerConfirm other = (TigerConfirm)obj;
+        	return this.txId.equals(other.txId);
+		}
+		return false;
+	}
+}

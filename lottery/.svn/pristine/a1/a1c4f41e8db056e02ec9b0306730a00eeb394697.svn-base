@@ -1,0 +1,50 @@
+package com.stip.net.service;
+
+import java.util.Date;
+import java.util.List;
+
+import com.stip.net.dto.BetDto;
+import com.stip.net.dto.HightBetDto;
+import com.stip.net.entity.LotteryRecords;
+import com.stip.net.entity.UserBetRecords;
+
+public interface UserBetService {
+	boolean addBet(UserBetRecords record);
+	
+	boolean updateByPrimaryKey(UserBetRecords record);
+	
+	int batchInsert(List<UserBetRecords> records);
+	
+	List<UserBetRecords> getUserBetHistry(int pageNum,String userName);
+	
+	List<UserBetRecords> getUserBetHistry(int pageNum,String userName,int records,String recordsId);
+	
+	int goBet(LotteryRecords lotteryRecords,BetDto betDto,List<UserBetRecords> list,String sid);
+	
+	int goBetHight(LotteryRecords lotteryRecords,HightBetDto hightBetDto,String sid) throws Exception;
+	
+	List<UserBetRecords> getBetRecordsByTime(Date datetime,LotteryRecords records);
+	
+	int updateByBetRecordsExample(UserBetRecords record,String transactionId);
+
+	/**
+	 * 用户下注记录数量 判断是否为首次
+	 */
+	int countByUser(String userName,Long betNum);
+	
+	List<UserBetRecords> getRecordsBytransactionId(String transactionId);
+
+	List<UserBetRecords> getUserBetByRecordId(String recordId);
+	
+	int getUserUnPrizeRecords();
+	
+	/**
+	 * 查询用户龙虎斗和大乐透的下注记录数量
+	 */
+	int countAllByUser(String userName);
+	
+	/**
+	 * 查询用户骰子的下注记录数量
+	 */
+	int getUserDiceByRecord(String userName);
+}

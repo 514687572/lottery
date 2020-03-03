@@ -1,0 +1,220 @@
+package com.stip.net.entity;
+
+import com.stip.mybatis.generator.plugin.BaseModel;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
+public class UserTransactionRecords extends BaseModel<Integer> implements Serializable {
+    private Integer id;
+
+    private Long betNum;
+
+    private Long userId;
+
+    private String userName;
+
+    private String serialNumber;
+
+    private String gameType;
+
+    private String paymentsType;
+
+    private String source;
+
+    private String childName;
+
+    private BigDecimal money;
+
+    private String unit;
+
+    private Date createTime;
+
+    private Date updateTime;
+
+    private String remark;
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     *
+     * @param betNum 期号
+     * @param userName 用户名
+     * @param gameType 游戏类型 1:时时彩 2:龙虎斗 3:21点
+     * @param paymentsType 收支类型 0:支出 1:收入
+     * @param source 收支来源 0:投注 1:邀请奖励 2:新用户奖励 3:邀请奖励
+     * @param money 金额
+     * @param unit 单位 1:EOS 2:代币
+     * @return
+     */
+    public UserTransactionRecords(Long betNum, String userName, String gameType, String paymentsType, String source, BigDecimal money, String unit) {
+        this.betNum = betNum;
+        this.userName = userName;
+        this.gameType = gameType;
+        this.paymentsType = paymentsType;
+        this.source = source;
+        this.money = money;
+        this.unit = unit;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Long getBetNum() {
+        return betNum;
+    }
+
+    public void setBetNum(Long betNum) {
+        this.betNum = betNum;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public String getGameType() {
+        return gameType;
+    }
+
+    public void setGameType(String gameType) {
+        this.gameType = gameType;
+    }
+
+    public String getPaymentsType() {
+        return paymentsType;
+    }
+
+    public void setPaymentsType(String paymentsType) {
+        this.paymentsType = paymentsType;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getChildName() {
+        return childName;
+    }
+
+    public void setChildName(String childName) {
+        this.childName = childName;
+    }
+
+    public BigDecimal getMoney() {
+        return money;
+    }
+
+    public void setMoney(BigDecimal money) {
+        this.money = money;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append(" [");
+        sb.append("Hash = ").append(hashCode());
+        sb.append(", id=").append(id);
+        sb.append(", betNum=").append(betNum);
+        sb.append(", userId=").append(userId);
+        sb.append(", userName=").append(userName);
+        sb.append(", serialNumber=").append(serialNumber);
+        sb.append(", gameType=").append(gameType);
+        sb.append(", paymentsType=").append(paymentsType);
+        sb.append(", source=").append(source);
+        sb.append(", childName=").append(childName);
+        sb.append(", money=").append(money);
+        sb.append(", unit=").append(unit);
+        sb.append(", createTime=").append(createTime);
+        sb.append(", updateTime=").append(updateTime);
+        sb.append(", remark=").append(remark);
+        sb.append(", serialVersionUID=").append(serialVersionUID);
+        sb.append("]");
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        }
+        if (that == null) {
+            return false;
+        }
+        if (getClass() != that.getClass()) {
+            return false;
+        }
+        UserTransactionRecords other = (UserTransactionRecords) that;
+        return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()));
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
+        return result;
+    }
+}

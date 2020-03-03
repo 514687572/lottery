@@ -1,0 +1,47 @@
+package com.stip.net.job;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.web.socket.TextMessage;
+
+import com.lottery.net.utils.JsonUtil;
+import com.stip.net.entity.tiger.TigerRoom;
+import com.stip.net.imessage.IMWebSocketHandler;
+import com.stip.net.main.MainData;
+import com.stip.net.main.MsgCode;
+import com.stip.net.main.Notice;
+import com.stip.net.service.TigerService;
+
+import net.sf.json.JSONObject;
+
+/**
+ * 龙虎斗，玩家进入房间
+ */
+public class TigerRoomEnterJob extends AbstractJob {
+
+	@Override
+	public void runImpl(IMWebSocketHandler handler, String userId, JSONObject params, Object... object) {
+		TigerService tigerService = (TigerService) object[0];
+		int roomId = params.getInt("roomId");// 房间id
+		TigerRoom room = MainData.getRoomById(roomId);
+		if (room == null) {
+			_log.error("room is NULL! id:" + roomId);
+			handler.sendNoticeToUser(userId, Notice.ROOM_NOT_FOUND);
+			return;
+		}
+		// 从所有房间中移除此用户
+		MainData.removeUserInRoom(userId);
+		Set<String> heads = room.getHeads();
+		synchronized (heads) {
+			heads.add(userId);// 房间添加此用户
+		}
+		// 给客户端响应
+		Map<String, Object> map = new HashMap<>();
+		MainData.addRoomInfo(map, room);
+		tigerService.addMyInfoInRoom(map, userId, roomId, room.getType(), room.getQid());
+		String json = JsonUtil.buildJson(MsgCode.TIGER_ROOM_INFO, map);
+		handler.sendMessageToUser(userId, new TextMessage(json));
+	}
+}

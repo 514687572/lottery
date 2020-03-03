@@ -1,0 +1,52 @@
+package com.stip.net.controller;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+
+/**
+ * 首页控制
+ *
+ * @author zl
+ */
+@Scope("request")
+@RestController
+@Transactional(propagation = Propagation.REQUIRED, rollbackFor = {RuntimeException.class, Exception.class})
+public class IndexController {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    private SessionLocaleResolver localeResolver;
+
+    @GetMapping("/")
+    public ModelAndView toindex(HttpServletRequest request) {
+        Locale locale = localeResolver.resolveLocale(request);
+        String userCode = request.getParameter("userCode");
+        Map<String,Object> resultMap = new HashMap<>(2);
+        resultMap.put("userCode",userCode);
+        return new ModelAndView("/html/welcome",resultMap);
+    }
+
+    @GetMapping("/index")
+    public ModelAndView toLottery(HttpServletRequest request) {
+        Locale locale = localeResolver.resolveLocale(request);
+        String userCode = request.getParameter("userCode");
+        Map<String,Object> resultMap = new HashMap<>(2);
+        resultMap.put("userCode",userCode);
+        return new ModelAndView("/html/index",resultMap);
+    }
+}

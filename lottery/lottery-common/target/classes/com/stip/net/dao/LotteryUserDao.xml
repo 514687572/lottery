@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.LotteryUserDao">
+  <resultMap id="BaseResultMap" type="com.stip.net.entity.LotteryUser">
+    <id column="lotteryUser_user_id" jdbcType="INTEGER" property="userId" />
+    <result column="lotteryUser_user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="lotteryUser_user_key" jdbcType="VARCHAR" property="userKey" />
+    <result column="lotteryUser_referrer" jdbcType="INTEGER" property="referrer" />
+    <result column="lotteryUser_user_code" jdbcType="VARCHAR" property="userCode" />
+    <result column="lotteryUser_user_status" jdbcType="VARCHAR" property="userStatus" />
+    <result column="lotteryUser_opt_user" jdbcType="VARCHAR" property="optUser" />
+    <result column="lotteryUser_opt_user_id" jdbcType="INTEGER" property="optUserId" />
+    <result column="lotteryUser_create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="lotteryUser_update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="lotteryUser_remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    lotteryUser.user_id as lotteryUser_user_id, lotteryUser.user_name as lotteryUser_user_name, 
+    lotteryUser.user_key as lotteryUser_user_key, lotteryUser.referrer as lotteryUser_referrer, 
+    lotteryUser.user_code as lotteryUser_user_code, lotteryUser.user_status as lotteryUser_user_status, 
+    lotteryUser.opt_user as lotteryUser_opt_user, lotteryUser.opt_user_id as lotteryUser_opt_user_id, 
+    lotteryUser.create_time as lotteryUser_create_time, lotteryUser.update_time as lotteryUser_update_time, 
+    lotteryUser.remark as lotteryUser_remark
+  </sql>
+  <select id="selectByExample" parameterType="com.stip.net.example.LotteryUserExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_lottery_user lotteryUser
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="fromRowNum != null and toRowNum >= 0">
+      limit #{fromRowNum}, #{toRowNum}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_lottery_user lotteryUser
+    where lotteryUser.user_id = #{userId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_lottery_user
+    where user_id = #{userId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.stip.net.example.LotteryUserExample">
+    delete lotteryUser from t_lottery_user lotteryUser
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.stip.net.entity.LotteryUser">
+    insert into t_lottery_user (user_id, user_name, user_key, 
+      referrer, user_code, user_status, 
+      opt_user, opt_user_id, create_time, 
+      update_time, remark)
+    values (#{userId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{userKey,jdbcType=VARCHAR}, 
+      #{referrer,jdbcType=INTEGER}, #{userCode,jdbcType=VARCHAR}, #{userStatus,jdbcType=VARCHAR}, 
+      #{optUser,jdbcType=VARCHAR}, #{optUserId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.stip.net.entity.LotteryUser">
+    insert into t_lottery_user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="userKey != null">
+        user_key,
+      </if>
+      <if test="referrer != null">
+        referrer,
+      </if>
+      <if test="userCode != null">
+        user_code,
+      </if>
+      <if test="userStatus != null">
+        user_status,
+      </if>
+      <if test="optUser != null">
+        opt_user,
+      </if>
+      <if test="optUserId != null">
+        opt_user_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userKey != null">
+        #{userKey,jdbcType=VARCHAR},
+      </if>
+      <if test="referrer != null">
+        #{referrer,jdbcType=INTEGER},
+      </if>
+      <if test="userCode != null">
+        #{userCode,jdbcType=VARCHAR},
+      </if>
+      <if test="userStatus != null">
+        #{userStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="optUser != null">
+        #{optUser,jdbcType=VARCHAR},
+      </if>
+      <if test="optUserId != null">
+        #{optUserId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.stip.net.example.LotteryUserExample" resultType="java.lang.Integer">
+    select count(*) from t_lottery_user lotteryUser
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_lottery_user lotteryUser
+    <set>
+      <if test="record.userId != null">
+        lotteryUser.user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userName != null">
+        lotteryUser.user_name = #{record.userName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userKey != null">
+        lotteryUser.user_key = #{record.userKey,jdbcType=VARCHAR},
+      </if>
+      <if test="record.referrer != null">
+        lotteryUser.referrer = #{record.referrer,jdbcType=INTEGER},
+      </if>
+      <if test="record.userCode != null">
+        lotteryUser.user_code = #{record.userCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userStatus != null">
+        lotteryUser.user_status = #{record.userStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.optUser != null">
+        lotteryUser.opt_user = #{record.optUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.optUserId != null">
+        lotteryUser.opt_user_id = #{record.optUserId,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null">
+        lotteryUser.create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        lotteryUser.update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.remark != null">
+        lotteryUser.remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_lottery_user lotteryUser
+    set lotteryUser.user_id = #{record.userId,jdbcType=INTEGER},
+      lotteryUser.user_name = #{record.userName,jdbcType=VARCHAR},
+      lotteryUser.user_key = #{record.userKey,jdbcType=VARCHAR},
+      lotteryUser.referrer = #{record.referrer,jdbcType=INTEGER},
+      lotteryUser.user_code = #{record.userCode,jdbcType=VARCHAR},
+      lotteryUser.user_status = #{record.userStatus,jdbcType=VARCHAR},
+      lotteryUser.opt_user = #{record.optUser,jdbcType=VARCHAR},
+      lotteryUser.opt_user_id = #{record.optUserId,jdbcType=INTEGER},
+      lotteryUser.create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      lotteryUser.update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      lotteryUser.remark = #{record.remark,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.stip.net.entity.LotteryUser">
+    update t_lottery_user
+    <set>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userKey != null">
+        user_key = #{userKey,jdbcType=VARCHAR},
+      </if>
+      <if test="referrer != null">
+        referrer = #{referrer,jdbcType=INTEGER},
+      </if>
+      <if test="userCode != null">
+        user_code = #{userCode,jdbcType=VARCHAR},
+      </if>
+      <if test="userStatus != null">
+        user_status = #{userStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="optUser != null">
+        opt_user = #{optUser,jdbcType=VARCHAR},
+      </if>
+      <if test="optUserId != null">
+        opt_user_id = #{optUserId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where user_id = #{userId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.stip.net.entity.LotteryUser">
+    update t_lottery_user
+    set user_name = #{userName,jdbcType=VARCHAR},
+      user_key = #{userKey,jdbcType=VARCHAR},
+      referrer = #{referrer,jdbcType=INTEGER},
+      user_code = #{userCode,jdbcType=VARCHAR},
+      user_status = #{userStatus,jdbcType=VARCHAR},
+      opt_user = #{optUser,jdbcType=VARCHAR},
+      opt_user_id = #{optUserId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR}
+    where user_id = #{userId,jdbcType=INTEGER}
+  </update>
+</mapper>

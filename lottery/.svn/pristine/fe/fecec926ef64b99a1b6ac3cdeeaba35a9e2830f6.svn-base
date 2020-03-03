@@ -1,0 +1,161 @@
+package com.stip.net.controller;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.lottery.net.utils.Constants;
+import com.stip.net.service.AccountService;
+import com.stip.net.service.LotteryUserService;
+import com.stip.net.service.RedisService;
+import com.stip.net.service.UserService;
+
+import io.eblock.eos4j.api.vo.account.Account;
+/**
+ * 账户相关操作
+ * @author cja
+ *
+ */
+@Scope("request")
+@RequestMapping("/account")
+@RestController
+@Transactional(propagation = Propagation.REQUIRED, rollbackFor = { RuntimeException.class, Exception.class })
+public class AccountController {
+	@Autowired
+	public AccountService accountService;
+	@Autowired
+	public UserService userService;
+	@Autowired
+	private LotteryUserService lotteryUserService;
+	@Autowired
+	private RedisService redisService;
+
+	/**
+	 *  查询用户信息
+	 * @param request
+	 * @return
+	 * @throws InterruptedException
+	 */
+	@GetMapping("/getAccount.do")
+	public Map<String, Object> getAccount(HttpServletRequest request) throws InterruptedException {
+		Map<String,Object> jsonResult=new HashMap<String, Object>(1);
+		String account=request.getParameter("account");
+		
+		Account acc=accountService.getAccount(account);
+		if (acc != null) {
+			jsonResult.put("balance",acc.getCoreLiquidBalance());
+			jsonResult.put("cpu",acc.getCpuLimit());
+		}
+		return jsonResult;
+	}
+	
+	/**
+	 * 查询系统用户信息
+	 * @param request
+	 * @return
+	 * @throws InterruptedException
+	 */
+	@GetMapping("/getSysInfo.do")
+	public Map<String, Object> getSysInfo(HttpServletRequest request) throws InterruptedException {  
+		Map<String,Object> jsonResult=new HashMap<String, Object>(1);
+		
+		Account acc=accountService.getAccount(Constants.account);
+		if (acc != null) {
+			jsonResult.put("balance",acc.getCoreLiquidBalance());
+			jsonResult.put("cpu",acc.getCpuLimit());
+		}
+		return jsonResult;
+	}
+	
+	/**
+	 * 收集用户信息
+	 * @param request
+	 * @return
+	 * @throws InterruptedException
+	 */
+	@PostMapping("/addUserInfo.do")
+	public void addUserInfo(HttpServletRequest request) throws InterruptedException {
+		String publicKey= request.getParameter("account[publicKey]");
+		String name=request.getParameter("account[accounts][0][name]");
+		String userCode=request.getParameter("userCode");
+
+		boolean b = userService.addUserInfo(name,publicKey);
+
+		// 新用户 绑定关系
+		if(b){
+			lotteryUserService.updateRelatioin(name,userCode);
+		}
+	}
+	
+    /**
+     * 用户私钥登录
+     *
+     * @param request
+     * @return
+     * @throws InterruptedException
+     */
+    @PostMapping("/loginWidthPriKey.do")
+    public Map<String, Object> loginWidthPriKey(HttpServletRequest request) throws Exception {
+    	String privateKey = request.getParameter("private_key");
+    	String userCode=request.getParameter("userCode");
+    	
+    	Map<String, Object> result=accountService.getUserNameByPk(privateKey);
+    	
+    	if("1".equals(result.get("status").toString())) {
+    		String userName=result.get("userName").toString();
+    		String pubKey=result.get("pubKey").toString();
+    		redisService.setCache(userName, privateKey);
+
+    		boolean b = userService.addUserInfo(userName,pubKey);
+    		
+    		// 新用户 绑定关系
+    		if(b){
+    			lotteryUserService.updateRelatioin(userName,userCode);
+    		}
+    	}
+    	
+    	return result;
+    }
+    
+	/**
+	 *  抵押CPU
+	 * @param request
+	 * @return
+	 * @throws InterruptedException
+	 */
+	@PostMapping("/delegatebw.do")
+	public Map<String, Object> delegatebw(HttpServletRequest request) throws InterruptedException {
+		Map<String,Object> jsonResult=new HashMap<String, Object>(1);
+		String account=request.getParameter("account");
+		String quantity=request.getParameter("quantity");
+		
+		String pk=redisService.getCache(account).toString();
+		
+		if(StringUtils.isNotBlank(pk)&&pk.length()>20) {
+			boolean acc=accountService.delegatebw(pk, account, quantity);
+			if (acc) {
+				jsonResult.put("status","success");
+				jsonResult.put("message","抵押成功");
+			}else {
+				jsonResult.put("status","fail");
+				jsonResult.put("message","抵押失败");
+			}
+		}else {
+			jsonResult.put("status","fail");
+			jsonResult.put("message","抵押失败");
+		}
+		
+		return jsonResult;
+	}
+}

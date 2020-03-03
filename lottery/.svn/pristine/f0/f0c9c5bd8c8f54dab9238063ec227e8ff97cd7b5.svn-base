@@ -1,0 +1,170 @@
+package com.stip.net.kafka.utils;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.springframework.web.socket.TextMessage;
+
+import com.google.gson.GsonBuilder;
+import com.lottery.net.utils.Constants;
+import com.stip.net.entity.LotteryRecords;
+import com.stip.net.entity.LotteryUser;
+import com.stip.net.entity.UserBetRecords;
+import com.stip.net.imessage.IMWebSocketHandler;
+import com.stip.net.service.AccountService;
+import com.stip.net.service.LotteryUserService;
+import com.stip.net.service.UserBetService;
+import com.stip.net.vo.Message;
+
+import net.sf.json.JSONObject;
+
+public class PublicMethod {
+
+	private PublicMethod() {
+		super();
+	}
+
+	/**
+	 * 新用户奖励 新用户及邀请者各得0.1EOS 新用户额外获得0.1EOS
+	 */
+	public static void newUser(String userName, UserBetService userBetService, LotteryUserService lotteryUserService,
+			AccountService accountService, Logger logger) {
+		int count = userBetService.countAllByUser(userName);
+		if (count > 1) {
+			return;
+		}
+		int countdice = userBetService.getUserDiceByRecord(userName);
+		if (countdice > 0) {
+			return;
+		}
+		LotteryUser lotteryUser = new LotteryUser();
+		lotteryUser.setUserName(userName);
+		lotteryUser = lotteryUserService.getLotteryByInviter(lotteryUser);
+		// 转账
+		if (null != lotteryUser) {
+			// 双方各得0.1EOS
+			BigDecimal b = new BigDecimal(Constants.REWARD);
+			try {
+				// 格式化小数 始终保持4位
+				String result = new DecimalFormat("0.0000")
+						.format(b.setScale(4, BigDecimal.ROUND_HALF_DOWN).doubleValue()).toString();
+
+				accountService.plusBalance(lotteryUser.getUserName(), result);
+				accountService.plusBalance(userName, result);
+				accountService.plusBalance(userName, result);
+			} catch (InterruptedException e) {
+				logger.error("转账出错了");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * 邀请奖励发放
+	 *
+	 * @param betAmount
+	 *            下注总金额
+	 * @param userName
+	 *            玩家
+	 */
+	public static void invitationAward(BigDecimal betAmount, String userName, LotteryUserService lotteryUserService,
+			AccountService accountService, Logger logger) {
+		LotteryUser lotteryUser = new LotteryUser();
+		lotteryUser.setUserName(userName);
+		lotteryUser = lotteryUserService.getLotteryByInviter(lotteryUser);
+		// 转账
+		if (null != lotteryUser) {
+			// 比例
+			BigDecimal proportion = new BigDecimal(Constants.PROPORTION);
+			try {
+				// 格式化小数 始终保持4位
+				String result = new DecimalFormat("0.0000")
+						.format(betAmount.multiply(proportion).setScale(4, BigDecimal.ROUND_HALF_DOWN).doubleValue())
+						.toString();
+				accountService.plusBalance(lotteryUser.getUserName(), result);
+			} catch (InterruptedException e) {
+				logger.error("转账出错了");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * 大乐透，发送开奖信息
+	 */
+	public static void senPrizeMsg(LotteryRecords records, Date date, UserBetService userBetService,
+			AccountService accountService, Logger logger, IMWebSocketHandler handler) {
+		List<UserBetRecords> list = userBetService.getBetRecordsByTime(date, records);
+		Map<String, Double> map = new HashMap<String, Double>(list.size());
+
+		for (UserBetRecords rec : list) {
+			double prize = 0;
+			if ("1".equals(rec.getHighClass())) {// 高级模式
+				if (rec.getNoteNum() == 1) {
+					prize = rec.getNoteMoney() * 9.8;
+				} else if (rec.getNoteNum() == 2) {
+					prize = rec.getNoteMoney() * 98;
+				} else if (rec.getNoteNum() == 3) {
+					prize = rec.getNoteMoney() * 980;
+				} else if (rec.getNoteNum() == 4) {
+					prize = rec.getNoteMoney() * 9800;
+				} else if (rec.getNoteNum() == 5) {
+					prize = rec.getNoteMoney() * 98000;
+				}
+			} else {
+				if (StringUtils.isNotBlank(rec.getLotteryOne())) {
+					prize = rec.getNoteMoney() * 9.8;
+				} else {
+					prize = rec.getNoteMoney() * 2 * 0.98;
+				}
+			}
+
+			BigDecimal b = new BigDecimal(prize);
+			try {
+				String result = new DecimalFormat("0.0000")
+						.format(b.setScale(4, BigDecimal.ROUND_HALF_DOWN).doubleValue()).toString();
+				accountService.plusBalance(rec.getUserName(), result);
+			} catch (InterruptedException e) {
+				logger.error("转账出错了");
+				e.printStackTrace();
+			}
+			rec.setLotteryBonus(b.setScale(4, BigDecimal.ROUND_HALF_DOWN).doubleValue());
+			userBetService.updateByPrimaryKey(rec);
+
+			if (map.get(rec.getUserName()) == null) {
+				map.put(rec.getUserName(), b.setScale(4, BigDecimal.ROUND_HALF_DOWN).doubleValue());
+			} else {
+				map.put(rec.getUserName(), map.get(rec.getUserName()).doubleValue()
+						+ b.setScale(4, BigDecimal.ROUND_HALF_DOWN).doubleValue());
+			}
+		}
+		Iterator<Entry<String, Double>> it = map.entrySet().iterator();
+
+		JSONObject jsonObject = null;
+		Message msg = null;
+		while (it.hasNext()) {
+			final Entry<String, Double> entry = it.next();
+
+			jsonObject = new JSONObject();
+			jsonObject.put("pri", entry.getValue().toString());
+			jsonObject.put("num", records.getRecordsId().toString());
+			jsonObject.put("time", new Date());
+
+			msg = new Message();
+			msg.setDate(new Date());
+			msg.setFrom("prizeMsg");
+			msg.setFromName(entry.getKey().toString());
+			msg.setText(jsonObject.toString());
+			String bulder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create().toJson(msg);
+			handler.broadcast(new TextMessage(bulder), Constants.LOTTERY_TYPE);
+		}
+	}
+}

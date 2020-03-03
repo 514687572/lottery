@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/lottery/lottery.iml" filepath="$PROJECT_DIR$/lottery/lottery.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lottery-account/lottery-account.iml" filepath="$PROJECT_DIR$/lottery-account/lottery-account.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lottery-chat/lottery-chat.iml" filepath="$PROJECT_DIR$/lottery-chat/lottery-chat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lottery-common/lottery-common.iml" filepath="$PROJECT_DIR$/lottery-common/lottery-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lottery-i18n/lottery-i18n.iml" filepath="$PROJECT_DIR$/lottery-i18n/lottery-i18n.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lottery-kafka/lottery-kafka.iml" filepath="$PROJECT_DIR$/lottery-kafka/lottery-kafka.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lottery-oauth/lottery-oauth.iml" filepath="$PROJECT_DIR$/lottery-oauth/lottery-oauth.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lottery-parent.iml" filepath="$PROJECT_DIR$/lottery-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lottery-pay/lottery-pay.iml" filepath="$PROJECT_DIR$/lottery-pay/lottery-pay.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lottery-redis/lottery-redis.iml" filepath="$PROJECT_DIR$/lottery-redis/lottery-redis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lottery-security/lottery-security.iml" filepath="$PROJECT_DIR$/lottery-security/lottery-security.iml" />
+    </modules>
+  </component>
+</project>

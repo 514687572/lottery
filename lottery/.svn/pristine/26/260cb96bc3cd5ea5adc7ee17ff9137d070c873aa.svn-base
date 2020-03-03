@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.UserBetScoreRecordsDao">
+  <!--
+    文件的生成时间： 2019-01-25 14:45:37.
+    你应该把Mapper类的扩展方法的sql语句放在这个文件里面
+  -->
+  
+  <insert id="batchInsert" parameterType="java.util.List">
+    insert into t_user_bet_records_score (bet_id, bet_num, user_id, 
+      user_name, bet_json, lottery_one, lottery_two, lottery_three, 
+      lottery_four, lottery_five, high_class, large_num, lottery_single, 
+      note_num, note_money, lottery_bonus, lottery_status, create_time, 
+      update_time, remark) values 
+    <foreach item='item' collection='list' separator=','  index=''>
+     (#{item.betId,jdbcType=INTEGER}, #{item.betNum,jdbcType=BIGINT}, 
+      #{item.userId,jdbcType=BIGINT}, #{item.userName,jdbcType=VARCHAR}, 
+      #{item.betJson,jdbcType=VARCHAR}, #{item.lotteryOne,jdbcType=VARCHAR}, 
+      #{item.lotteryTwo,jdbcType=VARCHAR}, #{item.lotteryThree,jdbcType=VARCHAR}, 
+      #{item.lotteryFour,jdbcType=VARCHAR}, #{item.lotteryFive,jdbcType=VARCHAR}, 
+      #{item.highClass,jdbcType=VARCHAR}, #{item.largeNum,jdbcType=VARCHAR}, 
+      #{item.lotterySingle,jdbcType=VARCHAR}, #{item.noteNum,jdbcType=INTEGER}, 
+      #{item.noteMoney,jdbcType=DOUBLE}, #{item.lotteryBonus,jdbcType=DOUBLE}, 
+      #{item.lotteryStatus,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+      #{item.updateTime,jdbcType=TIMESTAMP}, #{item.remark,jdbcType=VARCHAR}) 
+    </foreach>
+  </insert>
+</mapper>

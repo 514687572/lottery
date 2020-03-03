@@ -1,0 +1,83 @@
+package com.stip.net.service;
+
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.lottery.net.utils.Constants;
+import com.stip.net.entity.tiger.TigerConfirm;
+import com.stip.net.entity.tiger.TigerRoom;
+import com.stip.net.main.MainData;
+
+public class InitService {
+	private final Logger _log = LoggerFactory.getLogger(this.getClass());
+
+	private static boolean inited;
+
+	@Autowired
+	private TigerService tigerService;
+	@Autowired
+	private AccountService accountService;
+
+	/**
+	 * 初始化操作，开服会执行
+	 */
+	public void initData() {
+		if (inited) {
+			return;
+		}
+		initTigerRoom();
+		initTigerConfirm();
+		loadPoolBalance();
+		inited = true;
+	}
+
+	/**
+	 * 从数据库加载房间数据
+	 */
+	private void initTigerRoom() {
+		try {
+			if (MainData.tigerRooms.size() > 0) {
+				return;
+			}
+			List<TigerRoom> rooms = tigerService.getAllTigerRooms();
+			for (TigerRoom room : rooms) {
+				// 防止关闭服务器时期号未存储，导致开奖历史记录主键冲突
+				room.setQid(room.getQid() + 2);
+				room.setLastUpdate(System.currentTimeMillis());
+			}
+			MainData.tigerRooms.addAll(rooms);
+		} catch (Exception e) {
+			_log.error(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * 从数据库加载龙虎斗区块确认消息
+	 */
+	private void initTigerConfirm() {
+		try {
+			if (MainData.tigerConfirms.size() > 0) {
+				return;
+			}
+			List<TigerConfirm> confirms = tigerService.getAllConfirms();
+			MainData.tigerConfirms.addAll(confirms);
+		} catch (Exception e) {
+			_log.error(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * 查询奖池余额
+	 */
+	private void loadPoolBalance() {
+		try {
+			MainData.poolBalance.put(Constants.TIGER_TYPE, accountService.getBalance(Constants.account_tiger));
+			MainData.poolBalance.put(Constants.DICE_TYPE, accountService.getBalance(Constants.account_dice));
+		} catch (Exception e) {
+			_log.error(e.getMessage(), e);
+		}
+	}
+}

@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/gameHelper.css">
+    <link rel="stylesheet" href="../css/gameInvitation.css">
+    <link rel="stylesheet" href="../css/gameTable.css">
+    <link rel="stylesheet" href="../css/kafukaNumber.css">
+    <link rel="stylesheet" href="../css/bet.css">
+    <link rel="stylesheet" href="../css/history.css">
+    <link rel="stylesheet" href="../css/mybet.css">
+    <link rel="stylesheet" href="../css/thePopup.css">
+    <link rel="stylesheet" href="../css/message.css">
+
+    <title>主页</title>
+</head>
+<body>
+<!--弹出窗口-->
+<div id="popWindow">
+    <div id="popContent">
+        <!--这里是关闭弹窗的内容-->
+        <p>HOW TO PLAY</p>
+    </div>
+    <a href="javascript:hide()">关闭</a>
+</div>
+
+<div id="popInvitation">
+    <div id="popContent2">
+        <!--这里是关闭弹窗的内容-->
+        <h6>邀请方式</h6></br>
+        <p>将这个邀请网址发给朋友们 <br>
+            完成一次登录(使用scatter,key均可)<br>
+            并同意你的邀请，那么邀请过程就完成了，<br>
+            他就成为了你永远的下级
+        </p>
+        <div class="invitationCode">
+            https://www.baidu.com
+            <a href="javascript:;">复制</a>
+            <!--<a href="javascript:function () {  }"></a>-->
+        </div>
+    </div>
+    <a href="javascript:hideInvitation()">关闭</a>
+</div>
+
+<div id="cover"></div>
+<!--弹出窗口-->
+<!-- 头部导航 -->
+<header id="guid">
+    <div id="head">
+        <div id="headLeft">
+            <img src="../images/logo.png" alt="logo" onclick="toIndex();">
+            <!--<div id="gameSelectBox">龙虎斗</div>-->
+            <ul id="selectGame">
+                <li class="dropdown">
+                    <a id="selectTitle" href="javascript:void(0)" class="dropbtn" onclick="showList()">龙虎斗 <img
+                            src="../images/down.png" alt="down1"></a>
+                    <div class="dropdown-content" id="dropdown-a">
+                        <a href="#" onclick="hideList()">时时彩</a>
+                        <a href="#" onclick="hideList()">骰子</a>
+                    </div>
+                </li>
+            </ul>
+            <span id="rluerIntroduce">游戏帮助</span>
+            <span id="inviteBtn">邀请</span>
+        </div>
+        <div id="headRight">
+            <div id="userInfo">
+                <div>
+                     <p>余       额 :</p>
+                <p id="userEos">0</p>
+                </div>
+               <div>
+                   <p>用户名 :</p>
+                <p id="userName">eos</p>
+               </div>
+            </div>
+            <div id="loginBtn" data-state="1">登录</div>
+            <div id="LanguageBox">
+                <div id="inputBox"><img src="../images/guoqi.png" alt="" id="guoqiBox">简体中文</div>
+                <ul id="language">
+                    <li id="Ch"><i></i>简体中文</li>
+                    <li id="En"><i></i>English</li>
+                </ul>
+            </div>
+            <img src="../images/down.png" alt="downr" id="changeLanguage"
+                 style="width: 11px;height: 6px;margin-top: 30px;padding-right: 20px">
+        </div>
+    </div>
+</header>
+<!--<div style="width: 1000px;height: 341px;display: flex;margin: auto">
+    <div id="gameTable">
+        <table id="tableRoot">
+            <div class="tableItem">
+                <div class="tableGrid">
+                    <div class="gridFullRed"></div>
+                    <div class="gridFullBlue"></div>
+                    <div class="gridFullYellow"></div>
+                </div>
+            </div>
+            <div class="tableItem">
+                <div class="tableGrid">
+                    <div class="gridFullRed"></div>
+                    <div class="gridFullBlue"></div>
+                    <div class="gridFullYellow"></div>
+                </div>
+            </div>
+            <div class="tableItem">
+                <div class="tableGrid">
+                    <div class="gridFullRed"></div>
+                    <div class="gridFullBlue"></div>
+                    <div class="gridFullYellow"></div>
+                </div>
+            </div>
+            <div class="tableItem">
+                <div class="tableGrid">
+                    <div class="gridFullRed"></div>
+                    <div class="gridFullBlue"></div>
+                    <div class="gridFullYellow"></div>
+                </div>
+            </div>
+            <div class="tableItem">
+                <div class="tableGrid">
+                    <div class="gridFullRed"></div>
+                    <div class="gridFullBlue"></div>
+                    <div class="gridFullYellow"></div>
+                </div>
+            </div>
+            <div class="tableItem">
+                <div class="tableGrid">
+                    <div class="gridFullRed"></div>
+                    <div class="gridFullBlue"></div>
+                    <div class="gridFullYellow"></div>
+                </div>
+            </div>
+        </table>
+    </div>-->
+<!-- kafuka传过来的号码滚动展示 -->
+<!--<div id="kafukaNumber" style="margin-top: 10px">
+    <header>
+        <div>期数</div>
+        <div>区块</div>
+        <div>号码</div>
+        <div>时间</div>
+    </header>
+    <marquee id="kfkScroll" behavior="" direction="up" onmouseover=this.stop() onmouseout=this.start()  loop = 1>
+        <section class="kafkItem">
+            <div></div>
+            <div class="num1">1</div>
+            <div class="num2">…4474cbe3cc269fb31ac1b8e79e4130afd829ea<span>7</span></div>
+            <div class="num3">08:40:12:5</div>
+        </section>
+        <section class="kafkItem">
+            <div></div>
+            <div class="num1">2</div>
+            <div class="num2">…4474cbe3cc269fb31ac1b8e79e4130afd829ea<span>7</span></div>
+            <div class="num3">08:40:12:5</div>
+        </section>
+        <section class="kafkItem">
+            <div></div>
+            <div class="num1">3</div>
+            <div class="num2">…4474cbe3cc269fb31ac1b8e79e4130afd829ea<span>7</span></div>
+            <div class="num3">08:40:12:5</div>
+        </section>
+        <section class="kafkItem">
+            <div></div>
+            <div class="num1">4</div>
+            <div class="num2">…4474cbe3cc269fb31ac1b8e79e4130afd829ea<span>7</span></div>
+            <div class="num3">08:40:12:5</div>
+        </section>
+        <section class="kafkItem">
+            <div>25684285</div>
+            <div class="num1">5</div>
+            <div class="num2">…4474cbe3cc269fb31ac1b8e79e4130afd829ea<span>7</span></div>
+            <div class="num3">08:40:12:5</div>
+            <img src="images/now.png" alt="now">
+        </section>
+        <section class="kafkItem">
+            <div></div>
+            <div class="num1">6</div>
+            <div class="num2">…4474cbe3cc269fb31ac1b8e79e4130afd829ea<span>7</span></div>
+            <div class="num3">08:40:12:5</div>
+        </section>
+        <section class="kafkItem">
+            <div></div>
+            <div class="num1">7</div>
+            <div class="num2">…4474cbe3cc269fb31ac1b8e79e4130afd829ea<span>7</span></div>
+            <div class="num3">08:40:12:5</div>
+        </section>
+    </marquee>
+</div>-->
+
+<div class="lotteryTable">
+    <div class="lotteryTable1-1">
+        <ul class="lotteryTableTh">
+            <li>期数</li>
+            <li>区块</li>
+            <li>号码</li>
+            <li>时间</li>
+        </ul>
+    </div>
+    <div id="carousel">
+    </div>
+
+    <div id="bet">
+        <!--  <div id="bonusPool">
+              <img src="../images/gold_icon.png" alt="goldIcon">
+              <div>
+                  <p>奖金池：</p>
+                  <p id="allPoolNum">100000</p>
+                  <p>EOS</p>
+              </div>
+          </div>-->
+        <div id="betContent">
+            <div id="betLeft">
+                <div class="betItem" id="betLongSingle">
+                    <div class="betTitle">
+                        <p>总投注:</p>
+                        <p class="betNum">100000</p>
+                        <p>EOS</p>
+                    </div>
+                    <div class="betType">
+                        <div>
+                            <p>龙单</p>
+                            <div class="betOdds">
+                                <p>1</p>
+                                <p>:</p>
+                                <p>0.18</p>
+                            </div>
+                            <img class="winText" src="../images/c10.png" alt="winText">
+                        </div>
+                    </div>
+                    <div class="betSelf">
+                        <p>已下注</p>
+                        <p class="betNum">100000</p>
+                        <p>EOS</p>
+                    </div>
+                </div>
+                <div class="betItem" id="betLongDouble">
+                    <div class="betTitle">
+                        <p>总投注:</p>
+                        <p class="betNum">100000</p>
+                        <p>EOS</p>
+                    </div>
+                    <div class="betType">
+                        <div>
+                            <p>龙双</p>
+                            <div class="betOdds">
+                                <p>1</p>
+                                <p>:</p>
+                                <p>0.18</p>
+                            </div>
+                            <img class="winText" src="../images/c10.png" alt="winText">
+                        </div>
+                    </div>
+                    <div class="betSelf">
+                        <p>已下注</p>
+                        <p class="betNum">100000</p>
+                        <p>EOS</p>
+                    </div>
+                </div>
+                <!--<img src="../images/C4.png" alt="" style="position: relative">-->
+            </div>
+            <div id="betMiddle">
+                <div>
+                    <div class="mItem" id="betLong">
+                        <div class="betTitle">
+                            <p>总投注:</p>
+                            <p class="betNum">100000</p>
+                            <p>EOS</p>
+                        </div>
+                        <div class="betPoker">
+                            <div class="showPoker">
+                                <img class="pokerFront" id="longFront" src="../images/poker/card_f_1_new.png"
+                                     alt="showPoker">
+                                <img class="pokerBack" id="longBg" src="../images/poker/card_background_new.png"
+                                     alt="showPoker">
+                                <img class="winText" src="../images/c10.png" alt="winText">
+                            </div>
+                            <div class="showPoker_bg" style="background-image: url('../images/h.png');">
+                                <p style="font-size: 45px;color: #FF5C4A">龙</p>
+                            </div>
+                        </div>
+                        <div class="betOdds">
+                            <p>1</p>
+                            <p>:</p>
+                            <p>0.18</p>
+                        </div>
+                        <div class="betSelf">
+                            <p>已下注</p>
+                            <p class="betNum">100000</p>
+                            <p>EOS</p>
+                        </div>
+                    </div>
+                    <div id="mmItem">
+                        <div id="bonusPool">
+                            <div>
+                                <img src="../images/gold_icon.png" alt="goldIcon">
+                                <p>奖金池</p>
+                            </div>
+                            <div>
+                                <p id="allPoolNum">0</p>
+                                <!--<p>EOS</p>-->
+                            </div>
+                        </div>
+
+                        <div class="mItem" id="betHe">
+                            <div class="betTitle">
+                                <p>总投注:</p>
+                                <p class="betNum">100000</p>
+                                <p>EOS</p>
+                            </div>
+                            <div class="betPoker" id="heBetShowPoker">
+                                <div class="showPoker_bg">
+                                    <p id="heText">和</p>
+                                </div>
+                                <img class="winText" src="../images/c10.png" alt="winText" style="margin-left: 45px;">
+                            </div>
+                            <div class="betOdds">
+                                <p>1</p>
+                                <p>:</p>
+                                <p>0.18</p>
+                            </div>
+                            <div class="betSelf">
+                                <p>已下注</p>
+                                <p class="betNum">100000</p>
+                                <p>EOS</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mItem" id="betHu">
+                        <div class="betTitle">
+                            <p>总投注:</p>
+                            <p class="betNum">100000</p>
+                            <p>EOS</p>
+                        </div>
+                        <div class="betPoker">
+                            <div class="showPoker">
+                                <img class="pokerFront" id="huFront" src="../images/poker/card_f_1_new.png"
+                                     alt="showPoker">
+                                <img class="pokerBack" id="huBg" src="../images/poker/card_background_new.png"
+                                     alt="showPoker">
+                                <img class="winText" src="../images/c10.png" alt="winText">
+                            </div>
+                            <div class="showPoker_bg" style="background-image: url('../images/f.png');">
+                                <p style="font-size: 50px;color: #37E7FC">虎</p>
+                            </div>
+                        </div>
+                        <div class="betOdds">
+                            <p>1</p>
+                            <p>:</p>
+                            <p>0.18</p>
+                        </div>
+                        <div class="betSelf">
+                            <p>已下注</p>
+                            <p class="betNum">100000</p>
+                            <p>EOS</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <img src="../images/cup.png" alt="cup" style="margin-top: 37px">
+                    <p style="color: #545C6C;font-size: smaller;margin-left: 5px">开奖号码</p>
+                    <div class="rewardType">
+                        <p>龙</p>
+                        <p class="rewardAdds" id="rewardNumLong">0</p>
+                    </div>
+                    <div class="lotteryEos">
+                        <p id="longReward"></p>
+                        <p id="huReward"></p>
+                    </div>
+                    <div class="rewardType">
+                        <p>虎</p>
+                        <p class="rewardAdds" id="rewardNumHu">0</p>
+                    </div>
+                </div>
+                <div>
+                    <img src="../images/bet.png" alt="bet">
+                    <p style="color: #545C6C;font-size: smaller;margin-left: 5px;margin-top: -5px">投注金额</p>
+                    <div id="betTime">
+                        <img src="../images/timer.png" alt="timer">
+                        <p id="betOverTime">00s</p>
+                    </div>
+                </div>
+                <div id="betBtn">
+                    <!--<input id="currentBet">-->
+                    <!--100-->
+                    <!--</input>-->
+                    <input type="text" name="" id="betEditBox" placeholder="请输入下注金额">
+                    <div class="betBtn">0.1</div>
+                    <div class="betBtn">1</div>
+                    <div class="betBtn">10</div>
+                    <div class="betBtn">50</div>
+                    <div class="betBtn">MAX</div>
+                    <div id="betSure">登录</div>
+                </div>
+            </div>
+            <div id="betRight">
+                <div class="betItem" id="betHuSingle">
+                    <div class="betTitle">
+                        <p>总投注:</p>
+                        <p class="betNum">100000</p>
+                        <p>EOS</p>
+                    </div>
+                    <div class="betType">
+                        <div>
+                            <p>虎单</p>
+                            <div class="betOdds">
+                                <p>1</p>
+                                <p>:</p>
+                                <p>0.18</p>
+                            </div>
+                            <img class="winText" src="../images/c10.png" alt="winText">
+                        </div>
+                    </div>
+                    <div class="betSelf">
+                        <p>已下注</p>
+                        <p class="betNum">100000</p>
+                        <p>EOS</p>
+                    </div>
+                </div>
+                <div class="betItem" id="betHuDouble">
+                    <div class="betTitle">
+                        <p>总投注:</p>
+                        <p class="betNum">100000</p>
+                        <p>EOS</p>
+                    </div>
+                    <div class="betType">
+                        <div>
+                            <p>虎双</p>
+                            <div class="betOdds">
+                                <p>1</p>
+                                <p>:</p>
+                                <p>0.18</p>
+                            </div>
+                            <img class="winText" src="../images/c10.png" alt="winText">
+                        </div>
+                    </div>
+                    <div class="betSelf">
+                        <p>已下注</p>
+                        <p class="betNum">100000</p>
+                        <p>EOS</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="live">
+        <!-- 投注直播 -->
+        <div id="betsLive">
+            <p>投注直播</p>
+            <div class="userProfita">
+                <div class="userProfit">
+                </div>
+            </div>
+        </div>
+        <div>
+            <div id="gameTable">
+                <table id="tableRoot">
+                    <div class="tableItem">
+                        <div class="tableGrid">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem">
+                        <div class="tableGrid">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem">
+                        <div class="tableGrid">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem">
+                        <div class="tableGrid">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem">
+                        <div class="tableGrid">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem">
+                        <div class="tableGrid">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                </table>
+                <div class="tableRoot3">
+                    <div class="tableItem3">
+                        <div class="tableGrid3">
+                            <div class="tableColor">龙</div>
+                        </div>
+                    </div>
+                    <div class="tableItem3">
+                        <div class="tableGrid3">
+                            <div class="tableColor">龙</div>
+                        </div>
+                    </div>
+                    <div class="tableItem3">
+                        <div class="tableGrid3">
+                            <div class="tableColor">龙</div>
+                        </div>
+                    </div>
+                    <div class="tableItem3">
+                        <div class="tableGrid3">
+                            <div class="tableColor">龙</div>
+                        </div>
+                    </div>
+                    <div class="tableItem3">
+                        <div class="tableGrid3">
+                            <div class="tableColor">龙</div>
+                        </div>
+                    </div>
+                    <div class="tableItem3">
+                        <div class="tableGrid3">
+                            <div class="tableColor">龙</div>
+                        </div>
+                    </div>
+                </div>
+                <table id="tableRoot2">
+                    <div class="tableItem2">
+                        <div class="tableGrid2">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+                    <div class="tableItem2">
+                        <div class="tableGrid2">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+                    <div class="tableItem2">
+                        <div class="tableGrid2">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+                    <div class="tableItem2">
+                        <div class="tableGrid2">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+                    <div class="tableItem2">
+                        <div class="tableGrid2">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+                    <div class="tableItem2">
+                        <div class="tableGrid2">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+                </table>
+                <div style="width: 304px;height: 130px/*;background-color: yellow*/"></div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 我的投注 -->
+    <div id="myOrders">
+        <p>我的投注</p>
+        <div class="orderHead">
+            <div class="orderHeadInner">
+                <!--<div>我的订单</div>-->
+                <div>期号</div>
+                <!--<div>中奖号</div>-->
+                <div>投注内容</div>
+                <div>投注结果</div>
+                <div>投注金额</div>
+                <div>金额</div>
+                <div>时间</div>
+            </div>
+        </div>
+        <div id="wrapper">
+            <div id="scroller">
+                <div id="pullDown">
+                    <span class="pullDownIcon"></span><span class="pullDownLabel"></span>
+                </div>
+                <ul id="thelist">
+
+                </ul>
+                <div id="listItemBase"></div>
+                <div id="pullUp" style="display:none;">
+                    <span class="pullUpIcon"></span><span class="pullUpLabel">Pull up to refresh...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 登录弹窗 -->
+    <div id="loginContainer">
+        <div id="loginBox">
+            <div id="loginHead">
+                <img src="../images/logo.png" alt="lotteryLogo"/>
+                <i id="loginClose"></i>
+            </div>
+            <div id="loginStyleContainer">
+                <div id="loginStyle">
+                    <div>
+                        <div id="myChainId">私钥登录</div>
+                        <div id="scatterLogin">
+                            <i id="scatterLogo"></i>登录
+                        </div>
+                    </div>
+                    <div id="privateLogin">
+                        <input placeholder="请在此放心输入51位的私钥，只会用于本地交易签名" id="userChainId"/>
+                        <button id="loginComfire">登录</button>
+                    </div>
+                    <div id="loadScatter">
+                        <div id="loadScatterMiidle">
+                            <img src="../images/scatterLoad.png" alt="scatterLoad"/>
+                            <p>点击登录scatter钱包</p>
+                            <button class="scatter_login">登录</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="height: 50px"></div>
+    <div class="bg_bg"></div>
+    <div class="bg_main">
+        <input type="text" value="" style="display:none;"/>
+        <div class="info"></div>
+        <div>
+            <div class="btn"><span class="qrxz">确认</span><span class="qxxz">取消</span></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-core.min.js"></script>
+<script src="../lib/eos.min.js"></script>
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-eosjs.min.js"></script>
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-web3.min.js"></script>
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-tron.min.js"></script>
+<script src="https://cdn.bootcss.com/blueimp-md5/1.1.0/js/md5.js"></script>
+<script src="../lib/iscroll.js"></script>
+<script src="../lib/jquery-1.12.4.min.js"></script>
+<script src="../lib/message.min.js"></script>
+<script src="../js/WebsocketUtil.js"></script>
+<script src="../js/index.js"></script>
+<script src="../js/popWindow.js"></script>
+<script src="../js/eosList.js"></script>
+<script src="../js/bet.js"></script>
+<script src="../js/history.js"></script>
+<script src="../js/gameTable.js"></script>
+<script src="../js/MyBet.js"></script>
+</body>
+
+</html>

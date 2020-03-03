@@ -1,0 +1,105 @@
+#gamesHelp{
+    width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #252A48;
+    padding-bottom: 25px;
+    margin-top: 20px;
+    display: none;
+    margin-bottom: 50px;
+}
+/* 玩法规则头部 */
+.gamesHelp-header{
+    width: 100%;
+    height: 80px;
+    background-color: #282E50;
+    color: #ffffff;
+    padding-right: 30px;
+    padding-left: 30px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+}
+.gamesHelp-header>p:first-child{
+    font-size: 32px;
+    line-height: 80px;
+}
+.gamesHelp-header>p:last-child{
+    font-size: 14px;
+    line-height: 80px;
+}
+
+/* 中奖号码的产生 */
+.generationNumber{
+    
+    padding-right: 30px;
+    padding-left: 30px;
+    
+    
+}
+.generationNumber>div{
+    display: flex;
+    padding-bottom: 50px;
+    border-bottom: 1px dashed #3B405B;
+}
+.generationNumber1-1{
+    position: relative;
+    margin-top: 30px;
+}
+.shadow{
+    width: 40px;
+    height: 40px;
+    background-color: #3B405B;
+    border-radius: 50%;
+   
+}
+.gamesHelp-img{
+    position: absolute;
+    top: 11px;
+    left: 11px;
+}
+.generationNumber1-2{
+    width: 860px;
+    margin-left: 10px;
+    margin-top: 40px;
+}
+.generationNumber1-2>div:nth-of-type(1)>p:first-child{
+    margin-top: 32px;
+    margin-bottom: 10px;
+}
+.generationNumber1-2>div:nth-of-type(2)>p:first-child{
+    margin-top: 26px;
+    margin-bottom: 8px;
+}
+.gameplayFont-color{
+    color: #ff564f;
+}
+.li{
+    margin-top: 15px;
+}
+.gamesHelp-h3{
+    font-size: 18px;
+    color: #ffffff;
+}
+.gamesHelp-h5{
+    font-size: 16px;
+    color: #ffffff;
+}
+.gamesHelp-font{
+    font-size: 14px;
+    color: #7786d9;
+    line-height: 30px;
+}
+.gamesHelp-Time-font{
+    font-size: 14px;
+    color: #7786d9;
+    line-height: 30px;
+    margin-top: 25px;
+}
+.gamesHelp-footer{
+    font-size: 14px;
+    color: #7786d9;
+    line-height: 30px;
+    margin-left: 75px;
+    margin-top: 35px;
+}

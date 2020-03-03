@@ -1,0 +1,146 @@
+#gameTable {
+    width: 680px;
+    height: 341px;
+    background-color: #252a48;
+}
+
+#tableRoot {
+    border: 1px;
+}
+
+.tableItem {
+    display: flex
+}
+
+.tableGrid {
+    border: 1px solid #313862;
+    width: 15px;
+    height: 15px;
+}
+
+.gridFullRed {
+    /*visibility: ;*/
+    display: none;
+    width: 14px;
+    height: 14px;
+    color: white;
+    font-size: 2px;
+    text-align: center;
+    border: 1px solid red;
+    border-radius: 100%;
+}
+
+.gridFullBlue {
+    display: none;
+    width: 14px;
+    height: 14px;
+    /*margin-top: -14px;*/
+    border: 1px solid dodgerblue;
+    border-radius: 100%;
+}
+
+.gridFullYellow {
+    display: none;
+    width: 14px;
+    height: 14px;
+    /*margin-top: -14px;*/
+    border: 1px solid yellow;
+    color: white;
+    text-align: center;
+    line-height: 14px;
+    border-radius: 100%;
+}
+
+.tableItem2 {
+    width: 302px;
+    border: 1px solid #313862;
+    display: flex
+
+}
+
+.tableGrid2 {
+    /*border: 0px solid #313862;*/
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    border-right: 1px solid #313862;
+    width: 15px;
+    height: 15px;
+}
+
+.child {
+    width: 5px;
+    height: 5px;
+    border: 0.5px solid red;
+    border-radius: 100%;
+}
+
+.tableGrid2 > div:nth-child(1) {
+    visibility: hidden;
+    width: 5px;
+    height: 5px;
+    border: 0.5px solid red;
+    border-radius: 100%;
+}
+
+.tableGrid2 > div:nth-child(2) {
+    visibility: hidden;
+    width: 5px;
+    height: 5px;
+    border: 0.5px solid dodgerblue;
+    margin-top: 2px;
+    border-radius: 100%;
+}
+
+.tableGrid2 > div:nth-child(3) {
+    visibility: hidden;
+    width: 5px;
+    height: 5px;
+    border: 0.5px solid orchid;
+    border-radius: 100%;
+}
+
+.tableGrid2 > div:nth-child(4) {
+    visibility: hidden;
+    width: 5px;
+    height: 5px;
+    border: 0.5px solid yellow;
+    border-radius: 100%;
+}
+
+.tableRoot3 {
+    width: 375px;
+    height: 240px;
+    float: right;
+    /*background-color: red;*/
+}
+.tableItem3 {
+    display: flex;
+    width: 375px;
+    height: 39px;
+    /*background-color: red;*/
+    /*background-color: yellow;*/
+}
+
+.tableGrid3 {
+    border: 0.5px solid #313862;
+    width: 39px;
+    height: 39px;
+    line-height: 35px;
+}
+.tableColor{
+    display: none;
+    /*display: block;*/
+    margin: auto;
+    width: 25px;
+    height: 25px;
+    margin-top: 4px;
+    background-color: red;
+    color: white;
+    /*border: 1px solid red;*/
+    font-size: small;
+    text-align: center;
+    line-height: 25px;
+    border-radius: 100%;
+}
+

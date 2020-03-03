@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.UserBetRecordsDao">
+  <!--
+    文件的生成时间： 2018-12-03 13:10:33.
+    你应该把Mapper类的扩展方法的sql语句放在这个文件里面
+  -->
+  
+  <insert id="batchInsert" parameterType="java.util.List">
+    insert into t_user_bet_records (bet_id, records_id, transaction_id, 
+      bet_num, user_id, user_name, bet_json, lottery_one, lottery_two, 
+      lottery_three, lottery_four, lottery_five, high_class, large_num, 
+      lottery_single, note_num, note_money, lottery_bonus, lottery_status, 
+      create_time, update_time, remark) values 
+    <foreach item='item' collection='list' separator=','  index=''>
+     (#{item.betId,jdbcType=INTEGER}, #{item.recordsId,jdbcType=VARCHAR}, 
+      #{item.transactionId,jdbcType=VARCHAR}, #{item.betNum,jdbcType=BIGINT}, 
+      #{item.userId,jdbcType=BIGINT}, #{item.userName,jdbcType=VARCHAR}, 
+      #{item.betJson,jdbcType=VARCHAR}, #{item.lotteryOne,jdbcType=VARCHAR}, 
+      #{item.lotteryTwo,jdbcType=VARCHAR}, #{item.lotteryThree,jdbcType=VARCHAR}, 
+      #{item.lotteryFour,jdbcType=VARCHAR}, #{item.lotteryFive,jdbcType=VARCHAR}, 
+      #{item.highClass,jdbcType=VARCHAR}, #{item.largeNum,jdbcType=VARCHAR}, 
+      #{item.lotterySingle,jdbcType=VARCHAR}, #{item.noteNum,jdbcType=INTEGER}, 
+      #{item.noteMoney,jdbcType=DOUBLE}, #{item.lotteryBonus,jdbcType=DOUBLE}, 
+      #{item.lotteryStatus,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+      #{item.updateTime,jdbcType=TIMESTAMP}, #{item.remark,jdbcType=VARCHAR}) 
+    </foreach>
+  </insert>
+
+    <select id="getMyChildsData" resultType="com.stip.net.entity.UserBetRecords" parameterType="java.util.Map">
+    SELECT userName,SUM(CAST(noteMoney AS DECIMAL(10,4))) noteMoney,SUM(CAST(lotteryBonus AS DECIMAL(10,4))) Bonus FROM (
+	SELECT 
+	record.user_name userName,IFNULL(m.money,0) noteMoney,IFNULL(n.bonus,0) lotteryBonus
+    FROM t_user_bet_records record
+    LEFT JOIN t_lottery_user tuser ON record.user_name=tuser.user_name
+    LEFT JOIN (
+	SELECT t1.user_name username,SUM(CAST(t1.note_money as DECIMAL(10,4))) money from t_user_bet_records t1
+	WHERE t1.bet_json is not null and t1.lottery_status=1 group by t1.user_name) m 
+	ON m.username = record.user_name
+	LEFT JOIN (
+	SELECT t2.user_name username,SUM(CAST(t2.lottery_bonus as DECIMAL(10,4))) bonus from t_user_bet_records t2
+	WHERE t2.bet_json is null and t2.lottery_status=1 group by t2.user_name) n 
+	ON n.username = record.user_name
+	WHERE tuser.referrer=#{userId}
+	GROUP BY tuser.user_name
+	UNION ALL
+	SELECT dice.account,SUM(CAST(dice.bettingEOS AS DECIMAL(10,4))),SUM(CAST(dice.prizeEOS AS DECIMAL(10,4))) d_money FROM t_user_bet_dice dice 
+	LEFT JOIN t_lottery_user tuser ON dice.account = tuser.user_name
+	WHERE tuser.referrer=#{userId} GROUP BY dice.account
+	UNION ALL
+  	SELECT tiger.userId,SUM(tiger.putMoney),SUM(tiger.gainMoney) FROM t_tiger_records tiger
+	LEFT JOIN t_lottery_user tuser ON tiger.userId = tuser.user_name
+	WHERE tuser.referrer=#{userId} GROUP BY tiger.userId
+	) x GROUP BY x.userName ORDER BY x.noteMoney DESC LIMIT #{fromRowNum}, #{toRowNum}
+    </select>
+
+    <select id="getMyChildsDataCount"  resultType="java.lang.Integer" parameterType="java.util.Map">
+    	SELECT COUNT(*) FROM
+			(SELECT DISTINCT(username) FROM
+        		(SELECT DISTINCT(record.user_name) username
+        		FROM t_user_bet_records record
+        		LEFT JOIN t_lottery_user tuser ON record.user_name=tuser.user_name
+        		WHERE tuser.referrer=#{userId}
+				UNION ALL
+				SELECT DISTINCT(dice.account) username from t_user_bet_dice dice
+				LEFT JOIN t_lottery_user tuser ON dice.account=tuser.user_name
+        		WHERE tuser.referrer=#{userId}
+				UNION ALL
+				SELECT DISTINCT(tiger.userId) username from t_tiger_records tiger
+				LEFT JOIN t_lottery_user tuser ON tiger.userId=tuser.user_name
+        		WHERE tuser.referrer=#{userId}
+        		) aa
+			) dd
+    </select>
+    <select id="getUserAllBetByRecord" resultType="java.lang.Integer">
+    	SELECT sum(a) FROM(
+			SELECT COUNT(*) a FROM t_user_bet_records lottery WHERE lottery.user_name = #{userName} AND lottery.lottery_status=1  and lottery.bet_num != #{betNum}
+			UNION ALL
+			SELECT COUNT(*) FROM t_tiger_records tiger WHERE tiger.userId = #{userName} AND tiger.txStatus=1 AND tiger.qid != #{betNum}
+		) a
+    </select>
+</mapper>

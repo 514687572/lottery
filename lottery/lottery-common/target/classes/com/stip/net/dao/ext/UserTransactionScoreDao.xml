@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.UserTransactionScoreDao">
+  <!--
+    文件的生成时间： 2019-01-19 16:07:26.
+    你应该把Mapper类的扩展方法的sql语句放在这个文件里面
+  -->
+  
+  <insert id="batchInsert" parameterType="java.util.List">
+    insert into t_user_transaction_records_score (id, roomId, bet_num, 
+      user_id, serial_number, game_type, payments_type, source, child_id, 
+      money, create_time, update_time, remark) values 
+    <foreach item='item' collection='list' separator=','  index=''>
+     (#{item.id,jdbcType=INTEGER}, #{item.roomid,jdbcType=INTEGER}, 
+      #{item.betNum,jdbcType=BIGINT}, #{item.userId,jdbcType=BIGINT}, 
+      #{item.serialNumber,jdbcType=VARCHAR}, #{item.gameType,jdbcType=CHAR}, 
+      #{item.paymentsType,jdbcType=CHAR}, #{item.source,jdbcType=CHAR}, 
+      #{item.childId,jdbcType=BIGINT}, #{item.money,jdbcType=DECIMAL}, 
+      #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, 
+      #{item.remark,jdbcType=VARCHAR}) 
+    </foreach>
+  </insert>
+</mapper>

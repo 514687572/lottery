@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.lottery.dao.UserBerecordsDao">
+
+	<select id="get" resultType="com.bootdo.lottery.domain.UserBerecordsDO">
+		select `bet_id`,`bet_num`,`user_id`,`user_name`,`lottery_one`,`lottery_two`,`lottery_three`,`lottery_four`,`lottery_status`,`lottery_five`,`high_class`,`large_num`,`lottery_single`,`note_num`,`note_money`,`lottery_bonus`,`create_time`,`update_time`,`remark` from t_user_bet_records where bet_id = #{value}
+	</select>
+
+	<select id="list" resultType="com.bootdo.lottery.domain.UserBerecordsDO">
+		select `bet_id`,`bet_num`,`user_id`,`user_name`,`lottery_one`,`lottery_two`,`lottery_three`,`lottery_four`,`lottery_status`,`lottery_five`,`high_class`,`large_num`,`lottery_single`,`note_num`,`note_money`,`lottery_bonus`,`create_time`,`update_time`,`remark` from t_user_bet_records
+        <where>  
+		  		  <if test="betId != null and betId != ''"> and bet_id = #{betId} </if>
+		  		  <if test="betNum != null and betNum != ''"> and bet_num = #{betNum} </if>
+		  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+		  		  <if test="userName != null and userName != ''"> and user_name = #{userName} </if>
+		  		  <if test="lotteryOne != null and lotteryOne != ''"> and lottery_one = #{lotteryOne} </if>
+		  		  <if test="lotteryTwo != null and lotteryTwo != ''"> and lottery_two = #{lotteryTwo} </if>
+		  		  <if test="lotteryThree != null and lotteryThree != ''"> and lottery_three = #{lotteryThree} </if>
+		  		  <if test="lotteryFour != null and lotteryFour != ''"> and lottery_four = #{lotteryFour} </if>
+		  		  <if test="lotteryFive != null and lotteryFive != ''"> and lottery_five = #{lotteryFive} </if>
+		  		  <if test="highClass != null and highClass != ''"> and high_class = #{highClass} </if>
+		  		  <if test="largeNum != null and largeNum != ''"> and large_num = #{largeNum} </if>
+		  		  <if test="lotterySingle != null and lotterySingle != ''"> and lottery_single = #{lotterySingle} </if>
+		  		  <if test="noteNum != null and noteNum != ''"> and note_num = #{noteNum} </if>
+		  		  <if test="noteMoney != null and noteMoney != ''"> and note_money = #{noteMoney} </if>
+		  		  <if test="lotteryBonus != null and lotteryBonus != ''"> and lottery_bonus = #{lotteryBonus} </if>
+		  		  <if test="lotteryStatus != null and lotteryStatus != ''"> and lottery_status = #{lotteryStatus} </if>
+		  		  <if test="createTime != null and createTime != ''"> and create_time = #{createTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="remark != null and remark != ''"> and remark = #{remark} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by bet_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_user_bet_records
+		 <where>  
+		  		  <if test="betId != null and betId != ''"> and bet_id = #{betId} </if>
+		  		  <if test="betNum != null and betNum != ''"> and bet_num = #{betNum} </if>
+		  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+		  		  <if test="userName != null and userName != ''"> and user_name = #{userName} </if>
+		  		  <if test="lotteryOne != null and lotteryOne != ''"> and lottery_one = #{lotteryOne} </if>
+		  		  <if test="lotteryTwo != null and lotteryTwo != ''"> and lottery_two = #{lotteryTwo} </if>
+		  		  <if test="lotteryThree != null and lotteryThree != ''"> and lottery_three = #{lotteryThree} </if>
+		  		  <if test="lotteryFour != null and lotteryFour != ''"> and lottery_four = #{lotteryFour} </if>
+		  		  <if test="lotteryFive != null and lotteryFive != ''"> and lottery_five = #{lotteryFive} </if>
+		  		  <if test="highClass != null and highClass != ''"> and high_class = #{highClass} </if>
+		  		  <if test="largeNum != null and largeNum != ''"> and large_num = #{largeNum} </if>
+		  		  <if test="lotterySingle != null and lotterySingle != ''"> and lottery_single = #{lotterySingle} </if>
+		  		  <if test="noteNum != null and noteNum != ''"> and note_num = #{noteNum} </if>
+		  		  <if test="noteMoney != null and noteMoney != ''"> and note_money = #{noteMoney} </if>
+		  		  <if test="lotteryBonus != null and lotteryBonus != ''"> and lottery_bonus = #{lotteryBonus} </if>
+		  		  <if test="createTime != null and createTime != ''"> and create_time = #{createTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="remark != null and remark != ''"> and remark = #{remark} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.bootdo.lottery.domain.UserBerecordsDO" useGeneratedKeys="true" keyProperty="betId">
+		insert into t_user_bet_records
+		(
+			`bet_num`,
+			`user_id`,
+			`user_name`, 
+			`lottery_one`, 
+			`lottery_two`,
+			`lottery_three`, 
+			`lottery_four`, 
+			`lottery_five`, 
+			`high_class`, 
+			`large_num`, 
+			`lottery_single`, 
+			`note_num`, 
+			`note_money`, 
+			`lottery_bonus`, 
+			`create_time`, 
+			`update_time`, 
+			`remark`
+		)
+		values
+		(
+			#{betNum}, 
+			#{userId}, 
+			#{userName}, 
+			#{lotteryOne}, 
+			#{lotteryTwo}, 
+			#{lotteryThree}, 
+			#{lotteryFour}, 
+			#{lotteryFive}, 
+			#{highClass}, 
+			#{largeNum}, 
+			#{lotterySingle}, 
+			#{noteNum}, 
+			#{noteMoney}, 
+			#{lotteryBonus}, 
+			#{createTime}, 
+			#{updateTime}, 
+			#{remark}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.bootdo.lottery.domain.UserBerecordsDO">
+		update t_user_bet_records 
+		<set>
+			<if test="betNum != null">`bet_num` = #{betNum}, </if>
+			<if test="userId != null">`user_id` = #{userId}, </if>
+			<if test="userName != null">`user_name` = #{userName}, </if>
+			<if test="lotteryOne != null">`lottery_one` = #{lotteryOne}, </if>
+			<if test="lotteryTwo != null">`lottery_two` = #{lotteryTwo}, </if>
+			<if test="lotteryThree != null">`lottery_three` = #{lotteryThree}, </if>
+			<if test="lotteryFour != null">`lottery_four` = #{lotteryFour}, </if>
+			<if test="lotteryFive != null">`lottery_five` = #{lotteryFive}, </if>
+			<if test="highClass != null">`high_class` = #{highClass}, </if>
+			<if test="largeNum != null">`large_num` = #{largeNum}, </if>
+			<if test="lotterySingle != null">`lottery_single` = #{lotterySingle}, </if>
+			<if test="noteNum != null">`note_num` = #{noteNum}, </if>
+			<if test="noteMoney != null">`note_money` = #{noteMoney}, </if>
+			<if test="lotteryBonus != null">`lottery_bonus` = #{lotteryBonus}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="remark != null">`remark` = #{remark}</if>
+		</set>
+		where bet_id = #{betId}
+	</update>
+	
+	<delete id="remove">
+		delete from t_user_bet_records where bet_id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_user_bet_records where bet_id in 
+		<foreach item="betId" collection="array" open="(" separator="," close=")">
+			#{betId}
+		</foreach>
+	</delete>
+
+
+	<!--按小时统计-->
+	<select id="listByHourStatistics" resultType="com.bootdo.lottery.pojo.UserBerecordsPojo">
+		SELECT
+		result.userCount,
+		result.lotteryBonus,
+		result.noteMoneyCount,
+		result.tatisticDate
+		FROM
+		(SELECT
+		m.countId userCount,
+		IFNULL(n.lotteryBonus,0) lotteryBonus,
+		IFNULL(m.noteMoney,0) noteMoneyCount,
+		DATE_FORMAT(r.create_time, '%Y-%m-%d %H:00:00') tatisticDate
+		FROM
+		t_user_bet_records r
+		LEFT JOIN
+		(SELECT DATE_FORMAT(t1.create_time , '%Y-%m-%d %H:00:00') create_time,count(t1.bet_id) countId,SUM(CAST(t1.note_money AS DECIMAL(10,4))) noteMoney
+		FROM t_user_bet_records t1
+		WHERE t1.bet_json is not null AND t1.lottery_status=1
+		GROUP BY DATE_FORMAT(t1.create_time, '%Y-%m-%d %H:00:00')
+		) m ON DATE_FORMAT(r.create_time, '%Y-%m-%d %H:00:00') = DATE_FORMAT(m.create_time, '%Y-%m-%d %H:00:00')
+		LEFT JOIN
+		(SELECT DATE_FORMAT(t2.create_time , '%Y-%m-%d %H:00:00') create_time,SUM(CAST(t2.lottery_bonus AS DECIMAL(10,4))) lotteryBonus
+		FROM t_user_bet_records t2 WHERE t2.bet_json is null AND t2.lottery_status=1
+		GROUP BY DATE_FORMAT(t2.create_time, '%Y-%m-%d %H:00:00')
+		) n ON DATE_FORMAT(r.create_time, '%Y-%m-%d %H:00:00') = DATE_FORMAT(n.create_time, '%Y-%m-%d %H:00:00')
+		WHERE
+		DATE_FORMAT(r.create_time, '%Y-%m-%d %H:00:00') IN
+		<foreach collection="dataList" item="list" open="(" separator="," close=")">
+			#{list}
+		</foreach>
+		GROUP BY
+		DATE_FORMAT(r.create_time, '%Y-%m-%d %H:00:00')
+		<foreach collection="dataList" item="list">
+			UNION (SELECT 0,0,0, #{list})
+		</foreach>
+		) result
+		GROUP BY
+		result.tatisticDate
+		ORDER BY
+		result.tatisticDate
+	</select>
+
+	<!--按天统计-->
+	<select id="listByDayStatistics" resultType="com.bootdo.lottery.pojo.UserBerecordsPojo">
+		SELECT
+		result.userCount,
+		result.lotteryBonus,
+		result.noteMoneyCount,
+		result.tatisticDate
+		FROM
+		(SELECT
+		m.countId userCount,
+		IFNULL(n.lotteryBonus,0) lotteryBonus,
+		IFNULL(m.noteMoney,0) noteMoneyCount,
+		DATE_FORMAT(r.create_time, '%Y-%m-%d') tatisticDate
+		FROM
+		t_user_bet_records r
+		LEFT JOIN
+		(SELECT DATE_FORMAT(t1.create_time , '%Y-%m-%d') create_time,count(t1.bet_id) countId,SUM(CAST(t1.note_money AS DECIMAL(10,4))) noteMoney
+		FROM t_user_bet_records t1
+		WHERE t1.bet_json is not null AND t1.lottery_status=1
+		GROUP BY DATE_FORMAT(t1.create_time, '%Y-%m-%d')
+		) m ON DATE_FORMAT(r.create_time, '%Y-%m-%d') = DATE_FORMAT(m.create_time, '%Y-%m-%d')
+		LEFT JOIN
+		(SELECT DATE_FORMAT(t2.create_time , '%Y-%m-%d') create_time,SUM(CAST(t2.lottery_bonus AS DECIMAL(10,4))) lotteryBonus
+		FROM t_user_bet_records t2 WHERE t2.bet_json is null AND t2.lottery_status=1
+		GROUP BY DATE_FORMAT(t2.create_time, '%Y-%m-%d')
+		) n ON DATE_FORMAT(r.create_time, '%Y-%m-%d') = DATE_FORMAT(n.create_time, '%Y-%m-%d')
+		WHERE
+		DATE_FORMAT(r.create_time, '%Y-%m-%d') IN
+		<foreach collection="dataList" item="list" open="(" separator="," close=")">
+			#{list}
+		</foreach>
+		GROUP BY
+		DATE_FORMAT(r.create_time, '%Y-%m-%d')
+		<foreach collection="dataList" item="list">
+			UNION (SELECT 0,0,0, #{list})
+		</foreach>
+		) result
+		GROUP BY
+		result.tatisticDate
+		ORDER BY
+		result.tatisticDate
+	</select>
+
+	<!--用户活跃统计 按小时 -->
+	<select id="listByHourUserCount" resultType="com.bootdo.lottery.pojo.UserBerecordsPojo">
+		SELECT
+		result.userCount,
+		result.tatisticDate
+		FROM
+		(
+		SELECT
+		count(od.userCount) userCount,
+		od.tatisticDate
+		FROM
+		(
+		SELECT
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d %H:00:00'
+		) tatisticDate,
+		COUNT(create_time) userCount
+		FROM
+		t_user_bet_records
+		WHERE
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d %H:00:00'
+		) IN
+		<foreach collection="dataList" item="list" open="(" separator="," close=")">
+			#{list}
+		</foreach>
+		GROUP BY
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d %H:00:00'
+		),
+		user_name
+		) AS od
+		GROUP BY
+		DATE_FORMAT(
+		od.tatisticDate,
+		'%Y-%m-%d %H:00:00'
+		)
+		<foreach collection="dataList" item="list">
+			UNION (SELECT 0, #{list})
+		</foreach>) AS result
+		GROUP BY
+		result.tatisticDate
+		ORDER BY
+		result.tatisticDate
+	</select>
+
+	<!--用户活跃统计 按天 -->
+	<select id="listByDayUserCount" resultType="com.bootdo.lottery.pojo.UserBerecordsPojo">
+		SELECT
+		result.userCount,
+		result.tatisticDate
+		FROM
+		(
+		SELECT
+		count(od.userCount) userCount,
+		od.tatisticDate
+		FROM
+		(
+		SELECT
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d'
+		) tatisticDate,
+		COUNT(create_time) userCount
+		FROM
+		t_user_bet_records
+		WHERE
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d'
+		) IN
+		<foreach collection="dataList" item="list" open="(" separator="," close=")">
+			#{list}
+		</foreach>
+		GROUP BY
+		DATE_FORMAT(
+		create_time,
+		'%Y-%m-%d'
+		),
+		user_name
+		) AS od
+		GROUP BY
+		DATE_FORMAT(
+		od.tatisticDate,
+		'%Y-%m-%d'
+		)
+		<foreach collection="dataList" item="list">
+			UNION (SELECT 0, #{list})
+		</foreach>) AS result
+		GROUP BY
+		result.tatisticDate
+		ORDER BY
+		result.tatisticDate
+	</select>
+
+	<!--利润统计 按小时-->
+	<select id="listByHourProfit" resultType="com.bootdo.lottery.pojo.UserBerecordsPojo">
+		SELECT fff.lotteryBonus lotteryBonus,fff.tatisticDate tatisticDate
+		FROM(
+		SELECT
+		IFNULL(y.money,0) lotteryBonus,y.dat tatisticDate
+		FROM
+		(
+		SELECT
+		cast((m.mone - n.mone) as DECIMAL(10,4)) money,
+		m.dat
+		FROM
+		(
+		SELECT
+		sum( t1.note_money ) mone,
+		DATE_FORMAT( t1.create_time, '%Y-%m-%d %H:00:00' ) dat
+		FROM
+		t_user_bet_records t1
+		WHERE
+		t1.bet_json IS NOT NULL  AND t1.lottery_status=1
+		AND t1.create_time BETWEEN #{frist}
+		AND #{last}
+		GROUP BY
+		DATE_FORMAT( t1.create_time, '%Y-%m-%d %H:00:00' )
+		) m,
+		(
+		SELECT
+		sum(t.lottery_bonus) mone,
+		DATE_FORMAT( t.create_time, '%Y-%m-%d %H:00:00' ) dat
+		FROM
+		t_user_bet_records t
+		WHERE
+		t.bet_json IS NULL  AND t.lottery_status=1
+		AND t.create_time BETWEEN #{frist}
+		AND #{last}
+		GROUP BY
+		DATE_FORMAT( t.create_time, '%Y-%m-%d %H:00:00' )
+		) n
+		WHERE
+		m.dat = n.dat
+		AND
+		m.dat IN
+		<foreach collection="list" item="item1" open="(" separator="," close=")">
+			#{item1}
+		</foreach>
+		) y
+		<foreach collection="list" item="item">
+			UNION (SELECT 0, #{item})
+		</foreach>
+		) fff GROUP BY fff.tatisticDate
+
+	</select>
+
+	<select id="getDayList" resultType="java.lang.String">
+		SELECT
+		DATE_FORMAT(t2.create_time, '%Y-%m-%d') test
+		FROM
+		t_lottery_records t2
+		WHERE
+		t2.create_time BETWEEN #{frist}
+		AND #{last}
+		GROUP BY
+		DATE_FORMAT(t2.create_time, '%Y-%m-	%d' )
+	</select>
+
+	<select id="getHourList" resultType="java.lang.String">
+		SELECT
+		DATE_FORMAT(t2.create_time, '%Y-%m-%d %H:00:00') test
+		FROM
+		t_lottery_records t2
+		WHERE
+		t2.create_time BETWEEN #{frist}
+		AND #{last}
+		GROUP BY
+		DATE_FORMAT(t2.create_time, '%Y-%m-%d %H:00:00')
+	</select>
+
+	<!--利润统计 按天-->
+	<select id="listByDayProfit" resultType="com.bootdo.lottery.pojo.UserBerecordsPojo">
+		SELECT fff.lotteryBonus lotteryBonus,fff.tatisticDate tatisticDate
+		FROM(
+		SELECT
+		IFNULL(y.money,0) lotteryBonus,y.dat tatisticDate
+		FROM
+		(
+		SELECT
+		cast((m.mone - n.mone) as DECIMAL(10,4)) money,
+		m.dat
+		FROM
+		(
+		SELECT
+		sum( t1.note_money ) mone,
+		DATE_FORMAT( t1.create_time, '%Y-%m-%d' ) dat
+		FROM
+		t_user_bet_records t1
+		WHERE
+		t1.bet_json IS NOT NULL  AND t1.lottery_status=1
+		AND t1.create_time BETWEEN #{frist}
+		AND #{last}
+		GROUP BY
+		DATE_FORMAT( t1.create_time, '%Y-%m-%d' )
+		) m,
+		(
+		SELECT
+		sum(t.lottery_bonus) mone,
+		DATE_FORMAT( t.create_time, '%Y-%m-%d' ) dat
+		FROM
+		t_user_bet_records t
+		WHERE
+		t.bet_json IS NULL  AND t.lottery_status=1
+		AND t.create_time BETWEEN #{frist}
+		AND #{last}
+		GROUP BY
+		DATE_FORMAT( t.create_time, '%Y-%m-%d' )
+		) n
+		WHERE
+		m.dat = n.dat AND
+		m.dat IN
+		<foreach collection="list" item="item1" open="(" separator="," close=")">
+			#{item1}
+		</foreach>
+		) y
+		<foreach collection="list" item="item">
+			UNION (SELECT 0, #{item})
+		</foreach>
+		) fff GROUP BY fff.tatisticDate
+	</select>
+
+	<select id="accumulateBalance" resultType="java.math.BigDecimal">
+		SELECT SUM(CAST(note_money AS DECIMAL(10,4)))
+		FROM t_user_bet_records WHERE lottery_status=1 AND bet_json IS NOT NULL
+	</select>
+
+	<update id="updateUserStatus">
+		UPDATE t_lottery_user
+		SET user_status =  (
+		case
+		  when user_status = '1' then '0'
+		  when user_status = '0' then '1'
+		end),
+		opt_user=#{userName},
+		opt_user_id=#{optionId},
+		update_time = NOW()
+		WHERE user_id = #{userId}
+	</update>
+
+	<select id="listForUsers" resultType="com.bootdo.lottery.domain.UserBerecordsDO">
+		SELECT tuser.`user_id` userId,
+			record.`user_name` userName,
+			tuser.`user_status` status
+		FROM t_user_bet_records record
+		LEFT JOIN t_lottery_user tuser ON record.user_name=tuser.user_name
+		<if test="userName!=null and userName != ''">
+			WHERE record.`user_name` LIKE CONCAT('%',#{userName},'%')
+		</if>
+		GROUP BY record.user_name
+		<if test="sort!=null and sort != ''">
+			ORDER BY #{sort}
+			<if test="sortOrder!='asc'">
+				 DESC
+			</if>
+			<if test="sortOrder=='asc'">
+				 ASC
+			</if>
+		</if>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="userWin" resultType="com.bootdo.lottery.domain.UserBerecordsDO">
+			SELECT
+				CAST( SUM( win ) / count( * ) AS DECIMAL ( 10, 4 ) ) winning,
+				SUM( a.money ) noteMoney,
+				SUM( a.bonus ) lotteryBonus
+			FROM
+				(
+			SELECT
+				IFNULL( cast( tr3.t3a / t2.t2a AS DECIMAL ( 10, 4 ) ), 0 ) win,
+				IFNULL( cast(t2.t2a AS DECIMAL ( 10, 4 ) ), 0 ) money,
+				IFNULL( cast(t1.bonus AS DECIMAL ( 10, 4 ) ), 0 ) bonus
+			FROM
+				t_user_bet_records record
+				LEFT JOIN (
+			SELECT
+				cast( sum( tr.lottery_bonus ) AS DECIMAL ( 10, 4 ) ) bonus,
+				tr.bet_num betNum1,
+				tr.user_name username1
+			FROM
+				t_user_bet_records tr
+			WHERE
+				tr.lottery_status = 1
+				AND tr.user_name = #{userName}
+				AND tr.bet_json IS NULL
+			GROUP BY
+				tr.bet_num
+				) t1 ON ( t1.betNum1 = record.bet_num AND t1.username1 = record.user_name )
+				LEFT JOIN (
+			SELECT
+				cast( sum( tr2.note_money ) AS DECIMAL ( 10, 4 ) ) t2a,
+				tr2.bet_num betNum2,
+				tr2.user_name username2
+			FROM
+				t_user_bet_records tr2
+			WHERE
+				tr2.lottery_status = 1
+				AND tr2.user_name = #{userName}
+				AND tr2.bet_json IS NOT NULL
+			GROUP BY
+				tr2.bet_num
+				) t2 ON ( t2.betNum2 = t1.betNum1 AND t2.username2 = t1.username1 )
+				LEFT JOIN (
+					SELECT
+						sum( tr3.note_money ) t3a,
+
+						tr3.bet_num betNum1,
+						tr3.user_name username1
+					FROM
+						t_user_bet_records tr3
+					WHERE
+						tr3.lottery_status = 1
+						AND tr3.user_name = #{userName}
+						AND tr3.bet_json IS NULL
+						 and tr3.lottery_bonus is not null
+			GROUP BY
+				tr3.bet_num
+				) tr3 ON ( tr3.betNum1 = record.bet_num AND tr3.username1 = record.user_name )
+			WHERE
+				record.user_name = #{userName}
+			GROUP BY
+				record.bet_num
+				) a
+	</select>
+
+	<select id="countForUsers" resultType="int">
+		SELECT
+			count(*)
+		FROM
+		(SELECT
+			count(*) FROM t_user_bet_records record
+			LEFT JOIN t_lottery_user tuser ON record.user_name = tuser.user_name
+			GROUP BY record.user_name) as a
+	</select>
+
+	<!--获取下级列表-->
+	<select id="getMyChildsData" resultType="com.bootdo.lottery.domain.UserBerecordsDO" parameterType="java.util.Map">
+		SELECT
+		 x.lotteryBonus lotteryBonus,
+		 x.noteMoney noteMoney,
+		 x.userName userName
+		FROM (SELECT record.user_name userName,
+		IFNULL(m.money,0) noteMoney,
+		IFNULL(n.bonus,0) lotteryBonus
+		FROM t_user_bet_records record
+		LEFT JOIN t_lottery_user tuser ON record.user_name=tuser.user_name
+		LEFT JOIN (
+		SELECT t1.user_name username,SUM(CAST(t1.note_money as DECIMAL(10,4))) money from t_user_bet_records t1
+		WHERE t1.bet_json is not null and t1.lottery_status=1 group by t1.user_name) m ON m.username = record.user_name
+		LEFT JOIN (
+		SELECT t2.user_name username,SUM(CAST(t2.lottery_bonus as DECIMAL(10,4))) bonus from t_user_bet_records t2
+		WHERE t2.bet_json is null and t2.lottery_status=1 group by t2.user_name) n ON n.username = record.user_name
+		WHERE tuser.referrer=#{userId}
+		GROUP BY tuser.user_name) x
+		ORDER BY x.noteMoney DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+
+	<select id="getMyChildsDataCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT count(*) FROM (SELECT record.user_name userName,
+		IFNULL(m.money,0) noteMoney,
+		IFNULL(n.bonus,0) lotteryBonus
+		FROM t_user_bet_records record
+		LEFT JOIN t_lottery_user tuser ON record.user_name=tuser.user_name
+		LEFT JOIN (
+		SELECT t1.user_name username,SUM(CAST(t1.note_money as DECIMAL(10,4))) money from t_user_bet_records t1
+		WHERE t1.bet_json is not null and t1.lottery_status=1 group by t1.user_name) m ON m.username = record.user_name
+		LEFT JOIN (
+		SELECT t2.user_name username,SUM(CAST(t2.lottery_bonus as DECIMAL(10,4))) bonus from t_user_bet_records t2
+		WHERE t2.bet_json is null and t2.lottery_status=1 group by t2.user_name) n ON n.username = record.user_name
+		WHERE tuser.referrer=#{userId}
+		GROUP BY tuser.user_name) x
+		ORDER BY x.noteMoney DESC
+	</select>
+
+	<select id="getUserInfoByName" resultType="java.lang.Long" >
+		SELECT user_id FROM  t_lottery_user
+		WHERE user_name = #{userName}
+		limit 0,1
+	</select>
+</mapper>

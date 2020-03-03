@@ -1,0 +1,209 @@
+package com.stip.net.service.impl;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.stip.net.dao.LotteryUserDao;
+import com.stip.net.dao.UserBetRecordsDao;
+import com.stip.net.entity.LotteryUser;
+import com.stip.net.entity.LotteryUserScore;
+import com.stip.net.entity.UserBetRecords;
+import com.stip.net.example.LotteryUserExample;
+import com.stip.net.service.LotteryUserService;
+
+@Service
+public class LotteryUserServiceImpl implements LotteryUserService {
+    @Autowired
+    private LotteryUserDao lotteryUserDao;
+    @Autowired
+    private UserBetRecordsDao userBetRecordsDao;
+    @Override
+    public void addLottery(LotteryUser user) {
+        lotteryUserDao.insert(user);
+    }
+
+    @Override
+    public void updateByPrimaryKeySelective(LotteryUser record) {
+        lotteryUserDao.updateByPrimaryKeySelective(record);
+    }
+
+    @Override
+    public LotteryUser getlotteryUser(LotteryUser record) {
+        LotteryUserExample example = new LotteryUserExample();
+        LotteryUserExample.Criteria criteria = example.createCriteria();
+        if (StringUtils.isNotBlank(record.getUserName())) {
+            criteria.andUserNameEqualTo(record.getUserName());
+        }
+        if (StringUtils.isNotBlank(record.getUserCode())) {
+            criteria.andUserCodeEqualTo(record.getUserCode());
+        }
+        List<LotteryUser> list = lotteryUserDao.selectByExample(example);
+
+        if (CollectionUtils.isNotEmpty(list)) {
+            return list.get(0);
+        }
+        return null;
+    }
+
+    /**
+     * 根据用户名获取邀请人
+     *
+     * @param lotteryUser
+     * @return
+     */
+    @Override
+    public LotteryUser getLotteryByInviter(LotteryUser lotteryUser) {
+        lotteryUser = this.getlotteryUser(lotteryUser);
+
+        if (lotteryUser == null || lotteryUser.getReferrer() == null || "0".equals(lotteryUser.getReferrer())) {
+            return null;
+        }
+
+        LotteryUser inviter = lotteryUserDao.selectByPrimaryKey(lotteryUser.getReferrer());
+        if (null == inviter || StringUtils.isBlank(inviter.getUserName())) {
+            return null;
+        }
+
+        return inviter;
+    }
+
+    /**
+     * @param userName 当前用户
+     * @param userCode 推荐人的邀请码
+     */
+    @Override
+    public LotteryUser updateRelatioin(String userName, String userCode) {
+        // 当前用户信息
+        LotteryUser lotteryUser = new LotteryUser();
+        lotteryUser.setUserName(userName);
+        lotteryUser = this.getlotteryUser(lotteryUser);
+
+        if (lotteryUser == null || lotteryUser.getReferrer() != null) {
+            return null;
+        }
+
+        // 邀请人信息
+        LotteryUser invitationUser = new LotteryUser();
+        invitationUser.setUserCode(userCode);
+        invitationUser = this.getlotteryUser(invitationUser);
+        if (invitationUser != null) {
+            // 修改当前用户的邀请人
+            LotteryUser newUser = new LotteryUser();
+            newUser.setUserId(lotteryUser.getUserId());
+            newUser.setReferrer(invitationUser.getUserId());
+            this.updateByPrimaryKeySelective(newUser);
+        }
+
+        return invitationUser;
+    }
+
+    @Override
+    public Map<String, Object> getMyChilds(String userName, int pageNum,int records) {
+        LotteryUserExample example = new LotteryUserExample();
+        example.createCriteria().andUserNameEqualTo(userName);
+        List<LotteryUser> list = lotteryUserDao.selectByExample(example);
+
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+
+        records = records == 0 ? 10 : records;
+        Map<String, Object> map = new HashMap<>(4);
+        map.put("userId", list.get(0).getUserId());
+        map.put("fromRowNum", (pageNum == 0 ? 0 : pageNum - 1) * records);
+        map.put("toRowNum", records);
+        List<UserBetRecords> results = userBetRecordsDao.getMyChildsData(map);
+
+        int count = userBetRecordsDao.getMyChildsDataCount(map);
+
+        map.clear();
+        map.put("total", count);
+        map.put("childs", results);
+        map.put("totalPage", (count / records) + (count % records > 0 ? 1 : 0));
+        map.put("records", records);
+        return map;
+    }
+
+    /**
+     * 验证用户冻结状态
+     *
+     * @param userName
+     * @return
+     */
+    @Override
+    public boolean getUserStatus(String userName) {
+        LotteryUserExample example = new LotteryUserExample();
+        example.createCriteria().andUserNameEqualTo(userName);
+        List<LotteryUser> list = lotteryUserDao.selectByExample(example);
+
+        if (CollectionUtils.isEmpty(list)) {
+            return false;
+        }
+
+        if (StringUtils.isNotBlank(list.get(0).getUserStatus()) && "1".equals(list.get(0).getUserStatus())) {
+            return true;
+        }
+        return false;
+    }
+
+	@Override
+	public int addLotteryUserScore(LotteryUserScore lotteryUserScore) {
+		return lotteryUserDao.addLotteryUserScore(lotteryUserScore);
+	}
+
+	@Override
+	public LotteryUserScore getLotteryUserScoreName(String userName) {
+		return lotteryUserDao.getLotteryUserScoreName(userName);
+	}
+
+	@Override
+	public LotteryUserScore getLotteryUserScoreTel(String tel) {
+		return lotteryUserDao.getLotteryUserScoreTel(tel);
+	}
+
+	@Override
+	public int updateLotteryUserScoreTeljia(long id, BigDecimal score) {
+		return lotteryUserDao.updateLotteryUserScoreTeljia(id, score);
+	}
+
+	@Override
+	public int updateLotteryUserScoreTeljian(long id, BigDecimal score) {
+		return lotteryUserDao.updateLotteryUserScoreTeljian(id, score);
+	}
+
+	@Override
+	public LotteryUserScore getLotteryUserScoreEmil(String emil) {
+		return lotteryUserDao.getLotteryUserScoreEmil(emil);
+	}
+
+	@Override
+	public LotteryUserScore getLotteryUserScoreId(long id) {
+		return lotteryUserDao.getLotteryUserScoreId(id);
+	}
+
+	@Override
+	public boolean getUserScoreStatus(String data) {
+		LotteryUserScore lotteryUserScore = null;//用户信息
+		Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+		//判断是否是纯数字
+		if(pattern.matcher(data).matches()){
+			lotteryUserScore=lotteryUserDao.getLotteryUserScoreTel(data);
+		}else{
+			lotteryUserScore=lotteryUserDao.getLotteryUserScoreEmil(data);
+		}
+		if(lotteryUserScore.getStatus()==1){
+			return true;
+		}
+		return false;
+	}
+
+
+}

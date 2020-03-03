@@ -1,0 +1,17 @@
+package com.stip.net.service.impl;
+
+import com.stip.mybatis.generator.plugin.BaseService;
+import com.stip.net.entity.LotteryUserInfo;
+import com.stip.net.example.LotteryUserInfoExample;
+import com.stip.net.service.LotteryUserInfoService;
+import org.springframework.stereotype.Service;
+
+@Service
+public class LotteryUserInfoServiceImpl extends BaseService<LotteryUserInfo, LotteryUserInfoExample, Long>
+        implements LotteryUserInfoService {
+
+    @Override
+    public void insertUserInfo(LotteryUserInfo lotteryUserInfo) {
+        dao.insertSelective(lotteryUserInfo);
+    }
+}

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>骰子</title>
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/theDiceHome.css">
+    <link rel="stylesheet" href="../css//theDiceHomeJackpot.css">
+    <link rel="stylesheet" href="../css//theDiceHomeBetting.css">
+    <link rel="stylesheet" href="../css/theDiceGameRules.css">
+    <link rel="stylesheet" href="../css/theDicePopup.css">
+    <link rel="stylesheet" href="../css/message.css">
+    <link rel="stylesheet" href="../css/theDiceInvite.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <img src="../img/CG.png" id="logo" alt="">
+            <div class="nav1-1">
+                <div class="nav-pull-down">
+                    <p>骰子</p>
+                    <img src="../img/pull-down.png" alt="">
+                    
+                </div>
+                <div class="SelectGame">
+                    <p id="tiger">龙虎斗</p>
+                    <p id="lottery">时时彩</p>
+                </div>
+                <p id="gamesHelpBtn">游戏帮助</p>
+                <p id="InviteFriends">邀请好友</p>
+            </div>
+            <div class="nav1-2">
+                <div>
+                    <div class="headerLoginBtn">
+                        <p id="navLoginBtn">登录</p>
+                    </div>
+                    <div class="userinfo">
+                        <p>
+                            <span id="userBalance">余额</span>
+                        </p>
+                        <p id="userName">用户名</p>
+                        <p id="navQuit">退出</p>
+                    </div>
+                </div>
+                <img src="../img/voice.png" alt="">
+                <div id="language">
+                    <div id="language1">
+                        <img src="../img/Singapore.png" alt="">
+                        <p>简体中文</p>
+                        <img src="../img/pull-down.png" alt="">
+                        
+                    </div>
+                    <div id="language2">
+                        <img src="../img/guoqi02.png" alt="">
+                        <span>English</span>
+                    </div>
+                </div>
+                
+            </div>
+        </nav>
+    </header>
+    <!-- 开奖记录区域 -->
+    <section id="gameHome">
+        <section class="The-lottery-record">
+            <div class="lotteryHeader">
+              
+                <h6>开奖记录</h6>
+             
+            </div>
+            <!-- 开奖记录现在开奖显示区域 -->
+            <div class="CurrentlyTheLottery">
+                <div class="newIssue">
+                    <p id="newPeriods">25684285</p>
+                    <div>
+                        <p id="newTime">08:40:00:00</p>
+                        <p>now</p>
+                    </div>
+                </div>
+                <div class="newBlockChainNo">
+                    <p>...</p>
+                    <p id="newBlockChainNo">123abc456789132asda1a</p>
+                </div>
+                <div class="newResult">
+                    <p id="newType">
+                        <span id="newBig">大</span>
+                        <span id="newSmall">小</span>
+                        <span id="newPair">对子</span>
+                    </p>
+                    <p id="newWinningNumbers">87</p>
+                </div>
+            </div>
+            <!-- 开奖记录表格区域 -->
+            <div class="lotteryTable">
+                <div class="lotteryTable1-1">
+                    <ul class="lotteryTableTh">
+                        <li>开奖期数</li>
+                        <li>区块链号</li>
+                        <li>中奖号</li>
+                        <li>开奖时间</li>
+                        <li>类型</li>
+                    </ul>
+                </div>
+                <div id="carousel">
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 奖池区域 -->
+        <section class="jackpot">
+            <div class="jackpot1-1">
+                <p>奖池</p>
+                <div>
+                    <img src="../img/BonusPools.png" alt="">
+                    <p id="jackpotSum"></p>
+                </div>
+                <!-- <p>分红池</p> -->
+            </div>
+            <!-- 投注区 -->
+            <div class="bettingArea">
+                <div class="diceBet">
+                    <div class="selectiveType">
+                        <div class="intervalOrSize">
+                            <div>
+                                <p id="selectInterva">猜区间</p>
+                                <p id="selectSize">猜大小</p>
+                            </div>
+                        </div>
+                        <div class="SelectTypeArea">
+                            <div class="guessInterval1-1">
+                                <div>
+                                    <p class="selectBet" data-id="1">大于</p>
+                                    <p class="selectBet" data-id="2">小于</p>
+                                </div>
+                                <div class="slider">
+                                    <input type="range" id="range1" min="0" max="99" step="1" defaultValue="50" onchange="b.value=this.value" />
+                                    <p>
+                                        <span>预测数：</span>
+                                        <output id="b" for="range1"></output>
+                                    </p>
+
+                                </div>
+                            </div>
+                            <div class="digitalRange">
+                                <p>0</p>
+                                <p>99</p>
+                            </div>
+                        </div>
+                        <div class="CrapArea">
+                            <div class="crap1-1">
+                                <div>
+                                    <p class="selectBet" data-id="3">大</p>
+                                    <p>0到49且不是对子的数</p>
+                                </div>
+                                <div>
+                                    <p class="selectBet" data-id="4">小</p>
+                                    <p>50到99且不是对子的数</p>
+                                </div>
+                                <div>
+                                    <p class="selectBet" data-id="5">对子</p>
+                                    <p>两个数字相同的数</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="oddsOrBonus">
+                            <div>
+                                <p>赔率：</p>
+                                <h4>
+                                    <span id="odds">0</span>X</h4>
+                            </div>
+                            <div>
+                                <p>预计奖金：</p>
+                                <h4 id="bonus">0</h4>EOS
+                            </div>
+                        </div>
+                    </div>
+                    <div class="WinningNumbers">
+                        <p>中奖号</p>
+                        <!-- <img src="../img/qiu.png" alt=""> -->
+                        <div>
+                            <p id="winningNum"></p>
+                            <p id="betNum"></p>
+                        </div>
+
+                    </div>
+                </div>
+                
+                <div class="bettingAmount">
+                    <p>投注金额</p>
+                    <div class="bettingAmount1-1">
+                        <img src="../img/eos.png" alt="">
+                        <input type="number" id="inputBox" value="0.1" min="0.1" max="100" onkeyup="clearNoNum(this)">
+                        <p id="divide">1/2</p>
+                        <p id="ride">X2</p>
+                        <p id="maximum" style="margin-top: 0px">MAX</p>
+                    </div>
+                    <!-- <p id="mask"></p> -->
+                    <p id="loginBtn" data-state="1">登录</p>
+                </div>
+                
+            </div>
+        </section>
+        <section class="record">
+            <div class="recordNav">
+                <div>
+                    <p id="theWinningBetsFont">中奖投注</p>
+                    <p id="iBetTheFont">我的投注</p>
+                </div>
+            </div>
+            <div class="recordTable">
+                <div id="iBetTheTable">
+                    <!-- 我的投注区域 -->
+                    <ul class="recordHeader">
+                        <li>时间</li>
+                        <li>期号</li>
+                        <li>投注内容</li>
+                        <li>投注金额</li>
+                        <li>投注结果</li>
+                        <li>金额</li>
+                    </ul>
+                    <div id="iBetThe">
+
+                    </div>
+
+                </div>
+                <!-- 中奖投注区域 -->
+                <div id="theWinningTable">
+                    <ul class="theWinningBets">
+                        <li>时间</li>
+                        <li>期号</li>
+                        <li>玩家</li>
+                        <li>投注内容</li>
+                        <li>投注金额</li>
+                        <li>赔率</li>
+                        <li>中奖</li>
+                    </ul>
+                    <div id="allPrizeTable">
+
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+    </section>
+    <!-- 玩法介绍/游戏帮助 -->
+    <div id="gamesHelp">
+        <div class="gamesHelp-header">
+            <p>玩法规则 GAME RULES</p>
+            <p id="goBack">返回</p>
+        </div>
+        <section class="generationNumber">
+            <div>
+                <div class="generationNumber1-1 ">
+                    <p class="shadow"></p>
+                    <img class="gamesHelp-img" src="../img/Lottery.png" alt="">
+                </div>
+                <div class="generationNumber1-2">
+                    <p class="gamesHelp-h3">中奖号码的产生</p>
+                    <div>
+                        <p class="gamesHelp-h5">中奖号码</p>
+                        <p class="gamesHelp-font">中奖号码一共两位，是利用连续产生的EOS区块号的最后一位数字来做为上一期的开奖号码。如果某个区块号的ID最后一位不为数字则向前顺延一位。</p>
+                    </div>
+                    <div>
+                        <p class="gamesHelp-h5">EOS区块号</p>
+                        <p class="gamesHelp-font">EOS区块号是一段32字节的数字，它是根据一套非常复杂的加密算法计算得出。通常是用16位进制，而我们的中奖号码利用了这样一个真正的随机号码</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="generationNumber">
+            <div>
+                <div class="generationNumber1-1 ">
+                    <p class="shadow"></p>
+                    <img class="gamesHelp-img" src="../img/gold.png" alt="">
+                </div>
+                <div class="generationNumber1-2">
+                    <p class="gamesHelp-h3">游戏玩法</p>
+                    <div>
+                        <p class="gamesHelp-h5">猜区间</p>
+                        <p class="gamesHelp-font">选择了大于或者小于就可以进行猜区间，移动进度条上的骰子可以选择数字。如果中奖号码符合了所选的条件就会中奖。例如，选择了大于48，开奖号码为51，即为中奖</p>
+                    </div>
+                    <div>
+                        <p class="gamesHelp-h5">猜大小</p>
+                        <p class="gamesHelp-font">选择了大、小或者对子就可以参与猜大小。对子就是两个数字相同，比如11，22，33；小是0-49，且不为对子的数字；大是51-99且不是对子的数字。</p>
+                        <p class="gamesHelp-font">例如，开奖号码为55，对子赢；</p>
+                        <p class="gamesHelp-font">开奖号码为18，小赢；</p>
+                        <p class="gamesHelp-font">开奖号码为85，大赢</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="generationNumber">
+            <div>
+                <div class="generationNumber1-1 ">
+                    <p class="shadow"></p>
+                    <img class="gamesHelp-img" src="../img/time.png" alt="">
+                </div>
+                <div class="generationNumber1-2">
+                    <p class="gamesHelp-h3">游戏时间</p>
+                    <p class="gamesHelp-Time-font">每秒都会开新一期，全天无休,下注后5秒后自动开奖，即买即开</p>
+                </div>
+            </div>
+        </section>
+        <section class="generationNumber">
+            <div>
+                <div class="generationNumber1-1 ">
+                    <p class="shadow"></p>
+                    <img class="gamesHelp-img" src="../img/quota.png" alt="">
+                </div>
+                <div class="generationNumber1-2">
+                    <p class="gamesHelp-h3">投注限额</p>
+                    <p class="gamesHelp-Time-font">本平台以游戏娱乐为主，不希望大额投注，因此我们设置了每局的投注限额，即最高1次游戏可投注100EOS奖金，根据玩家所选数字的不同，会有不同的投注限额</p>
+                </div>
+            </div>
+        </section>
+        <div class="gamesHelp-footer">
+            <p>为了保障平台的运营和日常开支，平台会在玩家中奖时，抽取2%的手续费，所以实际玩家收到的奖金 = 投注金额 * 返奖倍数 </p>
+
+        </div>
+     
+    </div>
+    <!-- 邀请好友 -->
+    <div id="Invite">
+        <div class="InviteHeader">
+            <p>邀请好友 INVITE FRIENDS</p>
+            <p id="InviteGoBack">返回</p>
+        </div>
+        <div class="briefIntroduction">
+            <div class="briefIntroduction1-1">
+                <div>
+                    <div>
+                        <p>0.1
+                            <span>EOS</span>
+                        </p>
+
+                    </div>
+                    <div>
+                        <p>新来即送</p>
+                        <p>每位新玩家，首次投注都会赠送 0.1 EOS。</p>
+                    </div>
+                </div>
+                <div>
+                    <div>
+                        <p>0.1
+                            <span>EOS</span>
+                        </p>
+
+                    </div>
+                    <div>
+                        <p>邀请好友</p>
+                        <p>每邀请一位朋友进行游戏，你和朋友可分别得到 0.1EOS 的奖励。</p>
+                        <p>只要拥有EOS账号,任何人都可以参加邀请活动,你邀请的人会永远成为你的下级。</p>
+                        <p>以后他的每一笔投注，无论输赢都会在投注成功后立即返还佣金到你的EOS账户。</p>
+                    </div>
+                </div>
+                <div>
+                    <div>
+                        <p>1.0
+                            <span>%</span>
+                        </p>
+
+                    </div>
+                    <div>
+                        <p>立得返佣</p>
+                        <p>佣金的比例为投注金额的 1%。</p>
+                        <p>佣金返还的时间是与下级投注投注同步完成的，无须等到开奖以后，也无论中否中奖，都会立即拿到返佣。</p>
+                        <p>举例: 骰子游戏每天最多可投注7680轮, 如果你的邀请人每轮仅下注1个EOS, 您每天也能获得76.8 EOS的高额返佣。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="theInvitationWay">
+            <div class="theInvitationWay1-1">
+                <div>
+                    <p>邀请方式</p>
+                    <div class="theInvitationWay2-1">
+                        <p></p>
+                        <p></p>
+                        <p></p>
+                        <p></p>
+                        <p></p>
+                    </div>
+                    <div class="theInvitationWay3-1">
+                        <p>复制网址</p>
+                        <p>好友登录</p>
+                        <p>好友登录</p>
+                    </div>
+                    <div class="theInvitationWay4-1">
+                        <div>
+                            <p>将这个邀请网址发给朋友们</p>
+                        </div>
+                        <div>
+                            <p>好友在这个网址上完成登录</p>
+                            <p>（使用scatter,key均可）</p>
+                        </div>
+                        <div>
+                            <p>好友登录后同意你的邀请即可</p>
+                            <p>他就成为了你永远的下级</p>
+                        </div>
+                    </div>
+                    <div class="kyrieandrewirving">
+                        <input id="inviteInput" readonly="true" type="text">
+                        <p id="InviteCopy">复制</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="subordinate">
+            <div>
+                <div class="subordinate1-1">
+                    <p>我的下级</p>
+                    <p>共
+                        <span id="headcount">0</span>人</p>
+                </div>
+                <ul class="subordinateTh">
+                    <li>序号</li>
+                    <li>用户名</li>
+                    <li>人数</li>
+                    <li>投注额</li>
+                    <li>佣金</li>
+                </ul>
+                <div class="subuserForm">
+                    
+                </div>
+                <div class="page">
+                    <p id="upPage">&lt;</p>
+                    <p id="currentPage">1</p>
+                    <p>/</p>
+                    <p id="TotalPages">1</p>
+                    <p id="nextPage">&gt;</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 登录弹窗 -->
+    <div id="loginContainer">
+        <div id="loginBox">
+            <div id="loginHead">
+                <img src="../img/Lottery_logo.png" alt="lotteryLogo" />
+                <i id="loginClose"></i>
+            </div>
+            <div id="loginStyleContainer">
+                <div id="loginStyle">
+                    <div>
+                        <div id="myChainId">私钥登录</div>
+                        <div id="scatterLogin">
+                            <i id="scatterLogo"></i>登录</div>
+                    </div>
+                    <div id="privateLogin">
+                        <input placeholder="请在此放心输入51位的私钥，只会用于本地交易签名" id="userChainId" value="5JWq4e7YriQcVz2dWzewcpDBPSuLfNfTVc5soJHzNvmyeFG8mAW"/>
+                        <button id="loginComfire">登录</button>
+                    </div>
+                    <div id="loadScatter">
+                        <div id="loadScatterMiidle">
+                            <img src="../img/scatterLoad.png" alt="scatterLoad" />
+                            <p>点击登录scatter钱包</p>
+                            <button class="scatter_login">登录</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 开奖倒计时 -->
+    <div>
+        <p id="theLast"></p>
+    </div>
+    <footer></footer>
+    <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-core.min.js"></script>
+    <script src="../js/eos.min.js"></script>
+    <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-eosjs.min.js"></script>
+    <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-web3.min.js"></script>
+    <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-tron.min.js"></script>
+    <script src="../js/jquery-1.12.4.min.js"></script>
+    <script src="../js/message.min.js"></script>
+    <script src="../js/theDiceHomeJackpot.js"></script>
+    <script src="../js/diceWebSocket.js"></script>
+    <script src="../js/bettingRecord.js"></script>
+
+</body>
+
+</html>

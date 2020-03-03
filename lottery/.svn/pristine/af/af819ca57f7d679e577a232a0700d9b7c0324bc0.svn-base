@@ -1,0 +1,8 @@
+package io.eblock.eos4j.utils;
+
+public class Constant {
+	public static final String contractAccount_top = "eosio.token";
+	public static final String account_top = "testtesttest";// 给用户发TOP币的账户
+	// TOP账户私钥
+	public static final String topjs_prive_key = "5J21S4DwqtuFTS3bANowLQYvVh93G49PPpyQ3CqDuRi7zCEgcS8";
+}

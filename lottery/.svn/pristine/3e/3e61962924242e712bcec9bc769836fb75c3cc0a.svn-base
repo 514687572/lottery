@@ -1,0 +1,184 @@
+package com.stip.net.kafka.consumer;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.TimeZone;
+
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.listener.MessageListener;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.socket.TextMessage;
+
+import com.google.gson.GsonBuilder;
+import com.lottery.net.utils.Constants;
+import com.stip.net.entity.LotteryRecords;
+import com.stip.net.imessage.IMWebSocketHandler;
+import com.stip.net.kafka.dto.SampleMessage;
+import com.stip.net.kafka.utils.PublicMethod;
+import com.stip.net.service.AccountService;
+import com.stip.net.service.LotteryService;
+import com.stip.net.service.RedisService;
+import com.stip.net.service.UserBetService;
+import com.stip.net.service.UserTransactionRecordsService;
+import com.stip.net.vo.Message;
+
+import net.sf.json.JSONObject;
+
+/**
+ *
+ * @Title:区块消息消费者
+ * @date：2018年11月14日-下午1:33:32
+ * @author：cja
+ *
+ */
+@Transactional(propagation = Propagation.REQUIRED, rollbackFor = {RuntimeException.class, Exception.class})
+@Component
+public class KafkaConsumer implements MessageListener<String, SampleMessage> {
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	@Autowired
+	private IMWebSocketHandler handler;
+	@Autowired
+	private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+	@Autowired 
+	private LotteryService lotteryService;
+	@Autowired
+	private UserBetService userBetService;
+	@Autowired
+	private AccountService accountService;
+	@Autowired
+	private RedisService redisService;
+	@Autowired
+	private UserTransactionRecordsService userTransactionRecordsService;
+
+	public Message msg;
+	public boolean start=false;
+	public int num=0;
+	public JSONObject obj;
+	public List<Integer> prizeNum;
+	public List<String> prizeBlock;
+	public Date datetime;
+
+	public void onMessage(ConsumerRecord<String, SampleMessage> data) {
+		JSONObject jsonObject = JSONObject.fromObject(data.value());
+		TextMessage textMessage = null;
+		try {
+			textMessage = messageUpdate(jsonObject);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		handler.broadcast(textMessage, Constants.LOTTERY_TYPE);
+	}
+	
+	/**
+	 * 消息处理
+	 * @param jsonObject
+	 * @return
+	 * @throws Exception 
+	 */
+	public TextMessage messageUpdate(JSONObject jsonObject) throws Exception {
+		JSONObject time=(JSONObject) jsonObject.get("header");
+		String StringDate = time.getString("timestamp");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		df.setTimeZone(TimeZone.getTimeZone("UTC"));
+		Date date = df.parse(StringDate);
+		Calendar nowtime = new GregorianCalendar();
+		nowtime.setTime(date);
+
+		if(start) {
+			String hash=jsonObject.get("id").toString();
+			
+			char lastStr=hash.charAt(hash.length()-1);
+			if(Character.isDigit(lastStr)) {
+				prizeNum.add(Integer.parseInt(lastStr+""));
+				prizeBlock.add(hash);
+				jsonObject.put("prize_num", true);
+				num++;
+				if(num==5) {
+					num=0;
+					start=false;
+					
+					threadPoolTaskExecutor.execute(new Runnable() {
+						public void run() {
+							getPrize(prizeNum,prizeBlock,datetime);
+						}
+					});
+				}
+			}
+		}else {
+			if (nowtime.get(Calendar.SECOND) == 0 && nowtime.get(Calendar.MILLISECOND) == 0) {
+				start=true;
+				prizeNum =new ArrayList<Integer>();
+				prizeBlock =new ArrayList<String>();
+				datetime=date;
+				jsonObject.put("prize_start", true);
+				
+				String hash=jsonObject.get("id").toString();
+				
+				char lastStr=hash.charAt(hash.length()-1);
+				if(Character.isDigit(lastStr)) {
+					prizeNum.add(Integer.parseInt(lastStr+""));
+					prizeBlock.add(hash);
+					jsonObject.put("prize_num", true);
+					num++;
+				}
+				
+				LotteryRecords LotteryRecords=lotteryService.getNotPrizeByTime("ASC");
+				
+				jsonObject.put("lottery_num", LotteryRecords.getRecordsId());
+				
+				redisService.setCacheExpir(LotteryRecords.getRecordsId().toString(), "0",120l);
+			} 
+		}
+
+		msg = new Message();
+		msg.setDate(new Date());
+		msg.setFrom("block");
+		msg.setFromName("");
+		msg.setText(jsonObject+"");
+		String bulder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create().toJson(msg);
+		
+		return new TextMessage(bulder);
+	}
+	
+	/**
+	 *  开奖和推送开奖结果
+	 * @param num
+	 * @param block
+	 * @param date
+	 */
+	public void getPrize(List<Integer> num,List<String> block,Date date) {
+		LotteryRecords records=lotteryService.getNotPrizeByTime(" ASC");
+		
+		records.setUpdateTime(date);
+		records.setHashOne(block.get(4));
+		records.setHashTwo(block.get(3));
+		records.setHashThree(block.get(2));
+		records.setHashFour(block.get(1));
+		records.setHashFive(block.get(0));
+		records.setLotteryOne(num.get(4));
+		records.setLotteryTwo(num.get(3));
+		records.setLotteryThree(num.get(2));
+		records.setLotteryFour(num.get(1));
+		records.setLotteryFive(num.get(0));
+		records.setLargeNum(num.get(4)>=5?"1":"0");
+		records.setLotterySingle(num.get(4)%2==0?"0":"1");
+		
+		lotteryService.updateByPrimaryKey(records);
+		
+		threadPoolTaskExecutor.execute(new Runnable() {
+			public void run() {
+				PublicMethod.senPrizeMsg(records,datetime, userBetService, accountService, logger, handler,userTransactionRecordsService);
+			}
+		});
+	}
+}

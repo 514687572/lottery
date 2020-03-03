@@ -1,0 +1,513 @@
+package com.stip.net.controller;
+
+import java.math.BigDecimal;
+import java.rmi.server.SocketSecurityException;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.springframework.web.socket.TextMessage;
+
+import com.google.gson.GsonBuilder;
+import com.lottery.net.utils.Constants;
+import com.lottery.net.utils.DBCache;
+import com.lottery.net.utils.JsonUtil;
+import com.stip.net.dao.LotteryRecordsDao;
+import com.stip.net.dto.BetDto;
+import com.stip.net.dto.HightBetDto;
+import com.stip.net.entity.DBDiceBetting;
+import com.stip.net.entity.LotteryRecords;
+import com.stip.net.entity.SysDict;
+import com.stip.net.entity.UserBetRecords;
+import com.stip.net.imessage.IMWebSocketHandler;
+import com.stip.net.kafka.consumer.OPenDiceConsumer;
+import com.stip.net.main.MainData;
+import com.stip.net.main.MsgCode;
+import com.stip.net.service.AccountService;
+import com.stip.net.service.LotteryService;
+import com.stip.net.service.LotteryUserService;
+import com.stip.net.service.RedisService;
+import com.stip.net.service.SysDictService;
+import com.stip.net.service.UserBetService;
+import com.stip.net.vo.Message;
+
+import io.eblock.eos4j.api.vo.account.Account;
+import net.sf.json.JSONObject;
+
+@Scope("request")
+@RequestMapping("/lottery")
+@RestController
+@Transactional(propagation = Propagation.REQUIRED, rollbackFor = {RuntimeException.class, Exception.class})
+public class LotteryController {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    private LotteryService lotteryService;
+    @Autowired
+    private UserBetService userBetService;
+    @Autowired
+    private ReloadableResourceBundleMessageSource messageSource;
+    @Autowired
+    private SessionLocaleResolver localeResolver;
+    @Autowired
+    private LotteryUserService lotteryUserService;
+    @Autowired
+	private IMWebSocketHandler handler;
+    @Autowired
+    private SysDictService sysDictService;
+    @Autowired
+	private LotteryRecordsDao dao;
+	@Autowired
+    private AccountService accountService;
+	@Autowired
+	private RedisService redisService;
+	
+//	@Autowired
+//	private OPenDiceConsumer consumer;
+//	
+//	private static boolean fa=true;
+
+    @GetMapping("/tolottery")
+    public ModelAndView toLottery(HttpServletRequest request, HttpServletResponse reponse) {
+		String userCode = request.getParameter("userCode");
+		Map<String,Object> resultMap = new HashMap<>(2);
+		resultMap.put("userCode",userCode);
+        return new ModelAndView("/html/index",resultMap);
+    }
+    
+    @GetMapping("/toDice")
+    public ModelAndView toDice(HttpServletRequest request, HttpServletResponse reponse) {
+		String userCode = request.getParameter("userCode");
+		Map<String,Object> resultMap = new HashMap<>(2);
+		resultMap.put("userCode",userCode);
+        return new ModelAndView("/EOS_DICE/html/theDiceHome",resultMap);
+    }
+
+	@GetMapping("/toTiger")
+	public ModelAndView toTiger(HttpServletRequest request, HttpServletResponse reponse) {
+		String userCode = request.getParameter("userCode");
+		Map<String, Object> resultMap = new HashMap<>(2);
+		resultMap.put("userCode", userCode);
+		return new ModelAndView("/eosdtplay/tiger/home", resultMap);
+	}
+
+    public String getConfig(String key, Locale locale) {
+        return messageSource.getMessage(key, null, locale);
+    }
+
+    /**
+     * 语言切换 通过session
+     *
+     * @param request
+     * @param type    切换语种  1中文 2英文
+     */
+    @GetMapping("/updLocale")
+    public void updLocale(HttpServletRequest request, HttpServletResponse response, String type) {
+        if ("1".equals(type)) {
+            localeResolver.setLocale(request,response,Locale.SIMPLIFIED_CHINESE);
+        } else {
+            localeResolver.setLocale(request,response,Locale.US);
+        }
+    }
+
+	/**
+	 * 博彩开关 是否开启
+	 * 检查账号冻结状态
+	 *
+	 * @param request
+	 */
+	@GetMapping("/checkUserStatus")
+	public Map<String, Object> checkUserStatus(HttpServletRequest request) {
+		String gameType = request.getParameter("gameType");
+		if ("tiger".equals(gameType)) {
+			return checkByType(Constants.DICT_TYPE_SWITCH_TIGER, request);
+		} else if ("dice".equals(gameType)) {
+			return checkByType(Constants.DICT_TYPE_SWITCH_DICE, request);
+		} else {
+			return checkByType(Constants.DICT_TYPE_SWITCH, request);
+		}
+	}
+
+	/**
+	 * 根据不同的游戏，判断是否可以投注
+	 */
+	private Map<String, Object> checkByType(String type, HttpServletRequest request) {
+		Map<String,Object> jsonResult=new HashMap<String, Object>(1);
+		jsonResult.put("status", Boolean.FALSE);
+		String userName=request.getParameter("userName");
+		Locale locale = localeResolver.resolveLocale(request);
+		if(StringUtils.isBlank(userName)){
+			jsonResult.put("msg", this.getConfig("notLogin",locale));
+			return jsonResult;
+		}
+
+		List<SysDict> sysdictByType = sysDictService.getSysdictByType(type);
+		if(CollectionUtils.isEmpty(sysdictByType) || !Constants.GENERAL_ONE.equals(sysdictByType.get(0).getValue())){
+			jsonResult.put("msg", this.getConfig("gameClosed",locale));
+			return jsonResult;
+		}
+
+		boolean userStatus = lotteryUserService.getUserStatus(userName);
+		if(userStatus){
+			jsonResult.put("status",Boolean.TRUE);
+			return jsonResult;
+		}
+		jsonResult.put("msg", this.getConfig("ecxeption",locale));
+		return jsonResult;
+	}
+
+	/**
+	 * 用户下注
+	 * @param request
+	 * @return
+	 * @throws InterruptedException 
+	 */
+	@PostMapping("/goBet.do")
+	public Map<String, Object> goBet(HttpServletRequest request){
+		Map<String,Object> jsonResult=new HashMap<String, Object>(1);
+		Date date=new Date();
+		int recordCount=0;
+		String isPrivate=request.getParameter("isPrivate");
+		String userName=request.getParameter("userName").toString();
+		String model=request.getParameter("model").toString();
+		String myBets=request.getParameter("perBets").toString();
+		String sid=request.getParameter("sid").toString();
+
+		List<UserBetRecords> list=new ArrayList<UserBetRecords>();
+		double longBets = 0;
+
+		Locale locale = localeResolver.resolveLocale(request);
+
+		try {
+			if(!"".equals(myBets)&&null!=myBets) {
+				double f =Double.parseDouble(myBets);
+				BigDecimal b = new BigDecimal(f);
+				longBets = b.setScale(4,BigDecimal.ROUND_HALF_DOWN).doubleValue();
+			}
+		} catch (NumberFormatException e) {
+			jsonResult.put("status", "false");
+			jsonResult.put("msg",  this.getConfig("betFail",locale));
+
+			return jsonResult;
+		}
+
+		LotteryRecords lotteryRecords=lotteryService.getNotPrizeByTime("ASC");
+
+		if("0".equals(model)) {//简单模式
+			String large=request.getParameter("large").toString();
+			String single=request.getParameter("single").toString();
+			String baseNum=request.getParameter("baseNum");
+			BetDto betDto=new BetDto();
+
+			betDto.setDate(date);
+			betDto.setLongBets(longBets);
+			betDto.setModel(model);
+			betDto.setUserName(userName);
+			betDto.setLarge(large);
+			betDto.setSingle(single);
+			betDto.setBaseNum(baseNum);
+
+			recordCount=userBetService.goBet(lotteryRecords, betDto, list,sid);
+
+			jsonResult.put("status", "true");
+			jsonResult.put("msg", this.getConfig("betSuccess",locale));
+			
+		}else {
+			HightBetDto hightBetDto=new HightBetDto();
+			String firstNums=request.getParameter("firstNums").toString();
+			String starRank=request.getParameter("starRank").toString();
+			String secondNums=request.getParameter("secondNums");
+			String thirdNums=request.getParameter("thirdNums");
+			String forthNums=request.getParameter("forthNums");
+			String fifthNums=request.getParameter("fifthNums");
+
+			hightBetDto.setDate(date);
+			hightBetDto.setFifthNums(fifthNums);
+			hightBetDto.setFirstNums(firstNums);
+			hightBetDto.setForthNums(forthNums);
+			hightBetDto.setLongBets(longBets);
+			hightBetDto.setModel(model);
+			hightBetDto.setSecondNums(secondNums);
+			hightBetDto.setStarRank(starRank);
+			hightBetDto.setThirdNums(thirdNums);
+			hightBetDto.setUserName(userName);
+
+			try {
+				recordCount=userBetService.goBetHight(lotteryRecords, hightBetDto,sid);
+			} catch (Exception e) {
+				jsonResult.put("status", "false");
+				jsonResult.put("msg", this.getConfig("betFail",locale));
+			}
+
+			jsonResult.put("status", "true");
+			jsonResult.put("msg", this.getConfig("betSuccess",locale));
+		}
+		
+		if(recordCount>0&&null!=isPrivate) {
+			Object pk=redisService.getCache(userName);
+			String priKey="";
+			
+			if(null!=pk) {
+				priKey=pk.toString();
+			}else {
+				jsonResult.put("loginStatus", "未登录或者登录信息过期，请重新登录。");
+			}
+			
+			try {
+				double cm=0;
+				if("0".equals(model)) {
+					cm=longBets*(list.size()-1);
+				}else {
+					cm=longBets*list.size();
+				}
+				BigDecimal a = new BigDecimal(cm);
+				String result=new DecimalFormat("0.0000").format(a.setScale(4,BigDecimal.ROUND_HALF_DOWN).doubleValue()).toString();
+				Map<String,String> remark=new HashMap<>();
+				remark.put("gameType", Constants.LOTTERY_TYPE);
+				remark.put("id", sid);
+				remark.put("userName", userName);
+				accountService.minusBalance(userName, result,priKey,JSONObject.fromObject(remark).toString());
+			} catch (InterruptedException e) {
+				logger.error("下注扣款失败");
+			}
+		}
+
+		return jsonResult;
+	}
+
+	/**
+	 * 查询开奖历史记录
+	 *
+	 * @param request
+	 * @return
+	 * @throws InterruptedException
+	 */
+	@GetMapping("/getLotteryHis.do")
+	public Map<String, Object> getLotteryHis(HttpServletRequest request) {
+		Map<String,Object> jsonResult=new HashMap<String, Object>(1);
+		int pageNum=Integer.parseInt(request.getParameter("pageNum"));
+		String rowNum=request.getParameter("rowNum");
+		jsonResult.put("hisRecords", lotteryService.getLotteryHistry(pageNum,rowNum));
+
+        return jsonResult;
+    }
+
+
+	/**
+	 * 骰子投注
+	 * @param account 用户名
+	 * @param type 投注类型
+	 * @param termnumber 期号
+	 * @param forecast 预测数字
+	 * @param bettingEOS 投注金额
+	 * @param transaction_id 交易地址
+	 * @param betTime	下注时间
+	 * @return
+	 */
+	@PostMapping("/getDiceBetting")
+	public Map<String, Object> getDiceBetting(@RequestParam String account,@RequestParam int type,@RequestParam long termnumber,
+ @RequestParam long forecast, @RequestParam String bettingEOS, @RequestParam long betTime, HttpServletRequest request) {
+		Locale locale = localeResolver.resolveLocale(request);
+		Map<String, Object> response = new HashMap<String, Object>(1);
+		int isPrivate=Integer.parseInt(request.getParameter("isPrivate"));
+		String transaction_id=request.getParameter("transaction_id");
+		if (Double.parseDouble(bettingEOS) < 0.1 || Double.parseDouble(bettingEOS) > 100) {
+			response.put("err", this.getConfig("dice111",locale));
+			return response;
+		}
+		if (forecast < 0 || forecast > 99) {
+			response.put("err", this.getConfig("dice112",locale));
+			return response;
+		}
+		//根据用户发送下注时间，把期号向后延迟
+		int sendMiao=(int) ((System.currentTimeMillis()-betTime)/1000);
+		if(sendMiao>0){
+			termnumber=termnumber+sendMiao*2;
+		}
+		//查询缓存中是否存在
+		DBDiceBetting diceCache=DBCache.getInstance().getDiceBettingAccount(account);
+		if(diceCache==null){
+			DBDiceBetting dbDice = new DBDiceBetting();
+			//判断是否是私钥登录，如果是私钥登录则扣款
+			if(isPrivate==1){
+				try {
+					Account acc=accountService.getAccount(account);
+					if(acc==null){
+						response.put("msg", this.getConfig("dice114",locale));
+						return response;
+					}
+					String balance = acc.getCoreLiquidBalance().split(" ")[0];
+					if(new BigDecimal(balance).compareTo(new BigDecimal(bettingEOS)) < 0){
+						response.put("msg", this.getConfig("dice113",locale));
+						return response;
+					}
+					String result=new DecimalFormat("0.0000").format(Double.parseDouble(bettingEOS)).toString();
+					Map<String,String> remark=new HashMap<>();
+					remark.put("gameType", Constants.DICE_TYPE);
+					remark.put("id", "");
+					remark.put("userName", account);
+					String privateKey=request.getParameter("privateKey");
+					long time=System.currentTimeMillis();
+					String id=accountService.minusBalanceToDice(account, result,privateKey,JSONObject.fromObject(remark).toString());
+					long time1=System.currentTimeMillis();
+					if(id!=null){
+						//扣钱需要多少秒
+						int miao=(int) ((time1-time)/1000);
+						//期号根据扣钱需要多少秒向后延迟
+						termnumber=termnumber+miao*2;
+						dbDice.setTransaction_id(id);
+						dbDice.setTermnumber(termnumber);
+						response.put("termnumber", termnumber);
+						response.put("balance", new BigDecimal(balance).subtract(new BigDecimal(bettingEOS))+" EOS");
+						// 推送骰子奖池余额
+						String poolBalance = accountService.getBalance(Constants.account_dice);
+						if (poolBalance != null) {
+							MainData.poolBalance.put(Constants.DICE_TYPE, poolBalance);
+							Map<String, Object> dmap = new HashMap<>();
+							dmap.put("balance", poolBalance);
+							String dJson = JsonUtil.buildJson(MsgCode.DICE_POOL_BALANCE, dmap);
+							handler.broadcast(new TextMessage(dJson), Constants.DICE_TYPE);
+						}
+					}else{
+						response.put("err", this.getConfig("dice115",locale));
+						return response;
+					}
+				} catch (InterruptedException e) {
+					response.put("err", this.getConfig("dice115",locale));
+					return response;
+				}
+			}else{
+				dbDice.setTransaction_id(transaction_id);
+				dbDice.setTermnumber(termnumber);
+			}
+			dbDice.setAccount(account);
+			dbDice.setType(type);
+			dbDice.setForecast(forecast);
+			dbDice.setBettingEOS(bettingEOS);
+			DBCache.getInstance().getDiceBettings().add(dbDice);
+			response.put("msg", this.getConfig("dice116",locale));
+		}else{
+			if(diceCache.getTermnumber()!=0){
+				response.put("err", this.getConfig("dice107",locale));
+				return response;
+			}
+			diceCache.setType(type);
+			diceCache.setTermnumber(termnumber);
+			diceCache.setForecast(forecast);
+			diceCache.setBettingEOS(bettingEOS);
+			diceCache.setTransaction_id(transaction_id);
+			response.put("msg", this.getConfig("dice116",locale));
+		}
+		return response;
+	}
+	/**
+	 * 查询用户的投注记录
+	 * @param account
+	 * @return
+	 */
+	@GetMapping("getAccountDice")
+	public Map<String, Object> getAccountDice(@RequestParam String account,@RequestParam int begin,@RequestParam int limit) {
+		Map<String, Object> response = new HashMap<String, Object>(1);
+		List<DBDiceBetting> dbdices=lotteryService.getAccountDice(account,begin,limit);
+		response.put("accountDice", dbdices);
+		return response;
+	}
+
+	/**
+	 * 查询用户下注记录
+	 * @param request
+	 * @return
+	 * @throws InterruptedException
+	 */
+	@GetMapping("/getUserBetHis.do")
+	public Map<String, Object> getUserBetHis(HttpServletRequest request) {
+		Map<String,Object> jsonResult=new HashMap<String, Object>(1);
+		int pageNum=Integer.parseInt(request.getParameter("pageNum"));
+		String userName=request.getParameter("userName").toString();
+
+		jsonResult.put("userHis", userBetService.getUserBetHistry(pageNum,userName));
+
+		return jsonResult;
+	}
+
+	/**
+	 * 发送用户下注记录
+	 * @return
+	 */
+	public void sendBetRecords(String userName,String count,Date date,String num) {
+		Message msg = new Message();
+		JSONObject obj=new JSONObject();
+
+		obj.put("userName", userName);
+		obj.put("count",count);
+		obj.put("date", date);
+		obj.put("num", num);
+
+		msg.setDate(new Date());
+		msg.setFrom("bet");
+		msg.setFromName("");
+		msg.setText(obj.toString());
+		String bulder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create().toJson(msg);
+		handler.broadcast(new TextMessage(bulder), Constants.LOTTERY_TYPE);
+	}
+	
+//	@GetMapping("/song.do")
+//	public String song() {
+//		new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				int block_number = 90810;
+//				fa=true;
+//				while (fa) {
+//					block_number++;
+//					String hash = UUID.randomUUID().toString().replaceAll("-", "");
+//					hash = hash + hash;
+//					long block_time = System.currentTimeMillis();
+//					SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+//					df.setTimeZone(TimeZone.getTimeZone("UTC"));
+//					String timestamp = df.format(new Date(block_time));
+//					String value = "{\"id\":\"" + hash + "\",\"block_num\":" + block_number + ",\"header\":{\"timestamp\":\"" + timestamp + "\",\"producer\":\"eosio\",\"confirmed\":0,\"previous\":\"000162b90b0ae8b6ef3479a9d0e2344eb0d357c0a5711523ba3a32f1aed7860f\",\"transaction_mroot\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"action_mroot\":\"1395b3b838f1a9249bfcde76b9b6379a5c7fb764fada90d7fb6f1593c0e113f1\",\"schedule_version\":0,\"header_extensions\":[],\"producer_signature\":\"SIG_K1_K3yPwihm7iTdn4DgE8Q9NJSTR4AgTxhsBf7ys6sAY5sDivzDbzB1WnEBPH3u7iGcdXjQBMUhSfdMkdoaMiZEt8yu8cpQ8p\"},\"dpos_proposed_irreversible_blocknum\":90810,\"dpos_irreversible_blocknum\":90809,\"bft_irreversible_blocknum\":0,\"pending_schedule_lib_num\":0,\"pending_schedule_hash\":\"828135c21a947b15cdbf4941ba09e1c9e0a80e88a157b0989e9b476b71a21c6b\",\"pending_schedule\":{\"version\":0,\"producers\":[]},\"active_schedule\":{\"version\":0,\"producers\":[{\"producer_name\":\"eosio\",\"block_signing_key\":\"EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV\"}]},\"blockroot_merkle\":{\"_active_nodes\":[\"000162b90b0ae8b6ef3479a9d0e2344eb0d357c0a5711523ba3a32f1aed7860f\",\"1a8105676f6458e9929e8238b44849e9596e526cd630c03c3b9bfcfd992f2fc3\",\"7966bd8c279136a7dc35366ee19c598dbbfc386baa8fcf3cd890e8855baac7af\",\"d085dd89871a3e7d3c707acc5bdd778930fb1ee1bcdbc4e306fae9fa8647fdd0\",\"28142a4d76123450a7d89023aeea3fd6d5617045b503e73c9973b0d3475efc74\",\"fdfe66d14da768d3dc1c1e84832ade78c5ff543b3f96a47da92b6dda82d9b6d3\",\"dc98f96278b6deaaeb477d55bd6bb00db06366d043f4025b76fcaf48f9bbec7b\",\"7c86b57c18f2f35a0ad5458aabae54d2db65a14fd4dbbde5639154fb9e051e2a\",\"2dbd8598fb1109289cf27b4a9188e2c7494daadc027d3f2e3dd156745151c7d5\",\"4c4fdb6e73b5760c4e4fa87a661f0a415d1d6548ca8aaa4974ad2d22a70345e8\"],\"_node_count\":90809},\"producer_to_last_produced\":[[\"eosio\",90810]],\"producer_to_last_implied_irb\":[[\"eosio\",90809]],\"block_signing_key\":\"EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV\",\"confirm_count\":[],\"confirmations\":[],\"block\":{\"timestamp\":\"2018-11-28T06:16:26.000\",\"producer\":\"eosio\",\"confirmed\":0,\"previous\":\"000162b90b0ae8b6ef3479a9d0e2344eb0d357c0a5711523ba3a32f1aed7860f\",\"transaction_mroot\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"action_mroot\":\"1395b3b838f1a9249bfcde76b9b6379a5c7fb764fada90d7fb6f1593c0e113f1\",\"schedule_version\":0,\"header_extensions\":[],\"producer_signature\":\"SIG_K1_K3yPwihm7iTdn4DgE8Q9NJSTR4AgTxhsBf7ys6sAY5sDivzDbzB1WnEBPH3u7iGcdXjQBMUhSfdMkdoaMiZEt8yu8cpQ8p\",\"transactions\":[],\"block_extensions\":[]},\"validated\":true,\"in_current_chain\":true}";
+//					JSONObject jsonObject = JSONObject.fromObject(value);
+//					consumer.test(jsonObject);
+//					try {
+//						Thread.sleep(500);
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			}
+//		}).start();
+//		return "<h1>gun</h1>";
+//	}
+//	
+//	@GetMapping("/song1.do")
+//	public String song1() {
+//		fa=false;
+//		return "<h1>guan</h1>";
+//	}
+}

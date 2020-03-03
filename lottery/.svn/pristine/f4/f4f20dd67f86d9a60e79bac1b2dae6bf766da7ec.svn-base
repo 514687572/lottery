@@ -1,0 +1,141 @@
+let userName="";
+let publicKey="";
+let loginBtn=false;
+let totalCpuWidth=$("#totalCpu").width();
+let betsTime=0;
+let loginBoolean = false;
+
+$(".loginBtnBets").click(function(){
+    $("#loginContainer").css("display","block");
+})
+
+
+//私钥登录
+$("#loginComfire").click(function () {
+    let reg = new RegExp("^[A-Za-z0-9]{51}$");
+    if (reg.test($("#userChainId").val()) == true) {
+      $.ajax({
+        type: "post",
+        url: `${baseUrl}/account/loginWidthPriKey.do`,
+        data: {
+          private_key: $("#userChainId").val(),
+          userCode: userCode ? userCode : ""
+        },
+        success: function (date) {
+            popup({type:'success',msg:"登录成功",delay:1000,callBack:function(){
+                $("#userChainId").val("");
+                userName = date.userName;
+                window.sessionStorage.setItem("userName",`${userName}`);
+                publicKey = date.pubKey;
+                window.sessionStorage.setItem("publicKey",`${publicKey}`);
+                loginBoolean = true;
+             }});
+          
+          $.ajax({
+            type: "get",
+            url: `${baseUrl}/account/getAccount.do`,
+            data: {
+              account: date.userName
+            },
+            success: function (msg) {
+              uid = date.userName;
+              $("#userInfomation").css("display", "block");
+              $("#loginBtn").css("display", "none");
+              $("#loginContainer").css("display", "none");
+              $(".loginBtnBets").css("display", "none");
+              $(".betsBtn").css("display", "block");
+  
+              $("#cpu").text(
+                `${Number((msg.cpu.used / msg.cpu.max) * 100).toFixed(2)}%`
+              );
+              $("#userName").text(`${date.userName}`);
+              $("#EosMoney").text(`${msg.balance ? msg.balance : "0"}`);
+            }
+          });
+          getHisBets();
+        }
+      });
+    } else {
+        popup({type:'error',msg:"请输入正确的51位私钥",delay:1000,bg:true,clickDomCancel:true});
+        $("#userChainId").val("");
+    }
+});
+
+
+//获取账户信息
+function checkIdentity() {
+    let userNameCheck="";
+    let userEos=0;
+    if(window.ScatterJS==undefined){
+      userNameCheck=userName;
+      loginBoolean=true;
+  }else{
+      if(window.ScatterJS.scatter.identity==null){
+        userNameCheck=userName;
+        loginBoolean=true;
+      }else{
+        userNameCheck=scatter.identity.accounts[0].name;
+        loginBoolean=false;
+      }
+  }
+    $.ajax({
+      type: "get",
+      url: `${baseUrl}/account/getAccount.do`,
+      data: {
+        account: userNameCheck
+      },
+      success: function (msg) {
+        if(msg.balance){
+            userEos=Number(msg.balance.replace("EOS",""));
+        }
+        if (userNameCheck!=""&&userNameCheck!=null) {
+          uid =userNameCheck
+          $("#userInfo").css("display", "block");
+          $("#userInfomation").css("display", "block");
+          $("#loginBtn").css("display", "none");
+          $("#loginContainer").css("display", "none");
+          $(".loginBtnBets").css("display", "none");
+          $(".betsBtn").css("display", "block");
+          $("#cpu").text(`${Number((msg.cpu.used / msg.cpu.max) * 100).toFixed(2)}%`);
+          $("#userCpu").css("width",`${Number((msg.cpu.used / msg.cpu.max))*totalCpuWidth/100}rem`);
+          $("#userName").text(`${userNameCheck}`);
+          if(userEos>=10000){
+            $("#EosMoney").text(`${Number(userEos/1000).toFixed(4)}K EOS`);
+          }else{
+            $("#EosMoney").text(`${userEos.toFixed(4)} EOS`);
+          }
+        } else {
+          $("#userInfo").css("display", "none");
+          $(".loginBtn").css("display", "block");
+          $(".loginBtnBets").css("display", "block");
+          $(".betsBtn").css("display", "none");
+        }
+      }
+    });
+}
+
+
+//获取奖金池的数量
+function getBlance() {
+    // console.log(111)
+    $.ajax({
+      type: "get",
+      url: `${baseUrl}/account/getSysInfo.do`,
+      success: function (msg) {
+        balance = Number(
+          msg.balance.replace("EOS", "").replace(" ", "")
+        ).toFixed(2);
+        totalLimitBets = Number(balance * 0.05).toFixed(4);
+        if(totalLimitBets>=1000){
+            $("#percent").text(`/${Number(totalLimitBets / 1000).toFixed(2)}K`)
+          }else{
+            $("#percent").text(`/${Number(totalLimitBets ).toFixed(2)}`)
+          }
+        if(balance>=10000){
+          $("#bonus").text(`${Number(balance/1000).toFixed(2)}K`);
+        }else{
+          $("#bonus").text(`${Number(balance)}`);
+        }
+      }
+    });
+}

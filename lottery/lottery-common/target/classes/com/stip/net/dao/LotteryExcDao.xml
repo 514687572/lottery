@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.LotteryExcDao">
+  <resultMap id="BaseResultMap" type="com.stip.net.entity.LotteryExc">
+    <id column="LotteryExc_exc_id" jdbcType="INTEGER" property="excId" />
+    <result column="LotteryExc_user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="LotteryExc_isPlus" jdbcType="INTEGER" property="isplus" />
+    <result column="LotteryExc_amount" jdbcType="DECIMAL" property="amount" />
+    <result column="LotteryExc_exc_status" jdbcType="VARCHAR" property="excStatus" />
+    <result column="LotteryExc_exc_count" jdbcType="INTEGER" property="excCount" />
+    <result column="LotteryExc_game_type" jdbcType="VARCHAR" property="gameType" />
+    <result column="LotteryExc_remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    LotteryExc.exc_id as LotteryExc_exc_id, LotteryExc.user_name as LotteryExc_user_name, 
+    LotteryExc.isPlus as LotteryExc_isPlus, LotteryExc.amount as LotteryExc_amount, LotteryExc.exc_status as LotteryExc_exc_status, 
+    LotteryExc.exc_count as LotteryExc_exc_count, LotteryExc.game_type as LotteryExc_game_type, 
+    LotteryExc.remark as LotteryExc_remark
+  </sql>
+  <select id="selectByExample" parameterType="com.stip.net.example.LotteryExcExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_lottery_exc LotteryExc
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="fromRowNum != null and toRowNum >= 0">
+      limit #{fromRowNum}, #{toRowNum}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_lottery_exc LotteryExc
+    where LotteryExc.exc_id = #{excId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_lottery_exc
+    where exc_id = #{excId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.stip.net.example.LotteryExcExample">
+    delete LotteryExc from t_lottery_exc LotteryExc
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.stip.net.entity.LotteryExc">
+    insert into t_lottery_exc (exc_id, user_name, isPlus, 
+      amount, exc_status, exc_count, 
+      game_type, remark)
+    values (#{excId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{isplus,jdbcType=INTEGER}, 
+      #{amount,jdbcType=DECIMAL}, #{excStatus,jdbcType=VARCHAR}, #{excCount,jdbcType=INTEGER}, 
+      #{gameType,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.stip.net.entity.LotteryExc">
+    insert into t_lottery_exc
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="excId != null">
+        exc_id,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="isplus != null">
+        isPlus,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+      <if test="excStatus != null">
+        exc_status,
+      </if>
+      <if test="excCount != null">
+        exc_count,
+      </if>
+      <if test="gameType != null">
+        game_type,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="excId != null">
+        #{excId,jdbcType=INTEGER},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="isplus != null">
+        #{isplus,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="excStatus != null">
+        #{excStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="excCount != null">
+        #{excCount,jdbcType=INTEGER},
+      </if>
+      <if test="gameType != null">
+        #{gameType,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.stip.net.example.LotteryExcExample" resultType="java.lang.Integer">
+    select count(*) from t_lottery_exc LotteryExc
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_lottery_exc LotteryExc
+    <set>
+      <if test="record.excId != null">
+        LotteryExc.exc_id = #{record.excId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userName != null">
+        LotteryExc.user_name = #{record.userName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isplus != null">
+        LotteryExc.isPlus = #{record.isplus,jdbcType=INTEGER},
+      </if>
+      <if test="record.amount != null">
+        LotteryExc.amount = #{record.amount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.excStatus != null">
+        LotteryExc.exc_status = #{record.excStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.excCount != null">
+        LotteryExc.exc_count = #{record.excCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.gameType != null">
+        LotteryExc.game_type = #{record.gameType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null">
+        LotteryExc.remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_lottery_exc LotteryExc
+    set LotteryExc.exc_id = #{record.excId,jdbcType=INTEGER},
+      LotteryExc.user_name = #{record.userName,jdbcType=VARCHAR},
+      LotteryExc.isPlus = #{record.isplus,jdbcType=INTEGER},
+      LotteryExc.amount = #{record.amount,jdbcType=DECIMAL},
+      LotteryExc.exc_status = #{record.excStatus,jdbcType=VARCHAR},
+      LotteryExc.exc_count = #{record.excCount,jdbcType=INTEGER},
+      LotteryExc.game_type = #{record.gameType,jdbcType=VARCHAR},
+      LotteryExc.remark = #{record.remark,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.stip.net.entity.LotteryExc">
+    update t_lottery_exc
+    <set>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="isplus != null">
+        isPlus = #{isplus,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="excStatus != null">
+        exc_status = #{excStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="excCount != null">
+        exc_count = #{excCount,jdbcType=INTEGER},
+      </if>
+      <if test="gameType != null">
+        game_type = #{gameType,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where exc_id = #{excId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.stip.net.entity.LotteryExc">
+    update t_lottery_exc
+    set user_name = #{userName,jdbcType=VARCHAR},
+      isPlus = #{isplus,jdbcType=INTEGER},
+      amount = #{amount,jdbcType=DECIMAL},
+      exc_status = #{excStatus,jdbcType=VARCHAR},
+      exc_count = #{excCount,jdbcType=INTEGER},
+      game_type = #{gameType,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR}
+    where exc_id = #{excId,jdbcType=INTEGER}
+  </update>
+</mapper>

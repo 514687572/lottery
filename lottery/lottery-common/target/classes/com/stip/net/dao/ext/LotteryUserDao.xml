@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.LotteryUserDao">
+  <!--
+    文件的生成时间： 2018-11-28 14:22:58.
+    你应该把Mapper类的扩展方法的sql语句放在这个文件里面
+  -->
+  
+  <insert id="batchInsert" parameterType="java.util.List">
+    insert into t_lottery_user (user_id, user_name, user_key, referrer, 
+      user_code, user_status, opt_user, opt_user_id, create_time, 
+      update_time, remark) values 
+    <foreach item='item' collection='list' separator=','  index=''>
+     (#{item.userId,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, 
+      #{item.userKey,jdbcType=VARCHAR}, #{item.referrer,jdbcType=INTEGER}, 
+      #{item.userCode,jdbcType=VARCHAR}, #{item.userStatus,jdbcType=VARCHAR}, 
+      #{item.optUser,jdbcType=VARCHAR}, #{item.optUserId,jdbcType=INTEGER}, 
+      #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, 
+      #{item.remark,jdbcType=VARCHAR}) 
+    </foreach>
+  </insert>
+
+	<!-- 根据id查询积分用户的邀请者 -->
+	<select id="getScoreInviterById" parameterType="long" resultType="com.stip.net.entity.LotteryUserScore">
+		SELECT * FROM t_lottery_score_user
+		WHERE id = 
+			(SELECT referrer FROM t_lottery_score_user WHERE id = #{id})
+	</select>
+</mapper>

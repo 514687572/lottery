@@ -1,0 +1,334 @@
+package com.stip.net.entity.tiger;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+/**
+ * 龙虎斗房间
+ */
+public class TigerRoom {
+	private int id;// 房间号
+	private int x;// 从最新区块往后数x位，为龙牌开奖区块
+	private int y;// 从最新区块往后数y位，为虎牌开奖区块
+	private int qid;// 期号
+	private int state = 3;// 游戏状态，默认洗牌阶段，参见TigerTimeState枚举
+	private long lastUpdate = System.currentTimeMillis();// 上次更新时间（开始投注或开始开奖）
+	private boolean done;// 每个游戏阶段的特定单次操作是否结束
+	private int cardNum;// 房间剩余牌数
+	private BigDecimal put_long0 = new BigDecimal(0);// 投注总金额，龙
+	private BigDecimal put_long1 = new BigDecimal(0);// 投注总金额，龙单
+	private BigDecimal put_long2 = new BigDecimal(0);// 投注总金额，龙双
+	private BigDecimal put_hu0 = new BigDecimal(0);// 投注总金额，虎
+	private BigDecimal put_hu1 = new BigDecimal(0);// 投注总金额，虎单
+	private BigDecimal put_hu2 = new BigDecimal(0);// 投注总金额，虎双
+	private BigDecimal put_he = new BigDecimal(0);// 投注总金额，和
+	private BlockInfo blockOpen;// 开奖时的当前区块
+	private BlockInfo blockLong;// 本期龙牌区块信息
+	private BlockInfo blockHu;// 本期虎牌区块信息
+	private int[] cardLong;// 本期龙牌索引、花色、点数
+	private int[] cardHu;// 本期虎牌索引、花色、点数
+	private List<int[]> cards = new ArrayList<>();// 此房间已经发过的牌，数组存的是花色和点数，黑桃1红桃2梅花3方块4
+	private Set<String> heads = new HashSet<>();// 房间里用户的account，只用于计算人数
+	private List<List<Integer>> roads = new LinkedList<>();// 路单，缓存历史开奖记录
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	public int getQid() {
+		return qid;
+	}
+
+	public void setQid(int qid) {
+		this.qid = qid;
+	}
+
+	public int getState() {
+		return state;
+	}
+
+	public void setState(int state) {
+		this.state = state;
+	}
+
+	public long getLastUpdate() {
+		return lastUpdate;
+	}
+
+	public void setLastUpdate(long lastUpdate) {
+		this.lastUpdate = lastUpdate;
+	}
+
+	public boolean isDone() {
+		return done;
+	}
+
+	public void setDone(boolean done) {
+		this.done = done;
+	}
+
+	public int getCardNum() {
+		return cardNum;
+	}
+
+	public void setCardNum(int cardNum) {
+		this.cardNum = cardNum;
+	}
+
+	public BigDecimal getPut_long0() {
+		return put_long0;
+	}
+
+	public void setPut_long0(BigDecimal put_long0) {
+		this.put_long0 = put_long0;
+	}
+
+	public BigDecimal getPut_long1() {
+		return put_long1;
+	}
+
+	public void setPut_long1(BigDecimal put_long1) {
+		this.put_long1 = put_long1;
+	}
+
+	public BigDecimal getPut_long2() {
+		return put_long2;
+	}
+
+	public void setPut_long2(BigDecimal put_long2) {
+		this.put_long2 = put_long2;
+	}
+
+	public BigDecimal getPut_hu0() {
+		return put_hu0;
+	}
+
+	public void setPut_hu0(BigDecimal put_hu0) {
+		this.put_hu0 = put_hu0;
+	}
+
+	public BigDecimal getPut_hu1() {
+		return put_hu1;
+	}
+
+	public void setPut_hu1(BigDecimal put_hu1) {
+		this.put_hu1 = put_hu1;
+	}
+
+	public BigDecimal getPut_hu2() {
+		return put_hu2;
+	}
+
+	public void setPut_hu2(BigDecimal put_hu2) {
+		this.put_hu2 = put_hu2;
+	}
+
+	public BigDecimal getPut_he() {
+		return put_he;
+	}
+
+	public void setPut_he(BigDecimal put_he) {
+		this.put_he = put_he;
+	}
+
+	public BlockInfo getBlockOpen() {
+		return blockOpen;
+	}
+
+	public void setBlockOpen(BlockInfo blockOpen) {
+		this.blockOpen = blockOpen;
+	}
+
+	public BlockInfo getBlockLong() {
+		return blockLong;
+	}
+
+	public void setBlockLong(BlockInfo blockLong) {
+		this.blockLong = blockLong;
+	}
+
+	public BlockInfo getBlockHu() {
+		return blockHu;
+	}
+
+	public void setBlockHu(BlockInfo blockHu) {
+		this.blockHu = blockHu;
+	}
+
+	public int[] getCardLong() {
+		return cardLong;
+	}
+
+	public void setCardLong(int[] cardLong) {
+		this.cardLong = cardLong;
+	}
+
+	public int[] getCardHu() {
+		return cardHu;
+	}
+
+	public void setCardHu(int[] cardHu) {
+		this.cardHu = cardHu;
+	}
+
+	public List<int[]> getCards() {
+		return cards;
+	}
+
+	public void setCards(List<int[]> cards) {
+		this.cards = cards;
+	}
+
+	public Set<String> getHeads() {
+		return heads;
+	}
+
+	public void setHeads(Set<String> heads) {
+		this.heads = heads;
+	}
+
+	public List<List<Integer>> getRoads() {
+		return roads;
+	}
+
+	public void setRoads(List<List<Integer>> roads) {
+		this.roads = roads;
+	}
+
+	// json相关，start
+	public String getCardsJson() {
+		TypeToken<List<int[]>> token = new TypeToken<List<int[]>>() {
+		};
+		return new Gson().toJson(getCards(), token.getType());
+	}
+
+	public void setCardsJson(String cardsJson) {
+		if (cardsJson != null) {
+			TypeToken<List<int[]>> token = new TypeToken<List<int[]>>() {
+			};
+			setCards(new Gson().fromJson(cardsJson, token.getType()));
+		}
+	}
+
+	public String getRoadsJson() {
+		TypeToken<List<List<Integer>>> token = new TypeToken<List<List<Integer>>>() {
+		};
+		return new Gson().toJson(getRoads(), token.getType());
+	}
+
+	public void setRoadsJson(String roadsJson) {
+		if (roadsJson != null) {
+			TypeToken<List<List<Integer>>> token = new TypeToken<List<List<Integer>>>() {
+			};
+			setRoads(new Gson().fromJson(roadsJson, token.getType()));
+		}
+	}
+	// json相关，end
+
+	/**
+	 * 根据投注项，取房间此投注项总金额
+	 */
+	public BigDecimal getMoneyByOpt(TigerOption opt) {
+		switch (opt) {
+		case long0:
+			return put_long0;
+		case long1:
+			return put_long1;
+		case long2:
+			return put_long2;
+		case hu0:
+			return put_hu0;
+		case hu1:
+			return put_hu1;
+		case hu2:
+			return put_hu2;
+		case he:
+			return put_he;
+		default:
+			return null;
+		}
+	}
+
+	/**
+	 * 一小局结束后，清空上一局数据，期号加1
+	 */
+	public void newStart() {
+		put_long0 = new BigDecimal(0);
+		put_long1 = new BigDecimal(0);
+		put_long2 = new BigDecimal(0);
+		put_hu0 = new BigDecimal(0);
+		put_hu1 = new BigDecimal(0);
+		put_hu2 = new BigDecimal(0);
+		put_he = new BigDecimal(0);
+		qid++;
+		blockOpen = null;
+		blockLong = null;
+		blockHu = null;
+		cardLong = null;
+		cardHu = null;
+	}
+
+	/**
+	 * 根据点数，取随机花色的牌。一共8副牌，同一张牌不能超过8次。数组元素为花色、点数
+	 */
+	public int[] getRandomCard(int point) {
+		List<int[]> cardRemain = new ArrayList<>();
+		for (int i = 1; i <= 4; i++) {// 4种花色
+			for (int j = 0; j < 8; j++) {// 相同点数的8张牌
+				cardRemain.add(new int[] { i, point });
+			}
+		}
+		for (int[] card : cards) {
+			if (cardRemain.contains(card)) {
+				cardRemain.remove(card);
+			}
+		}
+		if (cardRemain.size() == 0) {
+			return null;
+		}
+		return cardRemain.get(new Random().nextInt(cardRemain.size()));
+	}
+
+	/**
+	 * 计算此房间当前最大赔付金额（根据所有玩家的下注）
+	 */
+	public BigDecimal getMaxPeiMoney() {
+		BigDecimal pei_long0 = put_long0.multiply(new BigDecimal(TigerOption.long0.getPei()));
+		BigDecimal pei_long1 = put_long0.multiply(new BigDecimal(TigerOption.long0.getPei()));
+		BigDecimal pei_long2 = put_long0.multiply(new BigDecimal(TigerOption.long0.getPei()));
+		BigDecimal pei_hu0 = put_long0.multiply(new BigDecimal(TigerOption.long0.getPei()));
+		BigDecimal pei_hu1 = put_long0.multiply(new BigDecimal(TigerOption.long0.getPei()));
+		BigDecimal pei_hu2 = put_long0.multiply(new BigDecimal(TigerOption.long0.getPei()));
+		BigDecimal pei_he = put_long0.multiply(new BigDecimal(TigerOption.long0.getPei()));
+		return pei_long0.add(pei_long1).add(pei_long2).add(pei_hu0).add(pei_hu1).add(pei_hu2).add(pei_he)
+				.divide(new BigDecimal(1000));
+	}
+}

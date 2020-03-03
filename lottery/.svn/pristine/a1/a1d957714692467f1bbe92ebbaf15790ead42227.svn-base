@@ -1,0 +1,72 @@
+package com.stip.net.entity.tiger;
+
+import java.math.BigDecimal;
+
+/**
+ * 龙虎斗投注记录更新器
+ */
+public class TigerPutRecordUpdater {
+	private String txId;// 区块链扣款的transaction_id，唯一键
+	private Integer txStatus;// 0为已投注，1为交易确认
+	private BigDecimal putMoney;// 投注金额
+	private BigDecimal gainMoney;// 获奖金额
+	private Long openTimeSpt;// 开奖时间戳
+	private Integer status;// 0未开奖，1未中奖，2中奖未发，3发奖成功，-1发奖失败
+	private Integer topStatus;// 0未发代币或发币失败，1已发代币，-1不发代币
+
+	public String getTxId() {
+		return txId;
+	}
+
+	public void setTxId(String txId) {
+		this.txId = txId;
+	}
+
+	public Integer getTxStatus() {
+		return txStatus;
+	}
+
+	public void setTxStatus(Integer txStatus) {
+		this.txStatus = txStatus;
+	}
+
+	public BigDecimal getPutMoney() {
+		return putMoney;
+	}
+
+	public void setPutMoney(BigDecimal putMoney) {
+		this.putMoney = putMoney;
+	}
+
+	public BigDecimal getGainMoney() {
+		return gainMoney;
+	}
+
+	public void setGainMoney(BigDecimal gainMoney) {
+		this.gainMoney = gainMoney;
+	}
+
+	public Long getOpenTimeSpt() {
+		return openTimeSpt;
+	}
+
+	public void setOpenTimeSpt(Long openTimeSpt) {
+		this.openTimeSpt = openTimeSpt;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public Integer getTopStatus() {
+		return topStatus;
+	}
+
+	public void setTopStatus(Integer topStatus) {
+		this.topStatus = topStatus;
+	}
+}

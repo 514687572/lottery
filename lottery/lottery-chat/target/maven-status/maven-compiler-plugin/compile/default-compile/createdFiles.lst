@@ -1,0 +1,15 @@
+com\stip\net\imessage\HandShake.class
+com\stip\net\job\TigerQueryMyPutJob.class
+com\stip\net\job\TigerHallInfoJob.class
+com\stip\net\imessage\IMWebSocketConfigurer.class
+com\stip\net\imessage\SockJsService.class
+com\stip\net\job\AbstractJob.class
+com\stip\net\job\TigerPutJob$2.class
+com\stip\net\job\TigerPutJob$1.class
+com\stip\net\job\ScoreLoginJob.class
+com\stip\net\job\TigerLoginJob.class
+com\stip\net\job\TigerRoomLeaveJob.class
+com\stip\net\imessage\IMWebSocketHandler.class
+com\stip\net\job\TigerPutJob.class
+com\stip\net\job\TigerRoomEnterJob.class
+com\stip\net\job\TigerRoomInfoJob.class

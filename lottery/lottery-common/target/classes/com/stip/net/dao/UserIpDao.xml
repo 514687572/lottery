@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.UserIpDao">
+  <resultMap id="BaseResultMap" type="com.stip.net.entity.UserIp">
+    <id column="UserIp_id" jdbcType="BIGINT" property="id" />
+    <result column="UserIp_user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="UserIp_login_ip" jdbcType="VARCHAR" property="loginIp" />
+    <result column="UserIp_ip_status" jdbcType="CHAR" property="ipStatus" />
+    <result column="UserIp_opt_user" jdbcType="VARCHAR" property="optUser" />
+    <result column="UserIp_opt_user_id" jdbcType="BIGINT" property="optUserId" />
+    <result column="UserIp_create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UserIp_update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    UserIp.id as UserIp_id, UserIp.user_name as UserIp_user_name, UserIp.login_ip as UserIp_login_ip, 
+    UserIp.ip_status as UserIp_ip_status, UserIp.opt_user as UserIp_opt_user, UserIp.opt_user_id as UserIp_opt_user_id, 
+    UserIp.create_time as UserIp_create_time, UserIp.update_time as UserIp_update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.stip.net.example.UserIpExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_user_ip UserIp
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="fromRowNum != null and toRowNum >= 0">
+      limit #{fromRowNum}, #{toRowNum}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_user_ip UserIp
+    where UserIp.id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_user_ip
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.stip.net.example.UserIpExample">
+    delete UserIp from t_user_ip UserIp
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.stip.net.entity.UserIp">
+    insert into t_user_ip (id, user_name, login_ip, 
+      ip_status, opt_user, opt_user_id, 
+      create_time, update_time)
+    values (#{id,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR}, #{loginIp,jdbcType=VARCHAR}, 
+      #{ipStatus,jdbcType=CHAR}, #{optUser,jdbcType=VARCHAR}, #{optUserId,jdbcType=BIGINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.stip.net.entity.UserIp">
+    insert into t_user_ip
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="loginIp != null">
+        login_ip,
+      </if>
+      <if test="ipStatus != null">
+        ip_status,
+      </if>
+      <if test="optUser != null">
+        opt_user,
+      </if>
+      <if test="optUserId != null">
+        opt_user_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="loginIp != null">
+        #{loginIp,jdbcType=VARCHAR},
+      </if>
+      <if test="ipStatus != null">
+        #{ipStatus,jdbcType=CHAR},
+      </if>
+      <if test="optUser != null">
+        #{optUser,jdbcType=VARCHAR},
+      </if>
+      <if test="optUserId != null">
+        #{optUserId,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.stip.net.example.UserIpExample" resultType="java.lang.Integer">
+    select count(*) from t_user_ip UserIp
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_user_ip UserIp
+    <set>
+      <if test="record.id != null">
+        UserIp.id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.userName != null">
+        UserIp.user_name = #{record.userName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.loginIp != null">
+        UserIp.login_ip = #{record.loginIp,jdbcType=VARCHAR},
+      </if>
+      <if test="record.ipStatus != null">
+        UserIp.ip_status = #{record.ipStatus,jdbcType=CHAR},
+      </if>
+      <if test="record.optUser != null">
+        UserIp.opt_user = #{record.optUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.optUserId != null">
+        UserIp.opt_user_id = #{record.optUserId,jdbcType=BIGINT},
+      </if>
+      <if test="record.createTime != null">
+        UserIp.create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        UserIp.update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_user_ip UserIp
+    set UserIp.id = #{record.id,jdbcType=BIGINT},
+      UserIp.user_name = #{record.userName,jdbcType=VARCHAR},
+      UserIp.login_ip = #{record.loginIp,jdbcType=VARCHAR},
+      UserIp.ip_status = #{record.ipStatus,jdbcType=CHAR},
+      UserIp.opt_user = #{record.optUser,jdbcType=VARCHAR},
+      UserIp.opt_user_id = #{record.optUserId,jdbcType=BIGINT},
+      UserIp.create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      UserIp.update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.stip.net.entity.UserIp">
+    update t_user_ip
+    <set>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="loginIp != null">
+        login_ip = #{loginIp,jdbcType=VARCHAR},
+      </if>
+      <if test="ipStatus != null">
+        ip_status = #{ipStatus,jdbcType=CHAR},
+      </if>
+      <if test="optUser != null">
+        opt_user = #{optUser,jdbcType=VARCHAR},
+      </if>
+      <if test="optUserId != null">
+        opt_user_id = #{optUserId,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.stip.net.entity.UserIp">
+    update t_user_ip
+    set user_name = #{userName,jdbcType=VARCHAR},
+      login_ip = #{loginIp,jdbcType=VARCHAR},
+      ip_status = #{ipStatus,jdbcType=CHAR},
+      opt_user = #{optUser,jdbcType=VARCHAR},
+      opt_user_id = #{optUserId,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

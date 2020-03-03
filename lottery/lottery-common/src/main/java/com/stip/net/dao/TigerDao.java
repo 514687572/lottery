@@ -1,0 +1,207 @@
+package com.stip.net.dao;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import com.stip.net.entity.TopFlow;
+import com.stip.net.entity.tiger.TigerConfirm;
+import com.stip.net.entity.tiger.TigerHistory;
+import com.stip.net.entity.tiger.TigerLatePutRecord;
+import com.stip.net.entity.tiger.TigerPutRecord;
+import com.stip.net.entity.tiger.TigerPutRecord2;
+import com.stip.net.entity.tiger.TigerPutRecordUpdater;
+import com.stip.net.entity.tiger.TigerRoom;
+
+public interface TigerDao {
+
+	/**
+	 * 测试代码，模拟推送投注确认消息
+	 */
+	@Select("SELECT * FROM t_tiger_records WHERE txStatus=0 LIMIT 1")
+	TigerPutRecord test1();
+
+	/**
+	 * 查询用户某房间某期的投注总金额（EOS）
+	 */
+	@Select("SELECT IFNULL(SUM(putMoney), 0) FROM t_tiger_records WHERE qid=#{qid} AND userId=#{userId} AND roomId=#{roomId} AND opt=#{opt}")
+	BigDecimal getMyPutMoney(@Param("userId") String userId, @Param("roomId") int roomId, @Param("qid") int qid,
+			@Param("opt") int opt);
+
+	/**
+	 * 查询用户某房间某期的投注总金额（积分）
+	 */
+	@Select("SELECT IFNULL(SUM(putMoney), 0) FROM t_tiger_record2 WHERE qid=#{qid} AND userId=#{userId} AND roomId=#{roomId} AND opt=#{opt}")
+	BigDecimal getMyPutMoney2(@Param("userId") String userId, @Param("roomId") int roomId, @Param("qid") int qid,
+			@Param("opt") int opt);
+
+	void saveRecord(TigerPutRecord record);
+
+	void saveRecord2(TigerPutRecord2 record);
+
+	void saveLateRecord(TigerLatePutRecord record);
+
+	/**
+	 * 根据txId查询投注记录
+	 */
+	@Select("SELECT * FROM t_tiger_records WHERE txId=#{txId}")
+	TigerPutRecord getRecordByTxId(@Param("txId") String txId);
+
+	/**
+	 * 根据txId查询延迟投注记录
+	 */
+	@Select("SELECT * FROM t_tiger_late_records WHERE txId=#{txId}")
+	TigerLatePutRecord getLateRecordByTxId(@Param("txId") String txId);
+
+	/**
+	 * 根据更新器，更新投注记录（EOS）
+	 */
+	void updateRecordByTxId(TigerPutRecordUpdater updater);
+
+	/**
+	 * 更新投注记录（积分）
+	 */
+	void updateRecord2ById(TigerPutRecord2 record);
+
+	/**
+	 * 更新延迟投注记录（EOS）
+	 */
+	void updateLateRecordByTxId(TigerLatePutRecord record);
+
+	/**
+	 * 根据Status查询投注记录
+	 */
+	@Select("SELECT * FROM t_tiger_records WHERE status=#{status}")
+	List<TigerPutRecord> getRecordsByStatus(@Param("status") int status);
+
+	/**
+	 * 龙虎斗开奖时，查询某房间某期的投注记录（包含区块未确认的）
+	 */
+	@Select("SELECT * FROM t_tiger_records WHERE qid=#{qid} AND roomId=#{roomId} AND status=0")
+	List<TigerPutRecord> getRecordsWhenOpen(@Param("roomId") int roomId, @Param("qid") int qid);
+
+	/**
+	 * 龙虎斗开奖时，查询某房间某期的投注记录（积分投注）
+	 */
+	@Select("SELECT * FROM t_tiger_record2 WHERE qid=#{qid} AND roomId=#{roomId} AND status=0")
+	List<TigerPutRecord2> getRecordsWhenOpen2(@Param("roomId") int roomId, @Param("qid") int qid);
+
+	/**
+	 * 开奖时查询需要发奖的投注记录
+	 */
+	@Select("SELECT * FROM t_tiger_records WHERE qid=#{qid} AND roomId=#{roomId} AND status=2 AND txStatus=1")
+	List<TigerPutRecord> getRecordsWhenSend(@Param("roomId") int roomId, @Param("qid") int qid);
+
+	/**
+	 * 开奖时查询需要发奖的投注记录（积分投注）
+	 */
+	@Select("SELECT * FROM t_tiger_record2 WHERE qid=#{qid} AND roomId=#{roomId} AND status=2")
+	List<TigerPutRecord2> getRecordsWhenSend2(@Param("roomId") int roomId, @Param("qid") int qid);
+
+	/**
+	 * 查询投注时间悠久，却未开奖的投注记录（包含区块未确认的）
+	 * 
+	 * @param cur
+	 *            当前时间戳
+	 * @param expire
+	 *            过期时长
+	 */
+	@Select("SELECT * FROM t_tiger_records WHERE status=0 AND #{cur}-putTimeSpt>#{expire}")
+	List<TigerPutRecord> getExpiredRecordsToOpen(@Param("cur") long cur, @Param("expire") long expire);
+
+	/**
+	 * 查询投注时间悠久，应该发奖却未发奖的记录
+	 * 
+	 * @param cur
+	 *            当前时间戳
+	 * @param expire
+	 *            过期时长
+	 */
+	@Select("SELECT * FROM t_tiger_records WHERE status=2 AND txStatus=1 AND #{cur}-putTimeSpt>#{expire}")
+	List<TigerPutRecord> getExpiredRecordsToSend(@Param("cur") long cur, @Param("expire") long expire);
+
+	/**
+	 * 查询应该退钱的迟到投注
+	 */
+	@Select("SELECT * FROM t_tiger_late_records WHERE status=0 AND txStatus=1")
+	List<TigerLatePutRecord> getLateRecordsToReturn();
+
+	/**
+	 * 查询我的EOS投注记录
+	 */
+	List<TigerPutRecord> getMyRecords(@Param("userId") String userId, @Param("pageSize") int pageSize,
+			@Param("time") long time);
+
+	/**
+	 * 查询我的积分投注记录
+	 */
+	List<TigerPutRecord2> getMyRecord2(@Param("uid") long uid, @Param("pageSize") int pageSize, @Param("time") long time);
+
+	/**
+	 * 房间，查询所有
+	 */
+	@Select("SELECT * FROM t_tiger_room ORDER BY id")
+	List<TigerRoom> getAllTigerRooms();
+
+	/**
+	 * 房间，删除所有
+	 */
+	@Delete("DELETE FROM t_tiger_room")
+	void deleteAllRooms();
+
+	/**
+	 * 批量插入房间数据
+	 */
+	void batchInsertRooms(List<TigerRoom> list);
+
+	/**
+	 * 查询所有投注确认数据
+	 */
+	@Select("SELECT * FROM t_tiger_confirm")
+	List<TigerConfirm> getAllConfirms();
+
+	/**
+	 * 删除所有投注确认数据
+	 */
+	@Delete("DELETE FROM t_tiger_confirm")
+	void deleteAllConfirms();
+
+	/**
+	 * 批量插入投注确认数据
+	 */
+	void batchInsertConfirms(List<TigerConfirm> list);
+
+	/**
+	 * 插入开奖历史记录
+	 */
+	@Insert("INSERT INTO t_tiger_history (roomId,qid,lp,hp,openTimeSpt) VALUES (#{roomId},#{qid},#{lp},#{hp},#{openTimeSpt})")
+	void insertTigerHistory(TigerHistory th);
+
+	/**
+	 * 查询一条开奖记录
+	 */
+	@Select("SELECT * FROM t_tiger_history WHERE qid=#{qid} AND roomId=#{roomId}")
+	TigerHistory getTigerHistory(@Param("qid") int qid, @Param("roomId") int roomId);
+
+	/**
+	 * 查询需要发代币的投注记录
+	 */
+	@Select("SELECT * FROM t_tiger_records WHERE txStatus=1 AND topStatus=0")
+	List<TigerPutRecord> getRecordsToSendTop();
+
+	/**
+	 * 插入TOP币流水
+	 */
+	@Insert("INSERT INTO t_top_flow (userId,gameType,eos,per,top,timeSpt) VALUES (#{userId},#{gameType},#{eos},#{per},#{top},#{timeSpt})")
+	void insertTopFlow(TopFlow tf);
+
+	/**
+	 * 查询返TOP币总量
+	 */
+	@Select("SELECT SUM(top) FROM t_top_flow")
+	BigDecimal getTotalTop();
+}

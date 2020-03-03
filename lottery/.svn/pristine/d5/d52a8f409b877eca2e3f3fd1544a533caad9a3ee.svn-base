@@ -1,0 +1,11 @@
+package com.stip.net.service.impl;
+
+import com.stip.mybatis.generator.plugin.BaseService;
+import com.stip.net.entity.UserTransactionScoreRecords;
+import com.stip.net.example.UserTransactionScoreRecordsExample;
+import com.stip.net.service.UserTransactionScoreRecordsService;
+import org.springframework.stereotype.Service;
+
+@Service
+public class UserTransactionScoreRecordsServiceImpl extends BaseService<UserTransactionScoreRecords, UserTransactionScoreRecordsExample, Integer> implements UserTransactionScoreRecordsService {
+}

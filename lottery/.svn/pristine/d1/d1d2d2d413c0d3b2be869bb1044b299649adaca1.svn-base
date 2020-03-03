@@ -1,0 +1,112 @@
+package com.stip.net.entity.tiger;
+
+import java.math.BigDecimal;
+
+/**
+ * 龙虎斗玩家投注记录（积分投注）
+ */
+public class TigerPutRecord2 {
+	private Long id;// 自增主键
+	private int roomId;// 房间号
+	private int qid;// 期号
+	private String userId;// 玩家uid
+	private int opt;// 投注项，参考TigerOption枚举
+	private BigDecimal putMoney;// 投注金额
+	private long putTimeSpt;// 投注时间戳
+	private BigDecimal gainMoney;// 获奖金额
+	private long openTimeSpt;// 开奖时间戳
+	private int status;// 0未开奖，1未中奖，2中奖未发，3发奖成功，-1发奖失败
+
+	public TigerPutRecord2() {
+		super();
+	}
+
+	public TigerPutRecord2(int roomId, int qid, String userId, int opt, BigDecimal putMoney) {
+		this.roomId = roomId;
+		this.qid = qid;
+		this.userId = userId;
+		this.opt = opt;
+		this.putMoney = putMoney;
+		this.putTimeSpt = System.currentTimeMillis();
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public int getRoomId() {
+		return roomId;
+	}
+
+	public void setRoomId(int roomId) {
+		this.roomId = roomId;
+	}
+
+	public int getQid() {
+		return qid;
+	}
+
+	public void setQid(int qid) {
+		this.qid = qid;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public int getOpt() {
+		return opt;
+	}
+
+	public void setOpt(int opt) {
+		this.opt = opt;
+	}
+
+	public BigDecimal getPutMoney() {
+		return putMoney;
+	}
+
+	public void setPutMoney(BigDecimal putMoney) {
+		this.putMoney = putMoney;
+	}
+
+	public long getPutTimeSpt() {
+		return putTimeSpt;
+	}
+
+	public void setPutTimeSpt(long putTimeSpt) {
+		this.putTimeSpt = putTimeSpt;
+	}
+
+	public BigDecimal getGainMoney() {
+		return gainMoney;
+	}
+
+	public void setGainMoney(BigDecimal gainMoney) {
+		this.gainMoney = gainMoney;
+	}
+
+	public long getOpenTimeSpt() {
+		return openTimeSpt;
+	}
+
+	public void setOpenTimeSpt(long openTimeSpt) {
+		this.openTimeSpt = openTimeSpt;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+}

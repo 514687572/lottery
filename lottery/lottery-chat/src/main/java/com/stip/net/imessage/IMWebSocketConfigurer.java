@@ -1,0 +1,30 @@
+package com.stip.net.imessage;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+
+/**
+ * WebScoket配置处理器
+ * 
+ * @author cja
+ * @Date 20181110
+ */
+@Configuration
+@EnableWebMvc
+@EnableWebSocket
+public class IMWebSocketConfigurer extends WebMvcConfigurerAdapter implements WebSocketConfigurer {
+	@Resource
+	public IMWebSocketHandler handler;
+
+	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+		registry.addHandler(handler, "/ws").addInterceptors(new HandShake()).setAllowedOrigins("*");
+		registry.addHandler(handler, "/ws/sockjs").addInterceptors(new HandShake()).setAllowedOrigins("*").withSockJS();
+	}
+
+}

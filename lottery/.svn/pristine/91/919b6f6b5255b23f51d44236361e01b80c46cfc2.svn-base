@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.TigerDao">
+
+	<insert id="saveRecord" parameterType="com.stip.net.entity.tiger.TigerPutRecord">
+		INSERT INTO t_tiger_records 
+			(roomId,qid,userId,txId,txStatus,opt,putMoney,putTimeSpt,gainMoney,status,type,topStatus)
+		VALUES
+			(#{roomId},#{qid},#{userId},#{txId},#{txStatus},#{opt},#{putMoney},#{putTimeSpt},#{gainMoney},#{status},#{type},#{topStatus})
+	</insert>
+
+	<update id="updateRecord" parameterType="com.stip.net.entity.tiger.TigerPutRecord">
+		UPDATE t_tiger_records
+		SET txStatus=#{txStatus},
+			gainMoney=#{gainMoney},
+			openTimeSpt=#{openTimeSpt},
+			status=#{status},
+			topStatus=#{topStatus}
+		WHERE txId=#{txId}
+	</update>
+
+	<!-- 查询我的投注记录 -->
+	<select id="getMyRecords" resultType="com.stip.net.entity.tiger.TigerPutRecord">
+		SELECT * FROM t_tiger_records
+		WHERE userId=#{userId}
+		AND status!=0
+		<if test="time != 0">
+			AND openTimeSpt &lt; #{time}
+		</if>
+		ORDER BY openTimeSpt DESC
+		LIMIT #{pageSize}
+	</select>
+
+	<!-- 房间，批量保存 -->
+	<insert id="batchInsertRooms" parameterType="java.util.List">
+		INSERT INTO t_tiger_room
+			(id,x,y,qid,cardNum,put_long0,put_long1,put_long2,put_hu0,put_hu1,put_hu2,put_he,cardsJson,roadsJson)
+		VALUES
+		<foreach collection="list" item="obj" separator=",">
+			(#{obj.id},#{obj.x},#{obj.y},#{obj.qid},#{obj.cardNum},#{obj.put_long0},#{obj.put_long1},#{obj.put_long2},#{obj.put_hu0},#{obj.put_hu1},#{obj.put_hu2},#{obj.put_he},#{obj.cardsJson},#{obj.roadsJson})
+		</foreach>
+	</insert>
+
+	<!-- 投注确认信息，批量保存 -->
+	<insert id="batchInsertConfirms" parameterType="java.util.List">
+		INSERT INTO t_tiger_confirm
+			(txId,userId,putMoney)
+		VALUES
+		<foreach collection="list" item="obj" separator=",">
+			(#{obj.txId},#{obj.userId},#{obj.putMoney})
+		</foreach>
+	</insert>
+</mapper>

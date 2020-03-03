@@ -1,0 +1,275 @@
+package com.stip.net.service.impl;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.lottery.net.utils.Constants;
+import com.stip.net.service.AccountService;
+
+import io.eblock.eos4j.Ecc;
+import io.eblock.eos4j.Rpc;
+import io.eblock.eos4j.api.vo.account.Account;
+import io.eblock.eos4j.api.vo.transaction.Transaction;
+import io.eblock.eos4j.utils.HttpUtils;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+/**
+ * EOS账户
+ * @author cja
+ *
+ */
+@Service
+public class AccountServiceImpl implements AccountService{
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	/**
+	 * 向用户eos钱包加EOS
+	 * @param request
+	 * @return
+	 * @throws InterruptedException
+	 */
+	public boolean plusBalance(String account,String quantity) throws InterruptedException {  
+		Rpc rpc = new Rpc(Constants.EOS_server);
+		
+		try {
+			Transaction t = rpc.transfer(Constants.eosjs_prive_key,Constants.contractAccount, Constants.account,account, quantity+" EOS", "");
+			t.getTransactionId();
+			
+			return true;
+		}catch(Exception ex) {
+			logger.error(ex.toString());
+			return false;
+		}
+		
+	}
+
+	@Override
+	public String plusBalanceFromTiger(String account,String quantity) throws InterruptedException {  
+		Rpc rpc = new Rpc(Constants.EOS_server);
+		try {
+			Transaction t = rpc.transfer(Constants.eosjs_prive_key_tiger,Constants.contractAccount, Constants.account_tiger,account, quantity+" EOS", "");
+			return t.getTransactionId();
+		}catch(Exception e) {
+			logger.error(e.toString());
+			return null;
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * @param account 转入账户
+	 * @param quantity转入数量必须保留小数点后四位
+	 * @param pirveKey奖金池账户私钥
+	 * @param bonusAccount奖金池账户
+	 * @return
+	 * @throws InterruptedException
+	 */
+	public boolean plusBalance(String pirveKey,String bonusAccount,String account,String quantity) throws InterruptedException {  
+		Rpc rpc = new Rpc(Constants.EOS_server);
+		
+		try {
+			Transaction t = rpc.transfer(pirveKey,Constants.contractAccount, bonusAccount,account, quantity+" EOS", "");
+			t.getTransactionId();
+			
+			return true;
+		}catch(Exception ex) {
+			logger.error(ex.toString());
+			return false;
+		}
+		
+	}
+	
+	/**
+	 * 向用户eos钱包减EOS
+	 * @param request
+	 * @return
+	 * @throws InterruptedException
+	 */
+	public  boolean minusBalance(String account,String quantity,String private_key,String remark) throws InterruptedException {  
+		Rpc rpc = new Rpc(Constants.EOS_server);
+
+		try {
+			Transaction t = rpc.transfer(private_key,Constants.contractAccount,account ,Constants.account, quantity+" EOS",remark);
+			t.getTransactionId();
+			
+			return true;
+		}catch(Exception ex) {
+			logger.error(ex.toString());
+			return false;
+		}
+		
+	}
+	
+	/**
+	 * 用户EOS钱包减EOS
+	 * @param bonusAccount 奖金池账户
+	 * @param account 转出账户名
+	 * @param quantity 转出数量小数点后4位
+	 * @param private_key 转出账户私钥
+	 * @param remark 转账备注
+	 * @return
+	 * @throws InterruptedException
+	 */
+	public  boolean minusBalance(String bonusAccount,String account,String quantity,String private_key,String remark) throws InterruptedException {  
+		Rpc rpc = new Rpc(Constants.EOS_server);
+		
+		try {
+			Transaction t = rpc.transfer(private_key,Constants.contractAccount,account ,bonusAccount, quantity+" EOS",remark);
+			t.getTransactionId();
+			
+			return true;
+		}catch(Exception ex) {
+			logger.error(ex.toString());
+			return false;
+		}
+		
+	}
+	
+	/**
+	 * 骰子向用户eos钱包减EOS
+	 * @param request
+	 * @return
+	 * @throws InterruptedException
+	 */
+	public String minusBalanceToDice(String account, String quantity, String private_key, String remark)
+			throws InterruptedException {
+		Rpc rpc = new Rpc(Constants.EOS_server);
+		try {
+			Transaction t1 = rpc.transfer(private_key,Constants.contractAccount,account ,Constants.account_dice, quantity+" EOS",remark);
+			return t1.getTransactionId();
+		}catch(Exception ex) {
+			logger.error(ex.toString());
+			return null;
+		}
+	}
+	/**
+	 * 骰子向用户EOS钱包加EOS
+	 */
+	@Override
+	public boolean plusBalanceFromDice(String account, String quantity)
+			throws InterruptedException {
+		Rpc rpc = new Rpc(Constants.EOS_server);
+		try {
+			rpc.transfer(Constants.eosjs_prive_key_dice,Constants.contractAccount, Constants.account_dice,account, quantity+" EOS", "");
+			return true;
+		}catch(Exception e) {
+			logger.error(e.toString());
+			return false;
+		}
+	}
+
+	@Override
+	public String minusBalanceToTiger(String account, String quantity, String private_key, String remark)
+			throws InterruptedException {
+		Rpc rpc = new Rpc(Constants.EOS_server);
+		try {
+			Transaction t1 = rpc.transfer(private_key,Constants.contractAccount,account ,Constants.account_tiger, quantity+" EOS",remark);
+			return t1.getTransactionId();
+		}catch(Exception ex) {
+			logger.error(ex.toString());
+			return null;
+		}
+	}
+	
+	/**
+	 * 查询指定账户余额
+	 * @param account 账户名
+	 * @return
+	 * @throws InterruptedException
+	 */
+	public Account getAccount(String account) throws InterruptedException {  
+		Rpc rpc = new Rpc(Constants.EOS_server);
+		Account acc=rpc.getAccount(account);
+		
+		return acc;
+	}
+	
+	/**
+	 * 通过用户私钥查询公钥
+	 * @param privateKey
+	 * @return
+	 * @throws InterruptedException
+	 */
+	public String getPublicKey(String privateKey) {
+		try {
+			String pk = Ecc.privateToPublic(privateKey);
+			return pk;
+		} catch (Exception e) {
+			return null;
+		}
+		
+	}
+	
+	/**
+	 * 通过公钥查询用户账户名
+	 * @param publicKey
+	 * @return
+	 * @throws InterruptedException
+	 * @throws IOException 
+	 */
+	public String getUserName(String publicKey) throws IOException {  
+		Map<String, String> params=new HashMap<String, String>(1);
+		params.put("public_key", publicKey);
+		JSONObject obj = HttpUtils.BodyPost(Constants.EOS_GET_USERNAME,params);
+		
+		if(obj!=null&&obj.containsKey("account_names")) {
+			if(!obj.getJSONArray("account_names").isEmpty()) {
+				return obj.getJSONArray("account_names").getString(0);
+			}else {
+				return null;
+			}
+		}else {
+			return null;
+		}
+	}
+	
+	/**
+	 * 通过用户私钥获取当前用户名
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+    public Map<String, Object> getUserNameByPk(String privateKey) throws Exception {
+    	Map<String, Object> jsonResult = new HashMap<String, Object>(1);
+    	
+    	jsonResult.put("status","0");
+    	
+    	if (StringUtils.isBlank(privateKey)&&!(privateKey.length()==51)) {
+    		jsonResult.put("error", "私钥错误");
+    		
+    		return jsonResult;
+    	}
+    	
+    	String pubKey=this.getPublicKey(privateKey);
+
+    	if (StringUtils.isBlank(pubKey)&&!(pubKey.length()==53)) {
+    		jsonResult.put("error", "信息错误01");
+    		
+    		return jsonResult;
+    	}else {
+    		jsonResult.put("pubKey",pubKey);
+    	}
+    	
+    	String userName=this.getUserName(pubKey);
+    	
+    	if(userName==null) {
+    		jsonResult.put("error", "信息错误02");
+    		
+    		return jsonResult;
+    	}else {
+    		jsonResult.put("userName",userName);
+    		jsonResult.put("status","1");
+    	}
+    	
+    	return jsonResult;
+    }
+
+
+}

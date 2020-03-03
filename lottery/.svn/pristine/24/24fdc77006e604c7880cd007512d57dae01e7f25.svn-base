@@ -1,0 +1,417 @@
+/* 奖池 */
+.jackpot{
+    width: 100%;
+    height: 260px;
+    background-color: #252A48;
+    margin-top: 20px;
+    padding: 8px;
+    box-sizing: border-box;
+    display: flex;
+}
+.jackpot1-1{
+    width: 170px;
+}
+.jackpot1-1>p:first-child{
+    color: #ffffff;
+    font-size: 16px;
+    margin-top: 20px;
+    text-align: center;
+}
+.jackpot1-1>div{
+    width: 120px;
+    height: 120px;
+    margin-top: 16px;
+    position: relative;
+}
+.jackpot1-1>div>img{
+   margin-left: 20px;
+}
+.jackpot1-1>div>p{
+    width: 95px;
+    text-align: center;
+    color: #ffffff;
+    margin-top: 24px;
+    position: absolute;
+    font-size: 12px;
+    top: 0px;
+    left: 40px;
+    /* border: 1px red solid; */
+}
+.jackpot1-1>p:last-child{
+    color: #ffffff;
+    font-size: 12px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* 投注区 */
+.bettingArea{
+    width: 810px;
+    height: 100%;
+    /* background-color: #20243F; */
+    padding-left: 20px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.guessInterval{
+    display: flex;
+    justify-content: space-between;
+}
+.guessInterval>p{
+    color: #6c7680;
+    font-size: 14px;
+    margin-top: 45px;
+}
+.guessInterval1-1{
+    flex: 1;
+    display: flex;
+    margin-left: 75px;
+}
+.guessInterval1-1>div:first-child>p:last-child{
+    margin-top: 10px;
+}
+.selectBet{
+    width: 50px;
+    height: 30px;
+    background-color: #282E50;
+    color: #ffffff;
+    line-height: 28px;
+    text-align: center;
+    border: 1px solid #282E50;
+    box-sizing: border-box;
+}
+.guessInterval1-1>div:last-child{
+    margin-top: 26px;
+    margin-left: 20px;
+}
+
+.guessInterval>div:last-child{
+    margin-top: 22px;
+    width: 120px;
+}
+.guessInterval>div:last-child>p{
+    color: #ffffff;
+    font-size: 14px;
+}
+.guessInterval>div:last-child>h4{
+    font-size: 20px;
+    color: #5D6572;
+}
+.slider>input{
+    width: 265px;
+    z-index: 2;
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    width: 265px;
+    height: 10px;
+    background: -webkit-linear-gradient(left, #FF564F , #FF8523); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, #FF564F, #FF8523); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, #FF564F, #FF8523); /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, #FF564F , #FF8523); /* 标准的语法（必须放在最后） */
+}
+input[type=range]:focus {
+    outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+}  
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 22px;
+    width: 22px;
+    margin-top: -33px; 
+   border-radius: 2px;
+   transform: rotate(45deg);
+    background: -webkit-linear-gradient(left, #FF564F , #FF8523); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, #FF564F, #FF8523); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, #FF564F, #FF8523); /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, #FF564F , #FF8523); /* 标准的语法（必须放在最后） */
+}
+input[type=range]::-moz-range-thumb {
+    -webkit-appearance: none;
+}  
+input[type=range]::-moz-range-thumb {
+    -webkit-appearance: none;
+    height: 22px;
+    width: 22px;
+    margin-top: -33px; 
+   border-radius: 2px;
+   transform: rotate(45deg);
+    background: -webkit-linear-gradient(left, #FF564F , #FF8523); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, #FF564F, #FF8523); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, #FF564F, #FF8523); /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, #FF564F , #FF8523); /* 标准的语法（必须放在最后） */
+}
+input[type=range]::-ms-track {
+    border-color: transparent; /*去除原有边框*/
+    color: transparent; /*去除轨道内的竖线*/
+}
+
+input[type=range]::-ms-thumb {
+    height: 22px;
+    width: 22px;
+    margin-top: -33px; 
+   border-radius: 2px;
+   transform: rotate(45deg);
+    background: -webkit-linear-gradient(left, #FF564F , #FF8523); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, #FF564F, #FF8523); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, #FF564F, #FF8523); /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, #FF564F , #FF8523); /* 标准的语法（必须放在最后） */
+}
+
+
+.slider>p{
+    color: #ffffff;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100px;
+    font-size: 14px;
+}
+#b{
+    color: #F0C03A;
+    font-size: 18px;
+}
+.digitalRange{
+    color: #ffffff;
+    font-size: 14px;
+}
+.digitalRange>p:first-child{
+    position: absolute;
+    top: 110px;
+    left: 180px;
+}
+.digitalRange>p:last-child{
+    position: absolute;
+    top: 110px;
+    left: 425px;
+}
+
+
+
+/* 猜大小 */
+.crap{
+    display: flex;
+    justify-content: space-between;
+}
+.crap>p{
+    color: #6c7680;
+    font-size: 14px;
+    margin-top: 35px;
+}
+.crap1-1{
+    flex: 1;
+    display: flex;
+    justify-content: space-around;
+}
+.crap1-1>div>p:first-child{
+    width: 60px;
+    height: 48px;
+    background-color: #282E50;
+    color: white;
+    line-height: 48px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #282E50;
+    box-sizing: border-box;
+}
+.crap>div:last-child{
+    margin-top: 22px;
+    width: 120px;
+}
+.crap>div:last-child>p{
+    color: #ffffff;
+    font-size: 14px;
+}
+.crap>div:last-child>h4{
+    font-size: 20px;
+    color: #5D6572;
+}
+
+
+/* 投注金额 */
+.bettingAmount{
+    display: flex;
+}
+.bettingAmount>p{
+    color: #6c7680;
+    font-size: 14px;
+    margin-top: 22px;
+}
+.bettingAmount1-1{
+    display: flex;
+    width: 462px;
+    height: 48px;
+    border: 1px solid #282E50;
+    border-radius: 3px;
+    margin-top: 8px;
+    padding: 5px;
+    box-sizing: border-box;
+    margin-left: 20px;
+    position: relative;
+    background-color: #20243F;
+}
+.bettingAmount1-1>img{
+    height: 20px;
+    position: absolute;
+    top: 12px;
+    left: 12px;
+}
+.bettingAmount1-1>input{
+    width: 158px;
+    background-color: #20243F;
+    border: none;
+    color: #ffffff;
+    font-size: 18px;
+    padding-left: 30px;
+    margin-right: 10px;
+    outline: none;
+}
+.bettingAmount1-1>p:nth-of-type(1),.bettingAmount1-1>p:nth-of-type(2){
+    width: 80px;
+    height: 36px;
+    background-color: #282E50;
+    margin-right: 10px;
+    border-radius: 3px;
+    color: gainsboro;
+    text-align: center;
+    line-height: 36px;
+}
+.bettingAmount1-1>p:nth-of-type(3){
+    width: 108px;
+    height: 36px;
+    background-color: #282E50;
+    border-radius: 3px;
+    color: gainsboro;
+    text-align: center;
+    line-height: 36px;
+}
+.bettingAmount>p:last-child{
+    width: 210px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    color: gainsboro;
+    border-radius: 3px;
+    margin-left: 30px;
+    margin-top: 12px;
+    background: -webkit-linear-gradient(left, #FF564F , #FF8523); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, #FF564F, #FF8523); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, #FF564F, #FF8523); /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, #FF564F , #FF8523); /* 标准的语法（必须放在最后） */
+
+}
+
+
+
+/* 投注区 */
+.diceBet{
+    display: flex;
+}
+.selectiveType{
+    width: 530px;
+    height: 188px;
+    background-color: #20243F;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.intervalOrSize{
+    border-bottom: 2px solid #252A48;
+    height: 42px;
+}
+.intervalOrSize>div{
+    width: 170px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: space-between;
+    color: #ffffff;
+}
+.intervalOrSize>div>p:hover{
+    cursor: pointer;
+}
+#selectInterva{
+    color: #3097ff;
+    border-bottom: 1px solid #3097ff;
+    padding-bottom: 5px;
+    margin-top: 7px;
+}
+#selectSize{
+    padding-bottom: 5px;
+    margin-top: 7px;
+}
+.SelectTypeArea{
+    height: 108px;
+    padding-top: 22px;
+    box-sizing: border-box;
+}
+.oddsOrBonus{
+    height: 34px;
+    border-top: 2px solid #252A48;
+    display: flex
+}
+.oddsOrBonus>div{
+    width: 230px;
+    display: flex;
+    color: #FF564F;
+    font-size: 18px;
+    line-height: 34px;
+}
+.oddsOrBonus>div:first-child{
+    margin-left: 75px;
+}
+.CrapArea{
+    height: 108px;
+    padding-top: 22px;
+    box-sizing: border-box;
+    display: none;
+}
+.crap1-1>div{
+    width: 150px;
+}
+.crap1-1>div>p:last-child{
+    font-size: 14px;
+    color: #6c7680;
+    text-align: center;
+    margin-top: 12px;
+}
+.WinningNumbers{
+    width: 260px;
+    /* position: relative; */
+}
+.WinningNumbers>p{
+    font-size: 18px;
+    color: #ffffff;
+    text-align: center;
+    margin-top: 16px;
+}
+
+.WinningNumbers>div{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 15px;
+    width: 120px;
+    height: 120px;
+    border: 2px solid #374579;
+    border-radius: 50%;
+    background: -webkit-linear-gradient(top, #4A5EA1 , #252A49); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(bottom, #4A5EA1, #252A49); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(bottom, #4A5EA1, #252A49); /* Firefox 3.6 - 15 */
+    background: linear-gradient(to bottom, #4A5EA1 , #252A49); /* 标准的语法（必须放在最后） */
+}
+#winningNum{
+    font-size: 40px;
+    text-align: center;
+    line-height: 120px;
+    color: #ffffff;
+}
+#betNum{
+    font-size: 40px;
+    text-align: center;
+    line-height: 120px;
+    color: #ffffff;
+    display: none;
+}

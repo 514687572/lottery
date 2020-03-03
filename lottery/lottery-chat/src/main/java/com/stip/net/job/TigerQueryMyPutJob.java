@@ -1,0 +1,49 @@
+package com.stip.net.job;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.web.socket.TextMessage;
+
+import com.lottery.net.utils.JsonUtil;
+import com.stip.net.entity.tiger.TigerPutRecord;
+import com.stip.net.imessage.IMWebSocketHandler;
+import com.stip.net.main.MsgCode;
+import com.stip.net.service.TigerService;
+
+import net.sf.json.JSONObject;
+
+/**
+ * 龙虎斗，查询我的投注
+ */
+public class TigerQueryMyPutJob extends AbstractJob {
+	private final int pageSize = 10;// 每页条数
+
+	@Override
+	public void runImpl(IMWebSocketHandler handler, String userId, JSONObject params, Object... object) {
+		TigerService tigerService = (TigerService) object[0];
+		long time = 0;
+		if (params.get("time") != null) {
+			time = params.getLong("time");
+		}
+		List<TigerPutRecord> records = tigerService.getMyRecords(userId, pageSize, time);
+		// 给客户端响应
+		Map<String, Object> map = new HashMap<>();
+		List<Map<String, Object>> list = new ArrayList<>();
+		map.put("list", list);
+		for (TigerPutRecord record : records) {
+			Map<String, Object> mmp = new HashMap<>();
+			mmp.put("roomId", record.getRoomId());
+			mmp.put("qid", record.getQid());
+			mmp.put("time", record.getOpenTimeSpt());
+			mmp.put("opt", record.getOpt());
+			mmp.put("put", record.getPutMoney());
+			mmp.put("gain", record.getGainMoney());
+			list.add(mmp);
+		}
+		String json = JsonUtil.buildJson(MsgCode.TIGER_MY_PUT_QUERY, map);
+		handler.sendMessageToUser(userId, new TextMessage(json));
+	}
+}

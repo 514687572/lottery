@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../css/SelectRoom.css">
+    <link rel="stylesheet" href="../css/HelpAndInvitation.css">
+</head>
+
+<body>
+    <header id="guid">
+        <div id="head">
+            <div id="headLeft">
+                <!-- <img src="../images/logo.png" alt="logo" onclick="toIndex();"> -->
+                <!--<div id="gameSelectBox">龙虎斗</div>-->
+                <ul id="selectGame">
+                    <li class="dropdown">
+                        <img src="../images/CASINO .png" alt="">
+                    </li>
+                </ul>
+                <span id="rluerIntroduce">游戏帮助</span>
+                <span id="inviteBtn">邀请好友</span>
+            </div>
+            <div id="headRight">
+                <div id="LanguageBox">
+                    <div id="inputBox">
+                        <img src="../images/Singapore.png" alt="" id="guoqiBox">简体中文</div>
+                    <ul id="language">
+                        <li id="Ch">
+                            <i></i>简体中文</li>
+                        <li id="En">
+                            <i></i>English</li>
+                    </ul>
+                </div>
+                <img src="../images/down.png" alt="downr" id="changeLanguage" style="width: 11px;height: 6px;margin-top: 30px;padding-right: 20px">
+            </div>
+        </div>
+    </header>
+    <section id="SelectRoom">
+        <div class="SelectRoomHeader">
+            <p>奖金池</p>
+            <p id="InxJackpot">2436 EOS</p>
+        </div>
+        <div class="room1">
+            <div class="roomNumber1">
+                <P>房号</P>
+                <P id="roomOne">01</P>
+                <P><span id="roomOneNum"></span>人</P>
+            </div>
+            <div class="room1Way">
+                <!-- <table class="room1Trend">
+
+                </table> -->
+                <table>
+                    <div class="tableItem">
+                        <div class="tableGrid">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem">
+                        <div class="tableGrid">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem">
+                        <div class="tableGrid">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem">
+                        <div class="tableGrid">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem">
+                        <div class="tableGrid">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem">
+                        <div class="tableGrid">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                </table>
+            </div>
+            <div class="room1Enter" id="Enter1">
+                <p></p>
+                <p>进入游戏</p>
+            </div>
+        </div>
+        <div class="room1">
+            <div class="roomNumber1">
+                <P>房号</P>
+                <P id="roomTwo">02</P>
+                <P><span id="roomTwoNum"></span>人</P>
+            </div>
+            <div class="room1Way">
+                <!-- <table class="room1Trend">
+
+                </table> -->
+                <table id="tableRoot">
+                    <div class="tableItem2">
+                        <div class="tableGrid2">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem2">
+                        <div class="tableGrid2">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem2">
+                        <div class="tableGrid2">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem2">
+                        <div class="tableGrid2">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem2">
+                        <div class="tableGrid2">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem2">
+                        <div class="tableGrid2">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                </table>
+            </div>
+            <div class="room1Enter" id="Enter2">
+                <p></p>
+                <p>进入游戏</p>
+            </div>
+        </div>
+        <div class="room1">
+            <div class="roomNumber1">
+                <P>房号</P>
+                <P id="roomTherr">03</P>
+                <P><span id="roomTherrNum"></span>人</P>
+            </div>
+            <div class="room1Way">
+                <!-- <table class="room1Trend">
+
+                </table> -->
+                <table>
+                    <div class="tableItem3">
+                        <div class="tableGrid3">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem3">
+                        <div class="tableGrid3">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem3">
+                        <div class="tableGrid3">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem3">
+                        <div class="tableGrid3">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem3">
+                        <div class="tableGrid3">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                    <div class="tableItem3">
+                        <div class="tableGrid3">
+                            <div class="gridFullRed"></div>
+                            <div class="gridFullBlue"></div>
+                            <div class="gridFullYellow"></div>
+                        </div>
+                    </div>
+                </table>
+            </div>
+            <div class="room1Enter" id="Enter3">
+                <p></p>
+                <p>进入游戏</p>
+            </div>
+        </div>
+    </section>
+     <!-- 玩法介绍/游戏帮助 -->
+     <div id="gamesHelp">
+            <div class="gamesHelp-header">
+                <p>玩法规则 GAME RULES</p>
+                <p id="goBack">返回</p>
+            </div>
+            <section class="generationNumber">
+                <div>
+                    <div class="generationNumber1-1 ">
+                        <p class="shadow"></p>
+                        <img class="gamesHelp-img" src="../images/Lottery.png" alt="">
+                    </div>
+                    <div class="generationNumber1-2">
+                        <p class="gamesHelp-h3">游戏规则</p>
+                        <div>
+                            <p class="gamesHelp-font">1、龙虎斗游戏总共有除开大小王8副牌，一共416张牌。</p>
+                        </div>
+                        <div>
+                            <p class="gamesHelp-font">2、玩家自由选择龙，和，虎，龙单，龙双，虎单，虎双一个或多个投注项。如果压中，则赢对应的游戏分数。压中多个投注项，每个投注项独立结算。玩家选择投注项不同，赔率也不同。</p>
+                        </div>
+                        <div>
+                            <p class="gamesHelp-font">3、系统只派龙和虎两个投注项牌。先派发龙第一张牌，在派发虎第二张牌。无需补牌。根据牌面点数大小定输赢。如果龙牌点数大，则为龙赢；虎牌点数大，则为虎赢；龙和虎的牌面点数相同即为和。如果龙牌点数为单，则为龙单。如果龙牌点数为双，则为龙双。虎单虎双同理。</p>
+                        </div>
+                        <div>
+                            <p class="gamesHelp-font">4、点数：由于我们的平台是利用EOS区块ID来代表点数。而EOS区块ID里没有10点，11点（J），12点（Q），13点（K），故我们用EOS区块ID里的0代表10点，a代表11点（J），b代表12点（Q），c代表13点（K）。</p>
+                        </div>
+                        <div>
+                            <p class="gamesHelp-font">例子1.玩家投注龙和虎双，如果翻牌结果为龙牌7点，虎牌2点，则该局为龙赢，玩家压中龙和虎双。</p>
+                        </div>
+                        <div>
+                            <p class="gamesHelp-font">例子2.玩家投注龙和虎双，如果翻牌结果为龙牌8点，虎牌8点，则该局为和，玩家只压中虎双。</p>
+                        </div>
+                        <div>
+                            <p class="gamesHelp-font">5、投注时间：玩家将会有30秒的投注时间进行下注。每次仅能选择一个投注项进行投注。 在30秒内，可以选择多个投注项进行投注。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="generationNumber">
+                <div>
+                    <div class="generationNumber1-1 ">
+                        <p class="shadow"></p>
+                        <img class="gamesHelp-img" src="../images/gold.png" alt="">
+                    </div>
+                    <div class="generationNumber1-2">
+                        <p class="gamesHelp-h3">开奖号码</p>
+                        <div>
+                            <p class="gamesHelp-font">不同于其他平台，我们的龙和虎的牌的点数，是利用EOS区块ID的最后一位数或字母代表。当最后一位数为除开abc三个字母的其他字母时，则依次向前找到最近的数字代替。EOS区块的ID是一个32位元组的数字，它是根据一系列非常复杂的加密算法随机生成的，通常的显示方式为16进制，而我们正是利用了这样一个真正的随机的结果来作为我们开奖的牌的点数。</p>
+                        </div>
+                        <div>
+                            <p class="gamesHelp-font">例子1. 17263538区块ID为 01076bb285364ee5a20c578a3701f7c6082df9880ea0b45f78676d361f871883，则发牌点数为3点。
+                            </p>
+                            <p class="gamesHelp-font">例子2. 17263538区块ID为 01076bb285754ef58ea682dd360f87f586bdf0b445f0b45a286a2d3a7e871baa，则发牌点数为11点。
+                            </p>
+                            <p class="gamesHelp-font">例子3：17263538区块ID为 0b445fb45a286a2d3a75754e076bb27f586bd78a3701f76d361fbdf0b445f10d，则发牌点数为10点。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="generationNumber">
+                <div>
+                    <div class="generationNumber1-1 ">
+                        <p class="shadow"></p>
+                        <img class="gamesHelp-img" src="../images/time.png" alt="">
+                    </div>
+                    <div class="generationNumber1-2">
+                        <p class="gamesHelp-h3">游戏编号</p>
+                        <p class="gamesHelp-Time-font">玩家投注结束时所在的区块就是“投注区块”。“投注区块”编号就是游戏编号。而在这个编号过后的第10个和第13个区块，就是我们游戏龙和虎对应的开奖区块。而不同房间每个开奖区块也不同。</p>
+                    </div>
+                </div>
+            </section>
+            <section class="generationNumber">
+                <div>
+                    <div class="generationNumber1-1 ">
+                        <p class="shadow"></p>
+                        <img class="gamesHelp-img" src="../images/quota.png" alt="">
+                    </div>
+                    <div class="generationNumber1-2">
+                        <p class="gamesHelp-h3">投注限额</p>
+                        <p class="gamesHelp-Time-font">本平台以游戏娱乐为主，不希望大额投注。因此我们设置了每局的投注限额。即单局每个投注项最高投注为100EOS。</p>
+                    </div>
+                </div>
+            </section>
+            <div class="gamesHelp-footer">
+                <p>为了保障平台的运营和日常开支，平台会在玩家中奖时，抽取2%的手续费，所以实际玩家收到的奖金 = 投注金额 * 返奖倍数 </p>
+    
+            </div>
+    
+        </div>
+        <!-- 邀请好友 -->
+        <div id="Invite">
+            <div class="InviteHeader">
+                <p>邀请好友 INVITE FRIENDS</p>
+                <p id="InviteGoBack">返回</p>
+            </div>
+            <div class="briefIntroduction">
+                <div class="briefIntroduction1-1">
+                    <div>
+                        <div>
+                            <p>0.1
+                                <span>EOS</span>
+                            </p>
+    
+                        </div>
+                        <div>
+                            <p>新来即送</p>
+                            <p>每位新玩家，首次投注都会赠送 0.1 EOS。</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <p>0.1
+                                <span>EOS</span>
+                            </p>
+    
+                        </div>
+                        <div>
+                            <p>邀请好友</p>
+                            <p>每邀请一位朋友进行游戏，你和朋友可分别得到 0.1EOS 的奖励。</p>
+                            <p>只要拥有EOS账号,任何人都可以参加邀请活动,你邀请的人会永远成为你的下级。</p>
+                            <p>以后他的每一笔投注，无论输赢都会在投注成功后立即返还佣金到你的EOS账户。</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <p>1.0
+                                <span>%</span>
+                            </p>
+    
+                        </div>
+                        <div>
+                            <p>立得返佣</p>
+                            <p>佣金的比例为投注金额的 1%。</p>
+                            <p>佣金返还的时间是与下级投注投注同步完成的，无须等到开奖以后，也无论中否中奖，都会立即拿到返佣。</p>
+                            <p>举例: 骰子游戏每天最多可投注7680轮, 如果你的邀请人每轮仅下注1个EOS, 您每天也能获得76.8 EOS的高额返佣。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="theInvitationWay">
+                <div class="theInvitationWay1-1">
+                    <div>
+                        <p>邀请方式</p>
+                        <div class="theInvitationWay2-1">
+                            <p>
+                                <img src="../images/fasong.png" alt="">
+                            </p>
+                            <p></p>
+                            <p>
+                                <img src="../images/denglu.png" alt="">
+                            </p>
+                            <p></p>
+                            <p>
+                                <img src="../images/xiaji.png" alt="">
+                            </p>
+                        </div>
+                        <div class="theInvitationWay3-1">
+                            <p>复制网址</p>
+                            <p>好友登录</p>
+                            <p>同意邀请</p>
+                        </div>
+                        <div class="theInvitationWay4-1">
+                            <div>
+                                <p>将这个邀请网址发给朋友们</p>
+                            </div>
+                            <div>
+                                <p>好友在这个网址上完成登录</p>
+                                <!-- <p>（使用scatter,key均可）</p> -->
+                            </div>
+                            <div>
+                                <p>好友登录后同意你的邀请即可</p>
+                                <!-- <p>他就成为了你永远的下级</p> -->
+                            </div>
+                        </div>
+                        <div class="kyrieandrewirving">
+                            <input id="inviteInput" readonly="true" type="text">
+                            <p id="InviteCopy">复制</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="subordinate">
+                <div>
+                    <div class="subordinate1-1">
+                        <p>我的下级</p>
+                        <p>共
+                            <span id="headcount">0</span>人</p>
+                    </div>
+                    <ul class="subordinateTh">
+                        <li>序号</li>
+                        <li>用户名</li>
+                        <li>人数</li>
+                        <li>投注额</li>
+                        <li>佣金</li>
+                    </ul>
+                    <div class="subuserForm">
+    
+                    </div>
+                    <div class="page">
+                        <p id="upPage">&lt;</p>
+                        <p id="currentPage">1</p>
+                        <p>/</p>
+                        <p id="TotalPages">1</p>
+                        <p id="nextPage">&gt;</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <script src="../lib/jquery-1.12.4.min.js"></script>
+    <!-- <script src="../js/gameTable.js"></script> -->
+    <script src="../js/selectRoom.js"></script>
+    
+    <!-- <script src="../js/popWindow.js"></script> -->
+</body>
+
+</html>

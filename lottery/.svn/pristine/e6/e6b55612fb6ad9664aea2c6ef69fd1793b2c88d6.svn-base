@@ -1,0 +1,492 @@
+*{
+    margin: 0;
+    padding: 0
+}
+/* html{
+    font-size:100px;
+} */
+body{
+    background-color:#12141d; 
+}
+
+/* @media screen and (min-width:768px){
+    
+} */
+/* 顶部文字 */
+header{
+    width: 100%;
+    height:0.47rem; 
+    color: white;
+    text-align: center;
+    font-size:0.14rem;
+    line-height: 0.47rem; 
+}
+
+/* 导航 */
+nav{
+    display: flex;
+    justify-content: space-between;
+    height:0.47rem;
+    padding: 0 0.1rem; 
+}
+#navLeft{
+    display: flex;
+    justify-content: space-between;
+    width: 0.93rem;
+    height: 0.47rem;
+    line-height:0.47rem;
+    align-items: center;
+}
+#navLeft>img{
+    width:0.32rem;
+    height: 0.32rem;
+    
+}
+#navLeft>span{
+    font-size:0.12rem;
+    margin-left: 0.06rem;
+    color: white;
+}
+#navRight{
+    width: 1.2rem;
+    height: 0.47rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+img[alt="more"]{
+    width: 0.16rem;
+    height: 0.16rem;
+}
+img[alt="more"]:hover{
+    cursor: pointer;
+}
+img[alt="close"]{
+    width: 0.12rem;
+    height: 0.12rem;
+    display: none;
+}
+img[alt="close"]:hover{
+    cursor: pointer;
+}
+#inputBox{
+    width: 0.8rem;
+    height: 0.4rem;
+    align-items: center;
+    font-size: 0.12rem;
+    color: white;
+    line-height: 0.4rem;
+    margin-top: 0.12rem;
+}
+img[alt="Singapore"]{
+    width: 0.2rem;
+    height: 0.2rem;
+}
+#language{
+    width: 0.8rem;
+    height: 0.46rem;
+    font-size: 0.12rem;
+    color: white;
+    /* background-color: #313862; */
+    display: none; 
+}
+#LanguageBox{
+    width: 0.8rem;
+    height: 0.68rem;
+    z-index:10000;
+}
+#language>li{
+    width: 0.8rem;
+    height: 0.23rem;
+}
+#language>li:nth-of-type(2){
+    margin-top: 0.08rem;
+}
+#language>li:nth-of-type(1)>i{
+    background-image: url("../images/Singapore.png");
+    width: 0.2rem;
+    height: 0.2rem;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.08rem;
+    background-size: cover;
+}
+#language>li:nth-of-type(2)>i{
+    background-image: url("../images/guoqi02.png");
+    width: 0.2rem;
+    height: 0.2rem;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.08rem;
+    background-size: cover;
+}
+
+/* 用户信息 */
+#userInfoContainer{
+    height:0.32rem;
+    padding: 0.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+img[alt="user"]{
+    width: 0.24rem;
+    height: 0.24rem;
+}
+img[alt="cpu"]{
+    width: 0.18rem;
+    height: 0.18rem;
+}
+img[alt="eos"]{
+    width: 0.13rem;
+    height: 0.2rem;
+}
+#userInfoLeft{
+    width: 2.0rem;
+    height: 0.32rem;
+    line-height: 0.32rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.12rem;
+    color: white;
+}
+#userInfoRight{
+    width: 0.9rem;
+    height: 0.32rem;
+    line-height: 0.32rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.12rem;
+    color: white;
+}
+
+/* 投注直播 */
+#betsLiveRow{
+    background-color:#1c1e2d;
+    height: 0.96rem;
+    margin-bottom:0.1rem;  
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#hash{
+    background-color:#1c1e2d;
+    height:1.65rem; 
+    font-size: 0.12rem;
+    color: #626368;
+    padding: 0.1rem 0;
+    overflow: hidden;
+}
+
+.hashContainer{
+    height: 0.24rem;
+    display: flex;
+    justify-content: space-between;
+    line-height: 0.2rem;
+    font-family:consolas,monaco,monospace;
+}
+.findDiv{
+    height: 0.24rem;
+    display: flex;
+    justify-content: space-between;
+    line-height: 0.2rem;
+    font-family:consolas,monaco,monospace;
+    background-color: #3c4381;
+}
+/* 投注计时 */
+#betTime{
+    font-size: 0.12rem;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    height: 0.54rem;
+    background-color: #1c1e2d;
+    align-items: center;
+    margin-top: 0.1rem;
+    padding:0 0.1rem;
+}
+img[alt="fenhongchi"]{
+    width: 0.4rem;
+    height: 0.4rem;
+}
+#betTimeRight{
+    display:flex;
+    justify-content: space-between;
+}
+
+/* hash值轮播 */
+#hashPlay{
+    height:1.83rem;
+    overflow: hidden;
+}
+
+/* 玩家投注 */
+#baseModel{
+    background-color: rgb(37, 42, 72);
+    height: 2.25rem;
+    padding: 0.1rem;
+    display: block;
+    color: white;
+    font-size: 0.12rem;
+}
+#chooseNumber{
+    height:0.4rem;
+    display: flex;
+    justify-content: space-between; 
+    line-height: 0.4rem;
+    align-items: center; 
+}
+#chooseNumberL{
+    width: 2rem;
+    height: 0.4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#chooseNumberL>div{
+    width: 0.48rem;
+    height: 0.32rem;
+    background-color: #282e50; 
+    text-align: center;
+    line-height: 0.32rem;
+}
+#resetOne{
+    width: 0.48rem;
+    height: 0.32rem;
+    background-color: #282e50; 
+    text-align: center;
+    line-height: 0.32rem;
+    color: white;
+}
+
+#numbers{
+    height: 0.4rem;
+    display: flex;
+    justify-content: space-between;
+    margin-top:0.14rem; 
+    align-items: center;
+}
+#numberContainer{
+    width: 2.86rem;
+    height:0.32rem;
+    display: flex;
+    justify-content: space-between;
+}
+#numberContainer>div{
+    width: 0.25rem;
+    height: 0.32rem;
+    background-color: #282e50;
+    color: white;
+    text-align: center;
+    line-height: 0.32rem;
+}
+#resetTwo{
+    width: 0.48rem;
+    height: 0.32rem;
+    background-color: #282e50; 
+    text-align: center;
+    line-height: 0.32rem;
+    color: white;
+}
+
+
+
+/* #bottom>p>i{
+    background-image: url("../images/EOS.png");
+    width: 0.1rem;
+    height: 0.2rem;
+    display: inline-block;
+} */
+.Multiple{
+    height:0.32rem;
+    background-color:#282e50;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;  
+}
+#MultipleChoose{
+    height:0.32rem;
+    width: 1rem;
+    background-color:#282e50;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0.05rem; 
+}
+#totalMoney{
+    height:0.32rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+}
+.Pri_login{
+    width: 1.8rem;
+    height: 0.4rem;
+    border-radius: 0.04rem;
+    background: linear-gradient(to right, #ff5c4a , #ff8325);
+    line-height: 0.4rem;
+    text-align: center; 
+    font-size: 0.16rem;
+    color: white;
+    outline: none;
+    border: none;
+    margin-top: 0.1rem;
+}
+.betsBtn{
+    width: 1.8rem;
+    height: 0.4rem;
+    border-radius: 0.04rem;
+    background: linear-gradient(to right, #ff5c4a , #ff8325);
+    line-height: 0.4rem;
+    text-align: center; 
+    font-size: 0.16rem;
+    color: white;
+    outline: none;
+    border: none;
+    display: none;
+    margin-left:0.88rem;
+    margin-top: 0.1rem;
+}
+
+#higherModel{
+    background-color: #20243f;
+    height: 3.59rem;
+    margin-top: 10px;
+    font-size: 0.12rem;
+    padding: 0.1rem 0.1rem;
+}
+#Hnumbers1{
+    height: 0.32rem;
+    display: flex;
+    justify-content: space-between;
+    margin-top:0.04rem; 
+}
+#Hnumbers2{
+    height: 0.32rem;
+    display: flex;
+    justify-content: space-between;
+    margin-top:0.04rem; 
+}
+#Hnumbers3{
+    height: 0.32rem;
+    display: flex;
+    justify-content: space-between;
+    margin-top:0.04rem; 
+}
+#Hnumbers4{
+    height: 0.32rem;
+    display: flex;
+    justify-content: space-between;
+    margin-top:0.04rem; 
+}
+#Hnumbers5{
+    height: 0.32rem;
+    display: flex;
+    justify-content: space-between;
+    margin-top:0.04rem; 
+}
+#resetTr{
+    width: 0.48rem;
+    height: 0.32rem;
+    background-color: #282e50; 
+    text-align: center;
+    line-height: 0.32rem;
+    color: white;
+}
+#resetFr{
+    width: 0.48rem;
+    height: 0.32rem;
+    background-color: #282e50; 
+    text-align: center;
+    line-height: 0.32rem;
+    color: white;
+}
+#resetFv{
+    width: 0.48rem;
+    height: 0.32rem;
+    background-color: #282e50; 
+    text-align: center;
+    line-height: 0.32rem;
+    color: white;
+}
+#resetSx{
+    width: 0.48rem;
+    height: 0.32rem;
+    background-color: #282e50; 
+    text-align: center;
+    line-height: 0.32rem;
+    color: white;
+}
+#resetSv{
+    width: 0.48rem;
+    height: 0.32rem;
+    background-color: #282e50; 
+    text-align: center;
+    line-height: 0.32rem;
+    color: white;
+}
+#resetTr:hover{
+    background: linear-gradient(to right, #ff5c4a , #ff8325);
+    cursor: pointer;
+}
+.HnumberContainer{
+    width: 2.86rem;
+    height:0.32rem;
+    display: flex;
+    justify-content: space-between;
+}
+.HnumberContainer>div{
+    width: 0.25rem;
+    height: 0.32rem;
+    background-color: #282e50;
+    color: white;
+    text-align: center;
+    line-height: 0.32rem;
+}
+#stars{
+    width: 1.25rem;
+    height: 0.22rem;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 0.04rem;
+}
+#stars>button{
+    width: 0.22rem;
+    height: 0.22rem;
+    background-color:#323761;
+    border-radius: 0.04rem;
+    line-height: 0.22rem;
+    text-align: center; 
+    outline: none;
+    border: none;
+    color: white;
+}
+
+
+/* 我的投注记录和历史开奖记录 */
+/* .myBetsRow:hover{
+  cursor: pointer;
+  background-color: #323761;
+} */
+.resultBig{
+    color:#ff5c4a;
+}
+.resultSmall{
+    color:#626368;
+}
+.resultSingle{
+    color:#ff5c4a;
+}
+.resultDouble{
+    color:#626368;
+}
+
+
+.lastNumbClass{
+    color:#ff5c4a;
+}
+.normalLastNum{
+    color:#626368;
+}

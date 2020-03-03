@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-content">
+						<form class="form-horizontal m-t" id="signupForm">
+						<input id="id" name="id" th:value="${userRechargeRecords.id}"  type="hidden">
+							<div class="form-group">	
+								<label class="col-sm-3 control-label">用户id：</label>
+								<div class="col-sm-8">
+									<input id="uid" name="uid" th:value="${userRechargeRecords.uid}" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-3 control-label">eos价格：</label>
+								<div class="col-sm-8">
+									<input id="eosPrice" name="eosPrice" th:value="${userRechargeRecords.eosPrice}" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-3 control-label">充值金额单位（分）：</label>
+								<div class="col-sm-8">
+									<input id="rechargeNum" name="rechargeNum" th:value="${userRechargeRecords.rechargeNum}" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-3 control-label">充值类型：</label>
+								<div class="col-sm-8">
+									<input id="rechargeType" name="rechargeType" th:value="${userRechargeRecords.rechargeType}" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-3 control-label">充值状态：</label>
+								<div class="col-sm-8">
+									<input id="rechargeStatus" name="rechargeStatus" th:value="${userRechargeRecords.rechargeStatus}" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-3 control-label">充值eos数量：</label>
+								<div class="col-sm-8">
+									<input id="eosNum" name="eosNum" th:value="${userRechargeRecords.eosNum}" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-3 control-label">充值时间：</label>
+								<div class="col-sm-8">
+									<input id="time" name="time" th:value="${userRechargeRecords.time}" class="form-control" type="text">
+								</div>
+							</div>
+																					<div class="form-group">
+								<div class="col-sm-8 col-sm-offset-3">
+									<button type="submit" class="btn btn-primary">提交</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+	</div>
+	</div>
+	<div th:include="include::footer"></div>
+	<script type="text/javascript" src="/js/appjs/system/userRechargeRecords/edit.js">
+	</script>
+</body>
+</html>

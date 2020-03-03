@@ -1,0 +1,96 @@
+package com.lottery.net.utils;
+
+import java.util.HashMap;
+
+/**
+ * 常量
+ * 
+ * @author cja
+ *
+ */
+public class Constants {
+	// 创建账号的私钥
+	public static final String add_caccount_prive_key = "5KAmdLGzPSz6GmuQtEKaxpEsm5ZWJBnbexqQgPqdUgqvCVpXs6B";
+	// 大乐透奖池私钥
+	public static final String eosjs_prive_key = "5KAmdLGzPSz6GmuQtEKaxpEsm5ZWJBnbexqQgPqdUgqvCVpXs6B";
+	// 龙虎斗奖池私钥
+	public static final String eosjs_prive_key_tiger = "5KAmdLGzPSz6GmuQtEKaxpEsm5ZWJBnbexqQgPqdUgqvCVpXs6B";
+	// 骰子奖池私钥
+	public static final String eosjs_prive_key_dice = "5KAmdLGzPSz6GmuQtEKaxpEsm5ZWJBnbexqQgPqdUgqvCVpXs6B";
+	public static final String contractAccount = "eosio.token";
+	public static final String account = "mylotterybet";// 大乐透奖池
+	public static final String account_tiger = "mylotterybet";// 龙虎斗奖池
+	public static final String account_dice = "mylotterybet";// 骰子奖池账号
+	public static final String add_account = "mylotterybet";// 创建账号的账号
+	public static final String EOS_server = "https://proxy.eosnode.tools";
+	public static final String EOS_GET_USERNAME = EOS_server + "/v1/history/get_key_accounts";
+
+	// 通用数字常量
+	public static final String GENERAL_ZERO = "0";
+	public static final String GENERAL_ONE = "1";
+	public static final String GENERAL_TWO = "2";
+	public static final String GENERAL_THREE = "3";
+
+	// 骰子玩法类型
+	public static final int DICE_GREATER_THAN = 1;
+	public static final int DICE_LESS_THAN = 2;
+	public static final int DICE_MAX = 3;
+	public static final int DICE_SMALL = 4;
+	public static final int DICE_COUPLET = 5;
+
+	// 每邀请一位朋友进行游戏，你和朋友可分别得到 0.1EOS 的奖励
+	public static final String REWARD = "0.1";
+	// 立得返佣比例
+	public static final String PROPORTION = "0.01";
+
+	public static final String DICT_TYPE_SWITCH = "on_off";// 大乐透开关
+	public static final String DICT_TYPE_SWITCH_TIGER = "on_off_tiger";// 龙虎斗开关
+	public static final String DICT_TYPE_SWITCH_DICE = "on_off_dice";// 骰子开关
+
+	public static final String LOTTERY_TYPE = "lottery";
+	public static final String TIGER_TYPE = "tiger";
+	public static final String DICE_TYPE = "dice";
+
+	public static final String ADMIN = "ROLE_ADMIN";
+	public static final String USER = "ROLE_USER";
+	public static final String ANONYMOUS = "ROLE_ANONYMOUS";
+
+	public static String APP_KEY = "34b98c4eeoe24e3cbf2zb408fc5397c2";
+	public static String APP_SECRET = "90dc11a7ce5f8c6f7c337b8f9eaac12397ezde";
+
+	public static HashMap<String, String> APP_KEYS_MAP;
+
+	static {
+		APP_KEYS_MAP = new HashMap<String, String>();
+		APP_KEYS_MAP.put(APP_KEY, APP_SECRET);
+	}
+
+	public static final long TIGER_PUT_TIME = 30 * 1000;// 龙虎斗投注时间段，毫秒
+	public static final long TIGER_WAIT_TIME = 15 * 1000;// 龙虎斗等待发奖时间段，毫秒，它被包含在OPEN时间段中
+	public static final long TIGER_OPEN_TIME = 30 * 1000;// 龙虎斗开奖时间段，毫秒
+	public static final long TIGER_WASH_TIME = 4 * 1000;// 龙虎斗洗牌时间段，毫秒
+
+	public static final String GAME_TYPE_LOTTERY = "1";// 时时彩
+	public static final String GAME_TYPE_TIGER = "2";  // 龙虎斗
+	public static final String GAME_TYPE_DICE = "3";  // 21点
+
+	public static final int ADD = 1;
+	public static final int MINUS = 0;
+
+	//短信接口
+	public static String SEND_CODE_URL="http://cf.51welink.com/submitdata/Service.asmx/g_Submit";//短信连接地址
+	public static String SEND_CODE_NAME="dlmuzi00";
+	public static String SEND_CODE_PWD="PAoZV57q";
+	public static String SEND_CODE_SCORPID="";
+	public static String SEND_CODE_SPRDID="1012818";//产品编号
+	
+	// 积分登录用户在HttpSession中的key
+	public static String USER_IN_SESSION = "USER_IN_SESSION";
+	
+	/* =============================== 变量表key值 ======================================== */
+	public static String VK_LOTTERY_POOL_SCORE = "lottery_pool_score";
+	public static String VK_TIGER_POOL_SCORE = "tiger_pool_score";
+	public static String VK_DICE_POOL_SCORE = "dice_pool_score";
+	/* =============================== 变量表key值 ======================================== */
+
+}

@@ -1,0 +1,283 @@
+package com.stip.net.kafka.consumer;
+
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.TimeZone;
+
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.listener.MessageListener;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.TextMessage;
+
+import com.google.gson.GsonBuilder;
+import com.lottery.net.utils.Constants;
+import com.lottery.net.utils.DBCache;
+import com.lottery.net.utils.DateUtils;
+import com.stip.net.entity.DBDiceBetting;
+import com.stip.net.entity.DiceOpenPrize;
+import com.stip.net.imessage.IMWebSocketHandler;
+import com.stip.net.kafka.dto.SampleMessage;
+import com.stip.net.vo.Message;
+
+import net.sf.json.JSONObject;
+
+/**
+ * 骰子开奖消息
+ * 
+ * @author SuperdRream
+ *
+ */
+@Component
+public class OPenDiceConsumer implements MessageListener<String, SampleMessage> {
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	@Autowired
+	private IMWebSocketHandler handler;
+	public Message msg;
+
+	public void test(JSONObject jsonObject) {
+		// 业务逻辑
+		openbetDice(jsonObject);
+		// 区块时间
+		JSONObject time = (JSONObject) jsonObject.get("header");
+		String date1 = time.getString("timestamp");
+		SimpleDateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		df2.setTimeZone(TimeZone.getTimeZone("UTC"));
+		Date date = null;
+		try {
+			date = df2.parse(date1);
+		} catch (ParseException e) {
+			logger.error(e.getMessage(), e);
+			return;
+		}
+		time.put("timestamp", DateUtils.getCurrentTime(date.getTime()));
+		msg = new Message();
+		msg.setDate(new Date());
+		msg.setFrom("diceBlock");
+		msg.setFromName("");
+		msg.setText(jsonObject + "");
+		String bulder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create().toJson(msg);
+		handler.broadcast(new TextMessage(bulder), Constants.DICE_TYPE);
+
+	}
+
+	@Override
+	public void onMessage(ConsumerRecord<String, SampleMessage> data) {
+		JSONObject jsonObject = JSONObject.fromObject(data.value());
+		// 业务逻辑
+		openbetDice(jsonObject);
+		// 区块时间
+		JSONObject time = (JSONObject) jsonObject.get("header");
+		String date1 = time.getString("timestamp");
+		SimpleDateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		df2.setTimeZone(TimeZone.getTimeZone("UTC"));
+		Date date = null;
+		try {
+			date = df2.parse(date1);
+		} catch (ParseException e) {
+			logger.error(e.getMessage(), e);
+			return;
+		}
+		time.put("timestamp", DateUtils.getCurrentTime(date.getTime()));
+		msg = new Message();
+		msg.setDate(new Date());
+		msg.setFrom("diceBlock");
+		msg.setFromName("");
+		msg.setText(jsonObject + "");
+		String bulder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create().toJson(msg);
+		handler.broadcast(new TextMessage(bulder), Constants.DICE_TYPE);
+	}
+
+	private void openbetDice(JSONObject jsonObject) {
+		// 区块号
+		String blocknum = jsonObject.get("block_num").toString();
+		long termnumber = Long.parseLong(blocknum) - 10;
+		List<DBDiceBetting> dicebetting = DBCache.getInstance().getDiceBettingsTerm(termnumber);
+		if (dicebetting != null && dicebetting.size() > 0) {
+			// 区块时间
+			JSONObject time = (JSONObject) jsonObject.get("header");
+			String date1 = time.getString("timestamp");
+			SimpleDateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+			df2.setTimeZone(TimeZone.getTimeZone("UTC"));
+			Date date = null;
+			try {
+				date = df2.parse(date1);
+			} catch (ParseException e) {
+				logger.error(e.getMessage(), e);
+				return;
+			}
+
+			String hash = jsonObject.get("id").toString();
+			// 中奖号码
+			String prizenum = "";
+			for (int a = hash.length() - 1; a >= 0; a--) {
+				char hashdata = hash.charAt(a);
+				if (Character.isDigit(hashdata)) {
+					String to = prizenum;
+					prizenum = hashdata + to;
+					if (prizenum.length() == 2) {
+						break;
+					}
+				}
+			}
+			DiceOpenPrize dop = new DiceOpenPrize(termnumber, prizenum, date);
+			for (DBDiceBetting db : dicebetting) {
+				switch (db.getType()) {
+				case Constants.DICE_GREATER_THAN: {// 大于
+					getGreaterThan(dop, db);
+					break;
+				}
+				case Constants.DICE_LESS_THAN: {// 小于
+					getLessThan(dop, db);
+					break;
+				}
+				case Constants.DICE_MAX: {// 大
+					getMax(dop, db);
+					break;
+				}
+				case Constants.DICE_SMALL: {// 小
+					getSmall(dop, db);
+					break;
+				}
+				case Constants.DICE_COUPLET: {// 对子
+					getCouplet(dop, db);
+					break;
+				}
+				default:
+					break;
+				}
+				System.out.println("开奖后" + db.toString());
+			}
+		}
+	}
+
+	/**
+	 * 大于（胜率：（99-预测数）%）
+	 */
+	private void getGreaterThan(DiceOpenPrize dop, DBDiceBetting dicebetting) {
+		dicebetting.setPrizenumber(dop.getPrize());
+		dicebetting.setTime(dop.getTime());
+		if (Long.parseLong(dop.getPrize()) > dicebetting.getForecast()) {
+			dicebetting.setState(1);
+			// 胜率
+			double win = (99 - dicebetting.getForecast()) * 0.01;
+			// 计算奖金
+			getPrize(win, dicebetting);
+		} else {
+			dicebetting.setState(0);
+		}
+	}
+
+	/**
+	 * 小于（胜率：预测数%）
+	 */
+	private void getLessThan(DiceOpenPrize dop, DBDiceBetting dicebetting) {
+		dicebetting.setPrizenumber(dop.getPrize());
+		dicebetting.setTime(dop.getTime());
+		if (Long.parseLong(dop.getPrize()) < dicebetting.getForecast()) {
+			dicebetting.setState(1);
+			// 胜率
+			double win = dicebetting.getForecast() * 0.01;
+			// 计算奖金
+			getPrize(win, dicebetting);
+		} else {
+			dicebetting.setState(0);
+		}
+	}
+
+	/**
+	 * 大（胜率：45%）
+	 */
+	private void getMax(DiceOpenPrize dop, DBDiceBetting dicebetting) {
+		dicebetting.setPrizenumber(dop.getPrize());
+		dicebetting.setTime(dop.getTime());
+		if (!isCouplet(dop.getPrize())) {
+			if (Long.parseLong(dop.getPrize()) >= 50) {
+				dicebetting.setState(1);
+				// 胜率
+				double win = 0.45;
+				// 计算奖金
+				getPrize(win, dicebetting);
+			} else {
+				dicebetting.setState(0);
+			}
+		} else {
+			dicebetting.setState(0);
+		}
+	}
+
+	/**
+	 * 小（胜率：45%）
+	 */
+	private void getSmall(DiceOpenPrize dop, DBDiceBetting dicebetting) {
+		dicebetting.setPrizenumber(dop.getPrize());
+		dicebetting.setTime(dop.getTime());
+		if (!isCouplet(dop.getPrize())) {
+			if (Long.parseLong(dop.getPrize()) <= 49) {
+				dicebetting.setState(1);
+				// 胜率
+				double win = 0.45;
+				// 计算奖金
+				getPrize(win, dicebetting);
+			} else {
+				dicebetting.setState(0);
+			}
+		} else {
+			dicebetting.setState(0);
+		}
+	}
+
+	/**
+	 * 对子(胜率：10%)
+	 */
+	private void getCouplet(DiceOpenPrize dop, DBDiceBetting dicebetting) {
+		dicebetting.setPrizenumber(dop.getPrize());
+		dicebetting.setTime(dop.getTime());
+		if (isCouplet(dop.getPrize())) {
+			dicebetting.setState(1);
+			// 胜率
+			double win = 0.1;
+			// 计算奖金
+			getPrize(win, dicebetting);
+		} else {
+			dicebetting.setState(0);
+		}
+	}
+
+	/**
+	 * 判断是否对子
+	 * 
+	 * @param prize
+	 * @return
+	 */
+	private boolean isCouplet(String prize) {
+		String[] data = { "00", "11", "22", "33", "44", "55", "66", "77", "88", "99" };
+		for (String str : data) {
+			if (str.equals(prize)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 计算奖金(收取2%手续费)
+	 * 
+	 * @return
+	 */
+	private void getPrize(double win, DBDiceBetting dicebetting) {
+		// 赔率
+		double odds = Double.parseDouble(new DecimalFormat("0.00").format(1 / win * 0.98));
+		dicebetting.setOdds(odds + "");
+		// 奖金
+		String prize = new DecimalFormat("0.0000").format(Double.parseDouble(dicebetting.getBettingEOS()) * odds);
+		dicebetting.setPrizeEOS(prize);
+	}
+}

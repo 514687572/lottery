@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="zh_CN" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link href="/css/style.min.css" rel="stylesheet">
+<body class="gray-bg">
+
+	<div th:include="include :: histogram"></div>
+	<div th:include="include :: footer"></div>
+
+	<!-- ECharts -->
+	<script type="text/javascript" src="/js/plugins/echarts/echarts-all.js"></script>
+	<!-- ECharts data -->
+	<script type="text/javascript" src="/js/appjs/tiger/stats/active.js"></script>
+</body>
+</html>

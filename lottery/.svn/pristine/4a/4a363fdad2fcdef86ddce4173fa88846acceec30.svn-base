@@ -1,0 +1,140 @@
+body{
+    background-color:#212540; 
+}
+#historyContainer{
+    width:1000px;
+    height:1127px; 
+    background-color: #252a48;
+    margin: auto;
+    margin-top:20px;
+    margin-bottom:40px; 
+    display:"none"
+}
+
+#historyHead{
+    width:940px;
+    height:84px;
+    line-height: 84px;
+    background-color: #282e50; 
+    color: white;
+    padding: 0 30px; 
+}
+#historyHead>h1{
+    font-size: 34px;
+    font-weight: lighter;
+    display: flex;
+    justify-content: space-between;
+}
+#historyHead>h1>span{
+    font-size: 14px;
+}
+#historyHead>h1>span:hover{
+    cursor: pointer;
+}
+
+#historyTab{
+    width:940px;
+    height: 1016px;
+    margin: auto;
+    margin-top:28px;  
+}
+#historyTabHead{
+    width: 940px;
+    height: 58px;
+    background-color:#343c68;
+    display: flex;
+    justify-content: space-between;
+    color: #6976c1; 
+}
+#historyTabHead>div:nth-child(1){
+    width: 190px;
+    height: 58px;
+    line-height: 58px;
+    text-align: center;
+}
+#historyTabHead>div:nth-child(2){
+    width: 132px;
+    height: 58px;
+    line-height: 58px;
+    text-align: center;
+}
+#historyTabHead>div:nth-child(3){
+    width: 178px;
+    height: 58px;
+    line-height: 58px;
+    text-align: center;
+}
+#historyTabHead>div:nth-child(4){
+    width: 147px;
+    height: 58px;
+    line-height: 58px;
+    text-align: center;
+}
+#historyTabHead>div:nth-child(3)>div:nth-of-type(1){
+    height: 29px;
+    line-height: 29px;
+}
+#historyTabHead>div:nth-child(3)>div:nth-of-type(2){
+    width: 178px;
+    height: 29px;
+    line-height: 29px;
+    font-size: 12px;
+    letter-spacing: 5px;
+}
+#historyTabHead>div:nth-child(4){
+    width: 147px;
+    height: 58px;
+    line-height: 58px;
+    text-align: center;
+}
+
+.historyTabContent{
+    width: 940px;
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+.historyTabContent:nth-of-type(odd){
+    background-color: #272d4d;
+}
+.historyTabContent>div:nth-child(1){
+    width: 190px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    color: #6976c1;
+}
+.historyTabContent>div:nth-child(2){
+    width: 132px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+}
+.historyTabContent>div:nth-child(3){
+    width: 178px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    letter-spacing:8px;
+    color: #c1484e;
+}
+.historyTabContent>div:nth-child(4){
+    width: 147px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+}
+
+.resultSmall{
+    color:#3da8ff;
+}
+.resultBig{
+    color: #3f4a8a;
+}
+.resultSingle{
+    color:#3da8ff;
+}
+.resultDouble{
+    color: #3f4a8a;
+}

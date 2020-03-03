@@ -1,0 +1,32 @@
+package com.stip.net.service.impl;
+
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.lottery.net.utils.GrnerateUUID;
+import com.lottery.net.utils.TimeUtils;
+import com.stip.net.dao.GameDao;
+import com.stip.net.entity.EosFlow;
+import com.stip.net.service.GameService;
+
+@Service
+public class GameServiceImpl implements GameService {
+
+	@Autowired
+	private GameDao gameDao;
+
+	@Override
+	public void insertEosFlow(EosFlow ef) {
+		Date date = new Date();
+		ef.setSerialNumber(TimeUtils.dateToString(date, "yyyyMMddHHmmss") + GrnerateUUID.getAtomicCounter());
+		ef.setCreateTime(date);
+		gameDao.insertEosFlow(ef);
+	}
+
+	@Override
+	public long countMyPut(String username) {
+		return gameDao.countMyPut(username);
+	}
+}

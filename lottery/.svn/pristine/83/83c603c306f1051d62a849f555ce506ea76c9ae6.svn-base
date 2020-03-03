@@ -1,0 +1,51 @@
+package com.stip.net.service.impl;
+
+import com.lottery.net.utils.GrnerateUUID;
+import com.lottery.net.utils.TimeUtils;
+import com.stip.mybatis.generator.plugin.BaseService;
+import com.stip.net.dao.LotteryUserDao;
+import com.stip.net.dao.UserTransactionRecordsDao;
+import com.stip.net.entity.UserIp;
+import com.stip.net.entity.UserTransactionRecords;
+import com.stip.net.example.UserIpExample;
+import com.stip.net.example.UserTransactionRecordsExample;
+import com.stip.net.service.UserTransactionRecordsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+
+@Service
+public class UserTransactionRecordsServiceImpl
+        extends BaseService<UserTransactionRecords, UserTransactionRecordsExample, Integer>
+        implements UserTransactionRecordsService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    private UserTransactionRecordsDao userTransactionRecordsDao;
+
+    @Override
+    public List<UserTransactionRecords> selectByExample(UserTransactionRecordsExample example) {
+        return userTransactionRecordsDao.selectByExample(example);
+    }
+
+    @Override
+    public int insert(UserTransactionRecords userTransactionRecords) {
+        Date date = new Date();
+        userTransactionRecords.setSerialNumber(TimeUtils.dateToString(date, "yyyyMMddHHmmss") + GrnerateUUID.getAtomicCounter());
+        userTransactionRecords.setCreateTime(date);
+        userTransactionRecords.setUpdateTime(date);
+        if("1".equals(userTransactionRecords.getSource())){
+            logger.error(userTransactionRecords.toString());
+        }
+        return userTransactionRecordsDao.insertSelective(userTransactionRecords);
+    }
+
+    @Override
+    public int updateByPrimaryKey(UserTransactionRecords userTransactionRecords) {
+        return userTransactionRecordsDao.updateByPrimaryKeySelective(userTransactionRecords);
+    }
+
+}

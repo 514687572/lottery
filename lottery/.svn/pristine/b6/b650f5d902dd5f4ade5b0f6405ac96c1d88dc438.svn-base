@@ -1,0 +1,33 @@
+/**
+ * Created by admin on 2018/11/14.
+ */
+
+function show()
+{
+    var login = document.getElementById('popWindow');
+    var over = document.getElementById('cover');
+    login.style.display = "block";
+    over.style.display = "block";
+}
+function hide()
+{
+    var login = document.getElementById('popWindow');
+    var over = document.getElementById('cover');
+    login.style.display = "none";
+    over.style.display = "none";
+}
+
+function showInvitation()
+{
+    var login = document.getElementById('popInvitation');
+    var over = document.getElementById('cover');
+    login.style.display = "block";
+    over.style.display = "block";
+}
+function hideInvitation()
+{
+    var login = document.getElementById('popInvitation');
+    var over = document.getElementById('cover');
+    login.style.display = "none";
+    over.style.display = "none";
+}

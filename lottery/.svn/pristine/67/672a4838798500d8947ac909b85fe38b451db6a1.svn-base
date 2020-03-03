@@ -1,0 +1,181 @@
+body{
+    background-color: #12141e;
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+#main{
+    width: 100%;
+}
+.animate-container{
+    width: 100%;
+    height:100%;
+}
+#waveBox{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+header{
+      width: 1000px;
+      height: 38px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+}
+img[alt="logo"]{
+    width: 98px;
+    height: 36px;
+    margin-top: 18px;
+}
+#headRight{
+    display: flex;
+    justify-content: space-between;
+    width: 120px;
+    height: 62px;
+    padding-top: 20px;
+}
+#inputBox{
+    width: 80px;
+    height: 23px;
+    font-size: 12px;
+    color: white;
+}
+#guoqiBox{
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+#language{
+    width: 80px;
+    height: 80px;
+    font-size: 12px;
+    color: white;
+    margin-top: 10px;
+    background-color:#12141e;
+    display: none;
+    z-index: 999; 
+}
+#LanguageBox{
+    width: 80px;
+    height: 69px;
+}
+#language>li{
+    width: 80px;
+    height: 23px;
+}
+#language>li:nth-of-type(2){
+    margin-top: 8px;
+}
+#language>li:nth-of-type(1)>i{
+    background-image: url("../images/Singapore.png");
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+#language>li:nth-of-type(2)>i{
+    background-image: url("../images/guoqi02.png");
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+img[alt="down"]{
+    width: 20px;
+    height: 20px;
+    margin-right: 20px;
+}
+h1{
+    text-align: center;
+    font-size: 60px;
+    margin-top:159px;
+    color: white; 
+}
+h1>span{
+    font-weight: normal;
+}
+.Lottery{
+    width: 420px;
+    height: 155px;
+    border:1px solid #ff782f;
+    position: absolute;
+    bottom: 33px;
+    right: 30px;
+}
+.Lottery>p{
+    margin-left: 100px;
+    line-height: 30px;
+}
+.Lottery>p:nth-child(1){
+    margin-top: 30px;
+    font-size: 28px;
+}
+.Lottery>p:nth-child(2){
+    color:#8b8c8e;
+    font-size: 12px;
+    /* margin-top: 20px; */
+}
+.LotteryBox{
+    width:510px;
+    height: 222px;
+    position: relative;
+    color: white;
+}
+.circleBox{
+    width: 140px;
+    height: 140px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    background-color: #12141e;
+}
+img[alt="circle"]{
+    width: 138px;
+    height: 138px; 
+}
+#arrowOne{
+    width: 66px;
+    height: 66px;
+    background-image: url("../images/arrow-none.png");
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+}
+#arrowOne:hover{
+    background-image: url("../images/arrow-active.png");
+    cursor: pointer;
+}
+#arrowTwo{
+    width: 66px;
+    height: 66px;
+    background-image: url("../images/arrow-none.png");
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+}
+#arrowTwo:hover{
+    background-image: url("../images/arrow-active.png");
+    cursor: pointer;
+}
+#arrowThree{
+    width: 66px;
+    height: 66px;
+    background-image: url("../images/arrow-none.png");
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+}
+#arrowThree:hover{
+    background-image: url("../images/arrow-active.png");
+    cursor: pointer;
+}

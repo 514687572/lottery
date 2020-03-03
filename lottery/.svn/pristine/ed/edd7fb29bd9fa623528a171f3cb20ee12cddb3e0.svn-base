@@ -1,0 +1,111 @@
+package com.stip.net.service;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import com.stip.net.entity.tiger.TigerConfirm;
+import com.stip.net.entity.tiger.TigerHistory;
+import com.stip.net.entity.tiger.TigerPutRecord;
+import com.stip.net.entity.tiger.TigerPutRecordUpdater;
+import com.stip.net.entity.tiger.TigerRoom;
+
+/**
+ * 龙虎斗
+ */
+public interface TigerService {
+
+	/**
+	 * 查询用户某房间某期某个投注项的投注总金额
+	 */
+	BigDecimal getMyPutMoney(String userId, int roomId, int qid, int opt);
+
+	void saveRecord(TigerPutRecord record);
+
+	TigerPutRecord getRecordByTxId(String txId);
+
+	void updateRecord(TigerPutRecordUpdater updater);
+
+	/**
+	 * 龙虎斗开奖时，查询某房间某期的投注记录（只查询区块已确认的）
+	 * 
+	 * @param roomId
+	 *            房间号
+	 * @param num
+	 *            期号
+	 */
+	List<TigerPutRecord> getRecordsWhenOpen(int roomId, int qid);
+
+	/**
+	 * 龙虎斗发奖时，查询某房间某期应该发奖的投注记录
+	 * 
+	 * @param roomId
+	 *            房间号
+	 * @param num
+	 *            期号
+	 */
+	List<TigerPutRecord> getRecordsWhenSend(int roomId, int qid);
+
+	/**
+	 * 查询投注时间悠久，却未开奖的投注记录（包含区块未确认的）
+	 * 
+	 * @param cur
+	 *            当前时间戳
+	 * @param expire
+	 *            过期时长
+	 */
+	List<TigerPutRecord> getExpiredRecords(long cur, long expire);
+
+	/**
+	 * 查询我的投注记录
+	 * 
+	 * @param userId
+	 *            用户名
+	 * @param pageSize
+	 *            每页条数
+	 * @param time
+	 *            开奖时间小于这个时间戳，0表示最新的
+	 */
+	List<TigerPutRecord> getMyRecords(String userId, int pageSize, long time);
+
+	List<TigerRoom> getAllTigerRooms();
+
+	/**
+	 * 存储房间数据（先删后插）
+	 */
+	void saveAllRooms(List<TigerRoom> list);
+
+	/**
+	 * 查询发奖失败的投注记录
+	 */
+	List<TigerPutRecord> getFailedRecords();
+
+	/**
+	 * 查询所有龙虎斗投注确认数据
+	 */
+	List<TigerConfirm> getAllConfirms();
+
+	/**
+	 * 存储房间数据（先删后插）
+	 */
+	void saveAllConfirms(List<TigerConfirm> list);
+
+	/**
+	 * 插入开奖记录
+	 */
+	void insertTigerHistory(TigerHistory th);
+
+	/**
+	 * 查询某条开奖记录
+	 * 
+	 * @param qid
+	 *            期号
+	 * @param roomId
+	 *            房间号
+	 */
+	TigerHistory getTigerHistory(int qid, int roomId);
+
+	/**
+	 * 查询需要发代币的投注记录
+	 */
+	List<TigerPutRecord> getRecordsToSendTop();
+}

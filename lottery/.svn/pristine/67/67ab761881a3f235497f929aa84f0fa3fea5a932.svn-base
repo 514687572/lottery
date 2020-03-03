@@ -1,0 +1,83 @@
+package com.stip.net.controller;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+/**
+ * 首页控制
+ *
+ * @author zl
+ */
+@Scope("request")
+@RestController
+@Transactional(propagation = Propagation.REQUIRED, rollbackFor = {RuntimeException.class, Exception.class})
+public class IndexController {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @GetMapping("/")
+    public ModelAndView toindex(HttpServletRequest request) {
+        String userCode = request.getParameter("userCode");
+        Map<String, Object> resultMap = new HashMap<>(2);
+        resultMap.put("userCode", userCode);
+        return new ModelAndView("/html/welcome", resultMap);
+    }
+
+    @GetMapping("/lottery")
+    public ModelAndView toLottery(HttpServletRequest request) {
+        String userCode = request.getParameter("userCode");
+        Map<String, Object> resultMap = new HashMap<>(2);
+        resultMap.put("userCode", userCode);
+        return new ModelAndView("/html/index", resultMap);
+    }
+
+    @GetMapping("/dice")
+    public ModelAndView toDice(HttpServletRequest request, HttpServletResponse reponse) {
+		String userCode = request.getParameter("userCode");
+		Map<String,Object> resultMap = new HashMap<>(2);
+		resultMap.put("userCode",userCode);
+        return new ModelAndView("/EOS_DICE/html/theDiceHome",resultMap);
+    }
+
+    @GetMapping("/tiger")
+	public ModelAndView toTiger(HttpServletRequest request, HttpServletResponse reponse) {
+		String userCode = request.getParameter("userCode");
+		Map<String, Object> resultMap = new HashMap<>(2);
+		resultMap.put("userCode", userCode);
+		return new ModelAndView("/eosdtplay/tiger/home", resultMap);
+	}
+
+    @GetMapping("/wap")
+    public ModelAndView wap(HttpServletRequest request) {
+        String userCode = request.getParameter("userCode");
+        Map<String, Object> resultMap = new HashMap<>(2);
+        resultMap.put("userCode", userCode);
+        return new ModelAndView("/html/wapWelcome", resultMap);
+    }
+
+    @GetMapping("/wap/lottery")
+    public ModelAndView toLottery(HttpServletRequest request, HttpServletResponse reponse) {
+        String userCode = request.getParameter("userCode");
+        Map<String, Object> resultMap = new HashMap<>(2);
+        resultMap.put("userCode", userCode);
+        return new ModelAndView("/html/wapIndex", resultMap);
+    }
+    @GetMapping("/wap/dice")
+    public ModelAndView toWapDice(HttpServletRequest request, HttpServletResponse reponse) {
+    	String userCode = request.getParameter("userCode");
+    	Map<String, Object> resultMap = new HashMap<>(2);
+    	resultMap.put("userCode", userCode);
+    	return new ModelAndView("/EOS_DICE/html/wapDiceHome", resultMap);
+    }
+}

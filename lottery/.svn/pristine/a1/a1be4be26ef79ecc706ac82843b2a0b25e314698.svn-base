@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Document</title>
+    <script src="../js/auto-size.js"></script>
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/wapDiceHome.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+</head>
+
+<body>
+    <header>
+        <div class="header">
+            <p>EOS Play</p>
+        </div>
+        <div class="header1">
+            <div>
+                <p>骰子</p>
+                <div>
+                    <img id="banner" data-banner="0" src="../img/Singapore.png" alt="">
+                    <img id="MoreOperations" data-more="0" src="../img/more.png" alt="">
+                    <div class="switchTheLanguage">
+                        <p><img id="chinese" src="../img/Singapore.png" alt=""></p>
+                        <p><img id="english" src="../img/guoqi02.png" alt=""></p>
+                    </div>
+                </div>
+                <div id="operation">
+                    <p id="gameHelpBtn">游戏帮助</p>
+                    <p id="InviteBtn">邀请好友</p>
+                    <!-- <p id="logOut">退出登录</p> -->
+                </div>
+            </div>
+            <div class="user">
+                <div>
+                    <img src="../img/user.png" alt="">
+                    <p id="userName"></p>
+                </div>
+                <div>
+                    <img src="../img/eos1.png" alt="">
+                    <p id="userBalance"></p>
+                </div>
+                <img id="logOut" src="../img/4.png" alt="">
+            </div>
+        </div>
+    </header>
+    <div id="gamePage">
+        <section class="newLottery">
+            <div class="newLottery1-1">
+                <p id="newPeriods">53365</p>
+                <p id="newTime">15:12:00</p>
+            </div>
+            <div>
+                <span>...</span>
+                <p id="newBlockChainNo">53725fdc2af716dsa398</p>
+            </div>
+            <div class="newLottery1-2">
+                <p id="result">对子</p>
+                <p id="newWinningNumbers">87</p>
+            </div>
+        </section>
+        <div></div>
+        <section class="Carousel">
+            <div id="carousel">
+
+            </div>
+
+
+        </section>
+        <section class="BettingArea">
+            <div>
+                <div class="WinningNumbers">
+                    <p>中奖号</p>
+                    <div>
+                        <p id="winningNum"></p>
+                        <p id="betNum"></p>
+                    </div>
+                </div>
+                <div class="jackpot">
+                    <p>当前奖池</p>
+                    <img src="../img/bonusPools1.png" alt="">
+                    <p id="jackpotSum">11000EOS</p>
+                </div>
+            </div>
+            <div class="SelectBet">
+                <div>
+                    <div class="select">
+                        <div>
+                            <p id="GuessInterval">猜区间</p>
+                        </div>
+                        <div>
+                            <p id="crap">猜大小</p>
+                        </div>
+
+                    </div>
+                    <div class="SelectTypeArea">
+                        <div class="guessInterval1-1">
+                            <div>
+                                <p class="CrapBtn" data-id="1">大于</p>
+                                <p class="CrapBtn" data-id="2">小于</p>
+                            </div>
+                            <div class="slider">
+                                <input type="range" id="range1" min="0" max="99" step="1" disabled="disabled" defaultValue="50" onchange="b.value=this.value"
+                                />
+                                <p>
+                                    <span>预测数：</span>
+                                    <output id="b" for="range1"></output>
+                                </p>
+
+                            </div>
+                        </div>
+                        <div class="digitalRange">
+                            <p id="minimum">0</p>
+                            <p id="max">99</p>
+                        </div>
+                    </div>
+                    <div class="crap1-1">
+                        <div>
+                            <p class="CrapBtn" data-id="3">大</p>
+                            <p class="CrapBtn" data-id="4">小</p>
+                            <p class="CrapBtn" data-id="5">对子</p>
+                        </div>
+
+                    </div>
+                    <div class="OddsAndBonuses">
+                        <p>赔率：
+                            <span id="odds">0</span>X</p>
+                        <p>预计奖金：
+                            <span id="bonus">0</span>EOS
+                        </p>
+                    </div>
+                </div>
+                <div class="amountSelected">
+                    <img src="../img/eos1.png" alt="">
+                    <input type="tel" id="inputBox" value="0.1" step="0.1" min="0.1" max="100" onkeyup="clearNoNum(this)">
+                    <p id="divide">1/2</p>
+                    <p id="ride">X2</p>
+                    <p id="maximum">MAX</p>
+                </div>
+            </div>
+        </section>
+        <div class="login">
+            <p id="loginBtn" data-state="1">登录</p>
+        </div>
+        <section class="record">
+            <div class="recordNav">
+                <div>
+                    <p id="theWinningBetsFont">中奖投注</p>
+                    <p id="iBetTheFont">我的投注</p>
+                </div>
+            </div>
+            <div class="recordTable">
+                <div id="iBetTheTable">
+                    <!-- 我的投注区域 -->
+                    <div id="loading" style="width:100%;height:3.8rem;background-color:rgba(0,0,0,0.5);position:absolute;bottom:-1.5rem;text-align:center;line-height: 3.8rem;display:none;"><img src="../img/loading.gif" alt="" style="width:0.6rem;height:0.6rem"></div>
+                    <ul class="recordHeader">
+                        <li>时间</li>
+                        <li>期号</li>
+                        <li>内容</li>
+                        <li>投注金额</li>
+                        <li>金额</li>
+                    </ul>
+                    <div id="iBetThe">
+                        <!-- <ul class="devoteTheResults">
+                        <li>11/21 17:34</li>
+                        <li>29096032</li>
+                        <li>对子</li>
+                        <li>14.21</li>
+                        <li>+52.20</li>
+                    </ul> -->
+                    </div>
+
+                </div>
+                <!-- 中奖投注区域 -->
+                <div id="theWinningTable">
+                    <ul class="theWinningBets">
+                        <li>时间</li>
+                        <li>期号</li>
+                        <li>玩家</li>
+                        <li>投注内容</li>
+                        <li>中奖</li>
+                    </ul>
+                    <div id="allPrizeTable">
+                        <!-- <ul class="lotteryTableTr">
+                        <li>11/21 17:34</li>
+                        <li>29096032</li>
+                        <li>xcvsdx</li>
+                        <li>大</li>
+                        <li>+88.66</li>
+                    </ul> -->
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+        <div class="loginCPM">
+            <div>
+                <p>私钥登录</p>
+                <img id="closeCPM" src="../img/close.png" alt="">
+            </div>
+
+            <input placeholder="请在此放心输入51位的私钥，只会用于本地交易签名" id="userChainId" />
+            <p id="loginComfire">登录</p>
+        </div>
+    </div>
+    <!-- 玩法规则页面 -->
+    <div id="gameRules">
+        <div class="rulesTitle">
+            <p>玩法规则</p>
+            <p>GAME RULES</p>
+            <p id="getBack">返回</p>
+        </div>
+        <section class="NumberGeneration">
+            <div class="NumberGeneration1-1">
+                <img src="../img/Lottery.png" alt="">
+                <p>中奖号码的产生</p>
+            </div>
+            <div class="NumberGeneration2-1">
+                <div>
+                    <p>中奖号</p>
+                    <p>中奖号码一共两位，是利用连续产生的EOS区块号的最后一位数字来做为上一期的开奖号码。如果某个区块号的ID最后一位不为数字则向前顺延一位。</p>
+                </div>
+                <div>
+                    <p>EOS区块号</p>
+                    <p>EOS区块号是一段32字节的数字，它是根据一套非常复杂的加密算法计算得出。通常是用16位进制，而我们的中奖号码利用了这样一个真正的随机号码</p>
+                </div>
+            </div>
+        </section>
+        <section class="gameplay">
+            <div class="gameplay1-1">
+                <img src="../img/gold.png" alt="">
+                <p>游戏玩法</p>
+            </div>
+            <div class="gameplay2-1">
+                <div>
+                    <p>猜区间</p>
+                    <p>选择了大于或者小于就可以进行猜区间，移动进度条上的骰子可以选择数字。如果中奖号码符合了所选的条件就会中奖。例如，选择了大于48，开奖号码为51，即为中奖</p>
+                </div>
+                <div>
+                    <p>猜大小</p>
+                    <p>选择了大、小或者对子就可以参与猜大小。对子就是两个数字相同，比如11，22，33；小是0-49，且不为对子的数字；大是51-99且不是对子的数字。</p>
+                </div>
+            </div>
+        </section>
+        <section class="gameTime">
+            <div class="gameTime1-1">
+                <img src="../img/time.png" alt="">
+                <p>游戏时间</p>
+            </div>
+            <div class="gameTime2-1">
+                <p>每秒都会开新一期，全天无休下注后5秒后自动开奖，即买即开</p>
+              
+            </div>
+        </section>
+        <section class="BettingLimits">
+            <div class="BettingLimits1-1">
+                <img src="../img/time.png" alt="">
+                <p>投注限额</p>
+            </div>
+            <div class="BettingLimits2-1">
+                <p>本平台以游戏娱乐为主，不希望大额投注，因此我们设置了每局的投注限额，即最高1次游戏可中1000EOS奖金，根据玩家所选数字的不同，会有不同的投注限额</p>
+              
+            </div>
+        </section>
+        <div class="rulesFooter">
+            <p>为了保障平台运营和日常开支，平台会在玩家中奖时，抽取2%的手续费。所以玩家实际获得的奖金=投注金额*返奖倍数</p>
+        </div>
+    </div>
+
+    <!-- 邀请好友页面 -->
+    <div id="invuteFriends">
+        <div class="invuteFriendsTitle">
+            <p>邀请好友</p>
+            <p>INVITE FRIENDS</p>
+            <p id="getBack1">返回</p>
+        </div>
+        <section class="invuteFriendsContent">
+            <div class="TheNewSend">
+                <p><span>0.1</span>EOS</p>
+                <p>新来即送</p>
+                <p>每位新玩家，首次投注都会赠送 0.1 EOS。</p>
+            </div>
+            <div class="invuteFriends1">
+                <p><span>0.1</span>EOS</p>
+                <p>邀请好友</p>
+                <p>每邀请一位朋友进行游戏，你和朋友可分别得到 0.1EOS 的奖励。只要拥有EOS账号,任何人都可以参加邀请活动,你邀请的人会永远成为你的下级。以后他的每一笔投注，无论输赢都会在投注成功后立即返还佣金到你的EOS账户。</p>
+                <p>只要拥有EOS账号,任何人都可以参加邀请活动,你邀请的人会永远成为你的下级。</p>
+                <p>以后他的每一笔投注，无论输赢都会在投注成功后立即返还佣金到你的EOS账户。</p>
+            </div>
+            <div class="StandCommission">
+                <p><span>1.0</span> %</p>
+                <p>立得返佣</p>
+                <p>佣金的比例为投注金额的 1%。佣金返还的时间是与下级投注投注同步完成的，无须等到开奖以后，也无论中否中奖，都会立即拿到返佣。举例: 骰子游戏每天最多可投注7680轮, 如果你的邀请人每轮仅下注1个EOS, 您每天也能获得76.8 EOS的高额返佣。</p>
+            </div>
+        </section>
+        <div class="TheInvitationWay">
+            <p>邀请方式</p>
+            <div class="icon">
+                <p></p>
+                <p></p>
+                <p></p>
+                <p></p>
+                <p></p>
+            </div>
+            <div class="InvitedToIntroduce">
+                <p>复制网址</p>
+                <p>好友登录</p>
+                <p>同意邀请</p>
+            </div>
+            <div class="InvitedToIntroduce1">
+                <p>将这个邀请网址发给朋友们</p>
+                <p>好友在这个网址上完成登录（使用scatter,key均可）</p>
+                <p>好友登录后同意你的邀请即可他就成为了你永远的下级</p>
+            </div>
+            <div class="DuplicateFrame">
+                <input type="text" id="inviteInput" placeholder="请先登录，才能获取邀请链接">
+                <p id="InviteCopy">复制</p>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>EOS Casino @2018</p>
+    </footer>
+    <script src="../js/zepto.min.js"></script>
+    <script src="../js/dialog.min.js"></script>
+    <script src="../js/jquery-1.12.4.min.js"></script>
+    <script src="../js/message.min.js"></script>
+    <script src="../js/wapDiceHome.js"></script>
+    <!-- <script src="../js/wapDiceHome(4).js"></script> -->
+</body>
+
+</html>

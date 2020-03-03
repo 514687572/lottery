@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Document</title>
+    <script src="../js/auto-size.js"></script>
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/wapDiceHome.css">
+    <link rel="stylesheet" href="../css/dialog.css">
+</head>
+
+<body>
+    <header>
+        <div class="header">
+            <p>EOS Play</p>
+        </div>
+        <div class="header1">
+            <div>
+                <p>骰子</p>
+                <div>
+                    <img src="../img/guoqi02.png" alt="">
+                    <img src="../img/more.png" alt="">
+                </div>
+            </div>
+            <div class="user">
+                <div>
+                    <img src="../img/user.png" alt="">
+                    <p id="userName"></p>
+                </div>
+                <div>
+                    <img src="../img/eos1.png" alt="">
+                    <p id="userBalance"></p>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="newLottery">
+        <div class="newLottery1-1">
+            <p id="newPeriods">53365</p>
+            <p id="newTime">15:12:00</p>
+        </div>
+        <div>
+            <span>...</span>
+            <p id="newBlockChainNo">53725fdc2af716dsa398</p>
+        </div>
+        <div class="newLottery1-2">
+            <p id="result">对子</p>
+            <p id="newWinningNumbers">87</p>
+        </div>
+    </section>
+    <div></div>
+    <section class="Carousel">
+            <div id="carousel">
+
+            </div>
+
+
+    </section>
+    <section class="BettingArea">
+        <div>
+            <div class="WinningNumbers">
+                <p>中奖号</p>
+                <div>
+                    <p id="winningNum"></p>
+                    <p id="betNum"></p>
+                </div>
+            </div>
+            <div class="jackpot">
+                <p>当前奖池</p>
+                <img src="../img/bonusPools1.png" alt="">
+                <p id="jackpotSum">11000EOS</p>
+            </div>
+        </div>
+        <div class="SelectBet">
+            <div>
+                <div class="select">
+                    <div>
+                        <p id="GuessInterval">猜区间</p>
+                    </div>
+                    <div>
+                        <p id="crap">猜大小</p>
+                    </div>
+
+                </div>
+                <div class="SelectTypeArea">
+                    <div class="guessInterval1-1">
+                        <div>
+                            <p class="CrapBtn" data-id="1">大于</p>
+                            <p class="CrapBtn" data-id="2">小于</p>
+                        </div>
+                        <div class="slider">
+                            <input type="range" id="range1" min="0" max="99" step="1" defaultValue="50" onchange="b.value=this.value" />
+                            <p>
+                                <span>预测数：</span>
+                                <output id="b" for="range1"></output>
+                            </p>
+
+                        </div>
+                    </div>
+                    <div class="digitalRange">
+                        <p id="minimum">0</p>
+                        <p id="max">99</p>
+                    </div>
+                </div>
+                <div class="crap1-1">
+                    <div>
+                        <p class="CrapBtn" data-id="3">大</p>
+                        <p class="CrapBtn" data-id="4">小</p>
+                        <p class="CrapBtn" data-id="5">对子</p>
+                    </div>
+
+                </div>
+                <div class="OddsAndBonuses">
+                    <p>赔率：
+                        <span id="odds">0</span>X</p>
+                    <p>预计奖金：
+                        <span id="bonus">0</span>EOS
+                    </p>
+                </div>
+            </div>
+            <div class="amountSelected">
+                <img src="../img/eos1.png" alt="">
+                <input type="number" id="inputBox" value="0.1" step="0.1" min="0.1" max="100" onkeyup="clearNoNum(this)">
+                <p id="divide">1/2</p>
+                <p id="ride">X2</p>
+                <p id="maximum">MAX</p>
+            </div>
+        </div>
+    </section>
+    <div class="login">
+        <p id="loginBtn" data-state="1">登录</p>
+    </div>
+    <section class="record">
+        <div class="recordNav">
+            <div>
+                <p id="theWinningBetsFont">中奖投注</p>
+                <p id="iBetTheFont">我的投注</p>
+            </div>
+        </div>
+        <div class="recordTable">
+            <div id="iBetTheTable">
+                <!-- 我的投注区域 -->
+                <ul class="recordHeader">
+                    <li>时间</li>
+                    <li>期号</li>
+                    <li>内容</li>
+                    <li>投注金额</li>
+                    <li>金额</li>
+                </ul>
+                <div id="iBetThe">
+                    <!-- <ul class="devoteTheResults">
+                        <li>11/21 17:34</li>
+                        <li>29096032</li>
+                        <li>对子</li>
+                        <li>14.21</li>
+                        <li>+52.20</li>
+                    </ul> -->
+                </div>
+
+            </div>
+            <!-- 中奖投注区域 -->
+            <div id="theWinningTable">
+                <ul class="theWinningBets">
+                    <li>时间</li>
+                    <li>期号</li>
+                    <li>玩家</li>
+                    <li>投注内容</li>
+                    <li>中奖</li>
+                </ul>
+                <div id="allPrizeTable">
+                    <!-- <ul class="lotteryTableTr">
+                        <li>11/21 17:34</li>
+                        <li>29096032</li>
+                        <li>xcvsdx</li>
+                        <li>大</li>
+                        <li>+88.66</li>
+                    </ul> -->
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+    <div class="loginCPM">
+        <div>
+            <p>私钥登录</p>
+            <img id="closeCPM" src="../img/close.png" alt="">
+        </div>
+
+        <input placeholder="请在此放心输入51位的私钥，只会用于本地交易签名" value="5KKoW8cXDce7A7iXRpUzehHWAVn315iLc8fauYDTTvqsFxpV7v3" id="userChainId"
+        />
+        <p id="loginComfire">登录</p>
+    </div>
+    <footer>
+        <p>EOS Casino @2018</p>
+    </footer>
+    <script src="../js/zepto.min.js"></script>
+    <script src="../js/dialog.min.js"></script>
+    <script src="../js/jquery-1.12.4.min.js"></script>
+    <script src="../js/message.min.js"></script>
+    <script src="../js/wapDiceHome.js"></script>
+</body>
+
+</html>

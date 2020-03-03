@@ -1,0 +1,529 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@taglib prefix="ctx" uri="http://www.springframework.org/tags" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>手机端主页</title>
+  <script src="../js/jquery.js"></script>
+  <script src="../js/wapAutoSize.js"></script>
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/wapMessage.css">
+  <link rel="stylesheet" href="../css/wapIndex.css" />
+</head>
+<body>
+<header style="position:relative;">EOS Play</header>
+<nav>
+  <div id="navLeft">
+    <img src="../images/circle.png" alt="logo" /> <span>LOTTERY</span>
+  </div>
+  <div id="navRight" style="position:relative;">
+    <div id="LanguageBox">
+      <div id="inputBox">
+        <img
+                src="../images/Singapore.png"
+                alt="Singapore"
+                id="guoqiBox"
+        />&nbsp&nbsp简体中文
+      </div>
+      <ul id="language">
+        <li id="Ch"><i></i>简体中文</li>
+        <li id="En"><i></i>English</li>
+      </ul>
+    </div>
+    <img src="../images/more.png" alt="more" id="more"/>
+    <img src="../images/close.png" alt="close" id="close" >
+  </div>
+</nav>
+<!-- 导航跳转 -->
+<div id="navContainer" style="display:none;width:100%;height:11.2rem;background:rgba(0,0,0,0.9);position:absolute;z-index:999;">
+  <div id="TogameRuler" style="padding:0 0.1rem;height:0.53rem;line-height:0.53rem;font-size:0.14rem;color: white;border-bottom: 1px solid #313862;">
+    <i style="background-image:url('../images/img04.png');background-size:cover;width:0.2rem;height:0.2rem;display: inline-block;vertical-align: middle;"></i>
+    <ctx:message code="howTo"/>
+  </div>
+  <div id="ToinviteFriends" style="padding:0 0.1rem;height:0.53rem;line-height:0.53rem;font-size:0.14rem;color: white;">
+    <i style="background-image:url('../images/user.png');background-size:cover;width:0.2rem;height:0.2rem;display: inline-block;vertical-align: middle;"></i>
+    <ctx:message code="invite"/>
+  </div>
+</div>
+<!-- 登录弹窗 -->
+<div id="loginContainer" style="display:none;width:100%;height:11.2rem;background:rgba(0,0,0,0.9);position:absolute;z-index:999;text-align: center;">
+  <div style="width:3.03rem;height:1.75rem;padding-top:0.2rem;background:#313862;margin:auto;border-radius:0.1rem;text-align:center;margin-top:0.4rem;">
+    <p style="font-size:0.14rem;color:white;"><ctx:message code="sydl"/> </p>
+    <input type="text" placeholder="<ctx:message code='placeholder'/>" id="userPriKey" style="width:2.64rem;height:0.3rem;line-height:0.3rem;color:#4d578f;border:none;font-size:0.1rem;background:#313862;border-bottom: 1px solid #4d578f;outline:none;float:left;margin-left:0.2rem;margin-top: 0.4rem;">
+    <input type="button" value="<ctx:message code='dice19'/>" id="privateLogin" style="width:2.64rem;height:0.3rem;font-size:0.14rem;color:white;border-radius:0.08rem;border:none;text-align:center;line-height:0.3rem;outline:none;background:linear-gradient(to right, #ff5c4a , #ff8325);float:left;margin-top: 0.4rem;margin-left:0.2rem;">
+  </div>
+  <div id="loginClose" style="width:0.32rem;height:0.32rem;background-image:url('../images/wapClose.png');margin:auto;margin-top: 0.4rem;background-size:cover"></div>
+</div>
+<!-- 用户信息 -->
+<div id="userInfo" style="display:none;">
+  <div id="userInfoContainer">
+    <div id="userInfoLeft">
+      <img src="../images/user.png" alt="user" />
+      <span id="userName"></span>
+      <img src="../images/EOS (2).png" alt="eos" />
+      <span id="userBalance"></span>
+    </div>
+    <div id="userInfoRight">
+      <div id="totalCpu"
+           style="width:0.6rem;height:0.1rem;background:#252a48;border-radius:0.08rem;position: relative;">
+        <div id[="userCpu"
+             style="position:absolute;left:0;top:0;height:0.1rem;background:#3097ff;width:0.1rem;border-radius:0.08rem;"
+        ></div>
+      </div>
+      <span id="cpuPercent"></span>
+    </div>
+    <img src="../images/tuichu.png" alt="" style="width:0.12rem;height:0.12rem;vertical-align:middle;">
+  </div>
+</div>
+<div id="App" style="align-items:center;position:relative;display:block;">
+  <!-- 投注直播 -->
+  <div id="betsLiveRow">
+    <div id="awardContainer" style="height:0.74rem;width:1.2rem;">
+    </div>
+    <div style="height:0.74rem;width:0.02rem;background:#313862;vertical-align: middle;">
+    </div>
+    <div id="betLiveContainer" style="height:0.74rem;width:2.2rem;overflow: hidden;">
+    </div>
+  </div>
+  <!-- hash值轮播 -->
+  <div id="hash">
+    <div id="hashPlay"></div>
+  </div>
+  <!-- 投注计时 -->
+  <div id="betTime">
+    <div id="betTimeLeft">
+      <p id="periods"></p>
+      <div>
+          <span><ctx:message code="endCurrent"/> </span
+          ><span
+              style="width:0.16rem;height:0.16rem;display:inline-block;background:red;"
+      >00</span
+      >:<span
+              id="timeLeft"
+              style="width:0.16rem;height:0.16rem;display:inline-block;background:red;"
+      >00</span
+      >
+      </div>
+    </div>
+    <div id="betTimeMiddle">
+      <p><ctx:message code="limit"/> </p>
+      <div  style="width:1rem;height:0.15rem;background:#252a48;position: relative;line-height: 0.15rem;text-align: center;">
+        <div style="position:absolute;left:0;top:0;height:0.15rem;background:#ff8523;"></div>
+        <b id="betsUsers" style="z-index:999"></b><b id="limitBets" style="z-index:999"></b>
+      </div>
+    </div>
+    <div id="betTimeRight" style="align-items:center;">
+        <div>
+            <canvas id="c"></canvas>
+        </div>
+      <div>
+        <p><ctx:message code="pool"/> </p>
+        <p id="bonus">110957</p>
+      </div>
+    </div>
+  </div>
+  <!-- 玩家投注 -->
+  <div>
+    <!-- 基础模式 -->
+    <div id="baseModelBox" style="display:block;">
+      <div id="baseModel">
+        <div id="bet">
+          <div id="chooseNumber">
+            <div id="chooseNumberL">
+              <div id="small">
+                <p><ctx:message code="s"/> </p>
+              </div>
+              <div id="big">
+                <p><ctx:message code="b"/></p>
+              </div>
+              <div id="single">
+                <p><ctx:message code="o"/></p>
+              </div>
+              <div id="double">
+                <p><ctx:message code="e"/></p>
+              </div>
+            </div>
+            <div id="resetOne"><ctx:message code="reset"/></div>
+            <span><ctx:message code="model"/>:</span>
+            <div style="width:0.48rem;height:0.24rem;background:#ff8523;border-radius:0.4rem;display:flex;justify-content: space-between">
+              <div class="baseBetsBtn" style="width:0.24rem;height:0.24rem;text-align: center;line-height: 0.24rem;border-radius:0.1rem 0 0 0.1rem;background: #ff8523"><ctx:message code="early"/></div>
+              <div class="higherBetsBtn" style="width:0.24rem;height:0.24rem;text-align: center;line-height: 0.24rem;border-radius:0 0.1rem 0.1rem 0;background:#252a48"><ctx:message code="hight"/></div>
+            </div>
+          </div>
+          <div id="numbers">
+            <div id="numberContainer">
+              <div class="numberBtn" data-check="off">0</div>
+              <div class="numberBtn" data-check="off">1</div>
+              <div class="numberBtn" data-check="off">2</div>
+              <div class="numberBtn" data-check="off">3</div>
+              <div class="numberBtn" data-check="off">4</div>
+              <div class="numberBtn" data-check="off">5</div>
+              <div class="numberBtn" data-check="off">6</div>
+              <div class="numberBtn" data-check="off">7</div>
+              <div class="numberBtn" data-check="off">8</div>
+              <div class="numberBtn" data-check="off">9</div>
+            </div>
+            <div id="resetTwo"><ctx:message code="reset"/> </div>
+          </div>
+        </div>
+        <div class="bottom" style="text-align:center;">
+          <div style="display:flex;justify-content: space-between;align-items: center;background-color: #282e50;padding: 0 0.1rem">
+            <p><ctx:message code="amount"/>:</p>
+            <div class="Multiple">
+              <input type="text" class="myBets" value="1" style="width:1.64rem;height:0.2rem;background:#313862;border:none;color: white;padding-left:0.1rem;outline:none;"/>
+              <div id="MultipleChoose">
+                <div class="half" style="width:0.2rem;height:0.2rem;text-align: center;line-height: 0.2rem">1/2</div>
+                <div class="doubles" style="width:0.2rem;height:0.2rem;text-align: center;line-height: 0.2rem">2X</div>
+                <div class="max" style="width:0.2rem;height:0.2rem;text-align: center;line-height: 0.2rem">MAX</div>
+              </div>
+            </div>
+          </div>
+          <div id="totalMoney">
+            <p><ctx:message code="count"/> <span id="baseBets" style="color:#b44141;">0</span></p>
+            <p><ctx:message code="total"/> <span id="baseTotalBets" style="color:#b44141;">0</span></p>
+          </div>
+          <button class="Pri_login" style="margin:auto"><ctx:message code="login"/> </button>
+          <button class="betsBtn" style="margin:auto"><ctx:message code="bet" /> </button>
+        </div>
+      </div>
+    </div>
+    <div id="higherModelBox" style="display:none">
+      <div id="higherModel" style="color:white;">
+        <div id="bet">
+          <div id="num1Box">
+            <div id="Hnumbers1">
+              <div class="HnumberContainer">
+                <div class="number1Btn" data-check="off">0</div>
+                <div class="number1Btn" data-check="off">1</div>
+                <div class="number1Btn" data-check="off">2</div>
+                <div class="number1Btn" data-check="off">3</div>
+                <div class="number1Btn" data-check="off">4</div>
+                <div class="number1Btn" data-check="off">5</div>
+                <div class="number1Btn" data-check="off">6</div>
+                <div class="number1Btn" data-check="off">7</div>
+                <div class="number1Btn" data-check="off">8</div>
+                <div class="number1Btn" data-check="off">9</div>
+              </div>
+              <div id="resetTr"><ctx:message code="reset"/></div>
+            </div>
+          </div>
+          <div id="num2Box">
+            <div id="Hnumbers2">
+              <div class="HnumberContainer">
+                <div class="number2Btn" data-check="off">0</div>
+                <div class="number2Btn" data-check="off">1</div>
+                <div class="number2Btn" data-check="off">2</div>
+                <div class="number2Btn" data-check="off">3</div>
+                <div class="number2Btn" data-check="off">4</div>
+                <div class="number2Btn" data-check="off">5</div>
+                <div class="number2Btn" data-check="off">6</div>
+                <div class="number2Btn" data-check="off">7</div>
+                <div class="number2Btn" data-check="off">8</div>
+                <div class="number2Btn" data-check="off">9</div>
+              </div>
+              <div id="resetFr"><ctx:message code="reset"/></div>
+            </div>
+          </div>
+          <div id="num3Box">
+            <div id="Hnumbers3">
+              <div class="HnumberContainer">
+                <div class="number3Btn" data-check="off">0</div>
+                <div class="number3Btn" data-check="off">1</div>
+                <div class="number3Btn" data-check="off">2</div>
+                <div class="number3Btn" data-check="off">3</div>
+                <div class="number3Btn" data-check="off">4</div>
+                <div class="number3Btn" data-check="off">5</div>
+                <div class="number3Btn" data-check="off">6</div>
+                <div class="number3Btn" data-check="off">7</div>
+                <div class="number3Btn" data-check="off">8</div>
+                <div class="number3Btn" data-check="off">9</div>
+              </div>
+              <div id="resetFv"><ctx:message code="reset"/></div>
+            </div>
+          </div>
+          <div id="num4Box">
+            <div id="Hnumbers4">
+              <div class="HnumberContainer">
+                <div class="number4Btn" data-check="off">0</div>
+                <div class="number4Btn" data-check="off">1</div>
+                <div class="number4Btn" data-check="off">2</div>
+                <div class="number4Btn" data-check="off">3</div>
+                <div class="number4Btn" data-check="off">4</div>
+                <div class="number4Btn" data-check="off">5</div>
+                <div class="number4Btn" data-check="off">6</div>
+                <div class="number4Btn" data-check="off">7</div>
+                <div class="number4Btn" data-check="off">8</div>
+                <div class="number4Btn" data-check="off">9</div>
+              </div>
+              <div id="resetSx"><ctx:message code="reset"/></div>
+            </div>
+          </div>
+          <div id="num5Box">
+            <div id="Hnumbers5">
+              <div class="HnumberContainer">
+                <div class="number5Btn" data-check="off">0</div>
+                <div class="number5Btn" data-check="off">1</div>
+                <div class="number5Btn" data-check="off">2</div>
+                <div class="number5Btn" data-check="off">3</div>
+                <div class="number5Btn" data-check="off">4</div>
+                <div class="number5Btn" data-check="off">5</div>
+                <div class="number5Btn" data-check="off">6</div>
+                <div class="number5Btn" data-check="off">7</div>
+                <div class="number5Btn" data-check="off">8</div>
+                <div class="number5Btn" data-check="off">9</div>
+              </div>
+              <div id="resetSv"><ctx:message code="reset"/></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;height:0.32rem;color: white;margin-bottom: 0.1rem;margin-top: 0.1rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;height:0.32rem;width: 2rem">
+            <p><ctx:message code="bits"/> :</p>
+            <div id="stars">
+              <button id="oneStar">1</button>
+              <button id="twoStar">2</button>
+              <button id="threeStar">3</button>
+              <button id="fourStar">4</button>
+              <button id="fiveStar">5</button>
+            </div>
+          </div>
+          <div style="display:flex;justify-content: space-between;align-items:center">
+            <span><ctx:message code="model"/> :</span>
+            <div style="width:0.48rem;height:0.24rem;background:#ff8523;border-radius:0.4rem;display:flex;justify-content: space-between">
+              <div class="baseBetsBtn" style="width:0.24rem;height:0.24rem;text-align: center;line-height: 0.24rem;border-radius:0.1rem 0 0 0.1rem;background: #252a48"><ctx:message code="early"/></div>
+              <div class="higherBetsBtn" style="width:0.24rem;height:0.24rem;text-align: center;line-height: 0.24rem;border-radius:0 0.1rem 0.1rem 0;"><ctx:message code="hight"/></div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom" style="text-align:center;">
+          <div style="display:flex;justify-content: space-between;align-items: center;background-color: #282e50;padding: 0 0.1rem">
+            <p><ctx:message code="amount"/>:</p>
+            <div class="Multiple">
+              <input type="text" class="myBets" value="1" style="width:1.64rem;height:0.2rem;background:#313862;border:none;color: white;padding-left:0.1rem;outline:none;"/>
+              <div id="MultipleChoose">
+                <div class="half" style="width:0.2rem;height:0.2rem;text-align: center;line-height: 0.2rem;border-radius:0.02rem">1/2</div>
+                <div class="doubles" style="width:0.2rem;height:0.2rem;text-align: center;line-height: 0.2rem;border-radius:0.02rem">2X</div>
+                <div class="max" style="width:0.2rem;height:0.2rem;text-align: center;line-height: 0.2rem;border-radius:0.02rem">MAX</div>
+              </div>
+            </div>
+          </div>
+          <div id="totalMoney">
+            <p><ctx:message code="count"/> <span id="higherBets" style="color:#b44141;">0</span></p>
+            <p><ctx:message code="total"/> <span id="higherTotalBets" style="color:#b44141;">0</span></p>
+          </div>
+          <button class="Pri_login"><ctx:message code="login"/> </button>
+          <button class="betsBtn"><ctx:message code="bet"/> </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 开奖记录和我的投注 -->
+  <div id="myHis">
+    <div style="height:0.38rem;line-height:0.38rem;color: white;font-size:0.14rem;display: flex;justify-content: space-between;">
+      <div id="hisAward" style="width:50%;text-align:center;"><ctx:message code="results"/> </div>
+      <div id="hisBets" style="width:50%;text-align:center;color:#6a727d;"><ctx:message code="mybets"/> </div>
+    </div>
+    <div id="myHisbets" style="display:none;height:3.3rem">
+      <div style="padding:0 0.1rem;height:0.3rem;line-height: 0.3rem;font-size:0.12rem;color:white;text-align: center;display: flex;justify-content: space-between">
+        <div style="width: 0.64rem;"><ctx:message code="issue"/> </div>
+        <div style="width: 0.60rem;"><ctx:message code="Content"/></div>
+        <div style="width: 0.28rem;"><ctx:message code="type"/></div>
+        <div style="width: 0.60rem;"><ctx:message code="Amount"/> </div>
+        <div style="width: 0.68rem;"><ctx:message code="date"/></div>
+      </div>
+      <div id="myHisBetTab" style="height:2.8rem;overFlow:auto">
+
+      </div>
+    </div>
+    <div id="myHisAward" style="display:block;height:3.3rem">
+      <div style="padding:0 0.1rem;height:0.3rem;line-height: 0.3rem;font-size:0.12rem;color:white;text-align: center;display: flex;justify-content: space-between">
+        <div style="width: 0.72rem;"><ctx:message code="date"/></div>
+        <div style="width: 0.68rem;"><ctx:message code="issue"/></div>
+        <div style="width: 0.58rem;"><ctx:message code="kjhm"/> </div>
+        <div style="width: 0.70rem;"><ctx:message code="b"/><ctx:message code="s"/>|<ctx:message code="o"/><ctx:message code="e"/></div>
+      </div>
+      <div id="myHisAwardTab" style="height:2.8rem;overFlow:auto">
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 游戏规则 -->
+<div id="gameRuler" style="display:none;background-color:#1c1e2d">
+  <h1 style="font-size:0.2rem;color:white;text-align:center;height:0.82rem;line-height: 0.82rem;"><ctx:message code="GameRule"/> </h1>
+
+  <div id="gameRulerPartOne" style="height:2.22rem;">
+    <p style="font-size:0.16rem;color:white;"><i style="background-image:url('../images/img01.png'); background-size:0.3rem 0.3rem;width:0.3rem;height:0.3rem;display:inline-block;vertical-align: middle;"></i>&nbsp<ctx:message code="kjhm"/></p>
+    <div style="margin-left:0.34rem;margin-top:0.1rem;">
+      <p style="font-size:0.12rem;color:white;"><ctx:message code="p1"/> </p>
+      <div style="font-size:0.12rem;color:#4d578f;width:3.12rem;line-height: 0.2rem;"><ctx:message code="p2"/> </div>
+    </div>
+  </div>
+
+  <div id="gameRulerPartTwo" style="height:0.8rem;">
+    <p style="font-size:0.16rem;color:white;"><i style="background-image:url('../images/img03.png'); background-size:0.3rem 0.3rem;width:0.3rem;height:0.3rem;display:inline-block;vertical-align: middle;"></i>&nbsp<ctx:message code="p3"/></p>
+    <div style="margin-left:0.34rem;margin-top:0.1rem;">
+      <div style="font-size:0.12rem;color:#4d578f;width:3.12rem;line-height: 0.2rem;"><ctx:message code="p4"/></div>
+    </div>
+  </div>
+
+  <div id="gameRulerPartThree" style="height:4.55rem;">
+    <p style="font-size:0.16rem;color:white;"><i style="background-image:url('../images/img04.png'); background-size:0.3rem 0.3rem;width:0.3rem;height:0.3rem;display:inline-block;vertical-align: middle;"></i>&nbsp<ctx:message code="p5"/></p>
+    <div style="margin-left:0.34rem;margin-top:0.1rem;">
+      <p style="font-size:0.12rem;color:white;"><ctx:message code="p6"/></p>
+      <div style="font-size:0.12rem;color:#4d578f;width:3.12rem;line-height: 0.2rem;"><ctx:message code="p7"/>
+        <br><ctx:message code="p71"/>
+        <br><ctx:message code="p72"/></div>
+    </div>
+    <div style="margin-left:0.34rem;margin-top:0.1rem;">
+      <p style="font-size:0.12rem;color:white;"><ctx:message code="p8"/></p>
+    </div>
+    <div style="margin-left:0.34rem;margin-top:0.1rem;">
+      <div style="font-size:0.12rem;color:#4d578f;width:3.12rem;line-height: 0.2rem;"><ctx:message code="p81"/></div>
+    </div>
+    <div style="margin-left:0.34rem;margin-top:0.1rem;">
+      <div style="font-size:0.12rem;color:#4d578f;width:3.12rem;line-height: 0.2rem;"><ctx:message code="p82"/></div>
+    </div>
+  </div>
+
+  <div id="gameRulerPartFour" style="height:6.0rem;">
+    <p style="font-size:0.16rem;color:white;"><i style="background-image:url('../images/img02.png'); background-size:0.3rem 0.3rem;width:0.3rem;height:0.3rem;display:inline-block;vertical-align: middle;"></i>&nbsp<ctx:message code="p10"/> </p>
+    <p style="font-size:0.12rem;color:#4d578f;margin-left:0.34rem;margin-top:0.1rem;"><ctx:message code="p101"/></p>
+    <p style="font-size:0.12rem;color:#4d578f;margin-left:0.34rem;margin-top:0.1rem;"><ctx:message code="p102"/></p>
+    <p style="font-size:0.12rem;color:#4d578f;margin-left:0.34rem;margin-top:0.1rem;"><ctx:message code="p103"/></p>
+    <p style="font-size:0.12rem;color:#4d578f;margin-left:0.34rem;margin-top:0.1rem;"><ctx:message code="p104"/></p>
+    <p style="font-size:0.12rem;color:#4d578f;margin-left:0.34rem;margin-top:0.1rem;"><ctx:message code="p105"/></p>
+    <p style="font-size:0.12rem;color:#4d578f;margin-left:0.34rem;margin-top:0.1rem;"><ctx:message code="p106"/></p>
+    <p style="font-size:0.12rem;color:#4d578f;margin-left:0.34rem;margin-top:0.1rem;"><ctx:message code="p107"/></p>
+    <p style="font-size:0.12rem;color:#4d578f;margin-left:0.34rem;margin-top:0.1rem;"><ctx:message code="p108"/></p>
+    <p style="font-size:0.12rem;color:#4d578f;margin-left:0.34rem;margin-top:0.1rem;"><ctx:message code="p109"/></p>
+  </div>
+</div>
+
+<!-- 邀请好友 -->
+<div id="inviteFriends" style="display:none;background-color:#1c1e2d;padding:0 0.1rem;">
+  <h1 style="font-size:0.2rem;color:white;text-align:center;height:0.82rem;line-height: 0.82rem;"><ctx:message code="p12"/> </h1>
+  <div style="width:3.06rem;height:1.3rem;margin:auto;border-bottom:0.01rem dotted #4d4f56;margin-top: 0.1rem;">
+    <p style="display:flex;align-items: baseline;"><span style="font-size:0.3rem;color:white;">0.1</span><span style="font-size:0.16rem;color:white;">EOS</span></p>
+    <p style="font-size:0.12rem;color:white;margin-top: 0.1rem;"><ctx:message code="p11"/> </p>
+    <p style="font-size:0.12rem;color:#494f78;margin-top:0.1rem;"><ctx:message code="p111"/></p>
+  </div>
+
+  <div id="inviteFriendsPartTwo" style="width:3.06rem;height:2.0rem;margin:auto;border-bottom:0.01rem dotted #4d4f56;margin-top: 0.1rem;">
+    <p style="display:flex;align-items: baseline;"><span style="font-size:0.3rem;color:white;">0.1</span><span style="font-size:0.16rem;color:white;">EOS</span></p>
+    <p style="font-size:0.12rem;color:white;margin-top: 0.1rem;"><ctx:message code="p12"/> </p>
+    <p style="font-size:0.12rem;color:#494f78;margin-top:0.1rem;line-height: 0.2rem;">
+      <ctx:message code="p121"/>
+      <ctx:message code="p122"/>
+      <ctx:message code="p123"/>
+    </p>
+  </div>
+
+  <div id="inviteFriendsPartThree" style="width:3.06rem;height:2.0rem;margin:auto;border-bottom:0.01rem dotted #4d4f56;margin-top: 0.1rem;">
+    <p style="display:flex;align-items: baseline;"><span style="font-size:0.3rem;color:white;">1.0</span><span style="font-size:0.16rem;color:white;">%</span></p>
+    <p style="font-size:0.12rem;color:white;margin-top: 0.1rem;"><ctx:message code="p13"/> </p>
+    <p style="font-size:0.12rem;color:#494f78;margin-top:0.1rem;line-height: 0.2rem;">
+      <ctx:message code="p131"/>
+      <ctx:message code="p132"/>
+      <ctx:message code="p133"/>
+      <ctx:message code="p134"/>
+    </p>
+  </div>
+
+  <section id="invitePart2" style="height:3.14rem;margin-top:0.2rem;font-size:0.12rem;color:white;text-align: center;">
+    <h1 style="font-weight: lighter;margin-top:0.2rem;font-size:0.2rem;"><ctx:message code="p12"/> </h1>
+    <div id="inviteDetails" style="height:1.87rem;margin:auto;margin-top:0.25rem;">
+      <div id="icon" style="height:0.44rem;margin:auto;display:flex;justify-content: space-between;">
+        <i style="width:0.4rem;height:0.4rem;border-radius:0.4rem;display:inline-block;background-size:cover;background-color:#3e425c;background-image:url('../images/yaoqing_icon01.png')"></i>
+        <hr class="line" style="width:1rem;height:0.01rem;border-top:0.01rem solid #4d5569;margin-top:0.2rem;"/>
+        <i style="width:0.4rem;height:0.4rem;border-radius:0.4rem;display:inline-block;background-size:cover;background-color:#3e425c;background-image:url('../images/yaoqing_icon02.png')"></i>
+        <hr class="line" style="width:1rem;height:0.01rem;border-top:0.01rem solid #4d5569;margin-top:0.2rem;"/>
+        <i style="width:0.4rem;height:0.4rem;border-radius:0.4rem;display:inline-block;background-size:cover;background-color:#3e425c;background-image:url('../images/yaoqing_icon03.png')"></i>
+      </div>
+      <div id="rulerWords" style="height:1.02rem;display:flex;justify-content: space-between;margin: auto;margin-top:0.16rem;font-size:0.12rem">
+        <p style="width:0.7rem;text-align: left;">
+          <span><ctx:message code="copy"/> </span>
+          <br />
+          <span style="color:#4d578f;"><ctx:message code="P142"/> </span>
+        </p>
+        <p style="width:0.9rem;text-align: center;">
+          <span><ctx:message code="friendLogin"/></span>
+          <br />
+          <span style="color:#4d578f;">
+            <ctx:message code="P143"/>
+          </span>
+        </p>
+        <p  style="width:0.64rem;text-align:right;">
+          <span><ctx:message code="friendLogin"/> </span>
+          <br />
+          <span style="color:#4d578f;"> <ctx:message code="P144"/></span>
+        </p>
+      </div>
+      <div id="inviteLink" style="margin-top:0.2rem;height:0.25rem;display:flex;justify-content: space-between;background:#282938;align-items: center;padding:0.1rem;">
+        <input id="linkInput" type="text" placeholder="<ctx:message code='P15'/>" style="width:2.76rem;height:0.3rem;border: none;outline: none;background:#484956;padding-left:0.2rem;"/>
+        <button id="copyUrl" style="width:0.74rem;height:0.3rem;text-align:center;line-height:0.3rem;font-size:0.16rem;background: linear-gradient(to right, #ff5c4a, #ff8325);border:none;color:white;"><ctx:message code="copy1"/></button>
+      </div>
+    </div>
+  </section>
+
+  <div id="myFriends" style="height:auto;margin-bottom:0.2rem;padding:0.2rem 0;font-size:0.12rem;color:#4d4f56;text-align: center;">
+    <p style="font-size:0.2rem;color:white;"><ctx:message code="mySubordinate"/></p>
+    <div style="display: flex;justify-content: space-between;margin-top: 0.2rem;height:0.42rem;line-height: 0.42rem;">
+      <div style="width:0.4rem;"><ctx:message code="NO"/></div>
+      <div style="width:0.9rem;"><ctx:message code="userName"/></div>
+      <div style="width:0.4rem;"><ctx:message code="child"/></div>
+      <div style="width:1.0rem;"><ctx:message code="betAmount"/></div>
+      <div style="width:1.0rem;"><ctx:message code="rebate"/></div>
+    </div>
+    <div id="myFriendsContainer">
+      
+    </div>
+    <div style="margin:auto;margin-top:0.2rem;width:1rem;height:0.3rem;line-height:0.3rem;text-align:center;display: flex;justify-content: space-between;">
+      <div style="background-color:#3e425c;width:0.3rem;height:0.3rem;border-radius: 0.04rem;">
+        <i style="width:0.16rem;height:0.16rem;vertical-align:middle;background-image:url('../images/arrowL.png');background-size:0.16rem 0.16rem;display:inline-block;"></i>
+      </div>
+      <span style="color:#4d578f;">1/1</span>
+      <div style="background-color:#3e425c;width:0.3rem;height:0.3rem;border-radius: 0.04rem;">
+        <i style="width:0.16rem;height:0.16rem;vertical-align:middle;background-image:url('../images/arrowR.png');background-size:0.16rem 0.16rem;display:inline-block;"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer style="color:#4d4f56;height:0.64rem;line-height:0.64rem;text-align:center;font-size:0.14rem;">
+  EOS Casino @2018
+</footer>
+<script>
+    var englistBig = '<ctx:message code="b"/>';
+    var englistSmall = '<ctx:message code="s"/>';
+    var englistOdd = '<ctx:message code="o"/>';
+    var englistEven = '<ctx:message code="e"/>';
+
+    var englistBet = '<ctx:message code="bet"/>';
+    var period1 = '<ctx:message code="period1"/>';
+    var period2 = '<ctx:message code="period2"/>';
+    var userCode = '${userCode}';
+    var notInstalled = '<ctx:message code="notInstalled"/>';
+    var logOut = '<ctx:message code="logOut"/>';
+    var win = '<ctx:message code="win"/>';
+    var ucerror = '<ctx:message code="ucerror"/>';
+    var common = '<ctx:message code="common"/>';
+    var people = '<ctx:message code="people"/>';
+    var lang = '${pageContext.response.locale}';
+</script>
+
+<script src="../js/changeTime.js"></script>
+<script src="../js/wapindex.js"></script>
+<script src="../js/timeDay.js"></script>
+<script src="../js/popups.js"></script>
+<script src="../js/wapView.js"></script>
+<script src="../js/wapBets.js"></script>
+<script src="../js/Wapball.js"></script>
+</body>
+</html>

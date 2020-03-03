@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.UserTransactionRecordsDao">
+  <resultMap id="BaseResultMap" type="com.stip.net.entity.UserTransactionRecords">
+    <id column="UserTransactionRecords_id" jdbcType="INTEGER" property="id" />
+    <result column="UserTransactionRecords_bet_num" jdbcType="BIGINT" property="betNum" />
+    <result column="UserTransactionRecords_user_id" jdbcType="BIGINT" property="userId" />
+    <result column="UserTransactionRecords_user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="UserTransactionRecords_serial_number" jdbcType="VARCHAR" property="serialNumber" />
+    <result column="UserTransactionRecords_game_type" jdbcType="CHAR" property="gameType" />
+    <result column="UserTransactionRecords_payments_type" jdbcType="CHAR" property="paymentsType" />
+    <result column="UserTransactionRecords_source" jdbcType="CHAR" property="source" />
+    <result column="UserTransactionRecords_money" jdbcType="DECIMAL" property="money" />
+    <result column="UserTransactionRecords_unit" jdbcType="CHAR" property="unit" />
+    <result column="UserTransactionRecords_create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UserTransactionRecords_update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="UserTransactionRecords_remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    UserTransactionRecords.id as UserTransactionRecords_id, UserTransactionRecords.bet_num as UserTransactionRecords_bet_num, 
+    UserTransactionRecords.user_id as UserTransactionRecords_user_id, UserTransactionRecords.user_name as UserTransactionRecords_user_name, 
+    UserTransactionRecords.serial_number as UserTransactionRecords_serial_number, UserTransactionRecords.game_type as UserTransactionRecords_game_type, 
+    UserTransactionRecords.payments_type as UserTransactionRecords_payments_type, UserTransactionRecords.source as UserTransactionRecords_source, 
+    UserTransactionRecords.money as UserTransactionRecords_money, UserTransactionRecords.unit as UserTransactionRecords_unit, 
+    UserTransactionRecords.create_time as UserTransactionRecords_create_time, UserTransactionRecords.update_time as UserTransactionRecords_update_time, 
+    UserTransactionRecords.remark as UserTransactionRecords_remark
+  </sql>
+  <select id="selectByExample" parameterType="com.stip.net.example.UserTransactionRecordsExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_user_transaction_records UserTransactionRecords
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="fromRowNum != null and toRowNum >= 0">
+      limit #{fromRowNum}, #{toRowNum}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_user_transaction_records UserTransactionRecords
+    where UserTransactionRecords.id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_user_transaction_records
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.stip.net.example.UserTransactionRecordsExample">
+    delete UserTransactionRecords from t_user_transaction_records UserTransactionRecords
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.stip.net.entity.UserTransactionRecords">
+    insert into t_user_transaction_records (id, bet_num, user_id, 
+      user_name, serial_number, game_type, 
+      payments_type, source, money, 
+      unit, create_time, update_time, 
+      remark)
+    values (#{id,jdbcType=INTEGER}, #{betNum,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, 
+      #{userName,jdbcType=VARCHAR}, #{serialNumber,jdbcType=VARCHAR}, #{gameType,jdbcType=CHAR}, 
+      #{paymentsType,jdbcType=CHAR}, #{source,jdbcType=CHAR}, #{money,jdbcType=DECIMAL}, 
+      #{unit,jdbcType=CHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.stip.net.entity.UserTransactionRecords">
+    insert into t_user_transaction_records
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="betNum != null">
+        bet_num,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="serialNumber != null">
+        serial_number,
+      </if>
+      <if test="gameType != null">
+        game_type,
+      </if>
+      <if test="paymentsType != null">
+        payments_type,
+      </if>
+      <if test="source != null">
+        source,
+      </if>
+      <if test="money != null">
+        money,
+      </if>
+      <if test="unit != null">
+        unit,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="betNum != null">
+        #{betNum,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="serialNumber != null">
+        #{serialNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="gameType != null">
+        #{gameType,jdbcType=CHAR},
+      </if>
+      <if test="paymentsType != null">
+        #{paymentsType,jdbcType=CHAR},
+      </if>
+      <if test="source != null">
+        #{source,jdbcType=CHAR},
+      </if>
+      <if test="money != null">
+        #{money,jdbcType=DECIMAL},
+      </if>
+      <if test="unit != null">
+        #{unit,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.stip.net.example.UserTransactionRecordsExample" resultType="java.lang.Integer">
+    select count(*) from t_user_transaction_records UserTransactionRecords
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_user_transaction_records UserTransactionRecords
+    <set>
+      <if test="record.id != null">
+        UserTransactionRecords.id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.betNum != null">
+        UserTransactionRecords.bet_num = #{record.betNum,jdbcType=BIGINT},
+      </if>
+      <if test="record.userId != null">
+        UserTransactionRecords.user_id = #{record.userId,jdbcType=BIGINT},
+      </if>
+      <if test="record.userName != null">
+        UserTransactionRecords.user_name = #{record.userName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.serialNumber != null">
+        UserTransactionRecords.serial_number = #{record.serialNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gameType != null">
+        UserTransactionRecords.game_type = #{record.gameType,jdbcType=CHAR},
+      </if>
+      <if test="record.paymentsType != null">
+        UserTransactionRecords.payments_type = #{record.paymentsType,jdbcType=CHAR},
+      </if>
+      <if test="record.source != null">
+        UserTransactionRecords.source = #{record.source,jdbcType=CHAR},
+      </if>
+      <if test="record.money != null">
+        UserTransactionRecords.money = #{record.money,jdbcType=DECIMAL},
+      </if>
+      <if test="record.unit != null">
+        UserTransactionRecords.unit = #{record.unit,jdbcType=CHAR},
+      </if>
+      <if test="record.createTime != null">
+        UserTransactionRecords.create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        UserTransactionRecords.update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.remark != null">
+        UserTransactionRecords.remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_user_transaction_records UserTransactionRecords
+    set UserTransactionRecords.id = #{record.id,jdbcType=INTEGER},
+      UserTransactionRecords.bet_num = #{record.betNum,jdbcType=BIGINT},
+      UserTransactionRecords.user_id = #{record.userId,jdbcType=BIGINT},
+      UserTransactionRecords.user_name = #{record.userName,jdbcType=VARCHAR},
+      UserTransactionRecords.serial_number = #{record.serialNumber,jdbcType=VARCHAR},
+      UserTransactionRecords.game_type = #{record.gameType,jdbcType=CHAR},
+      UserTransactionRecords.payments_type = #{record.paymentsType,jdbcType=CHAR},
+      UserTransactionRecords.source = #{record.source,jdbcType=CHAR},
+      UserTransactionRecords.money = #{record.money,jdbcType=DECIMAL},
+      UserTransactionRecords.unit = #{record.unit,jdbcType=CHAR},
+      UserTransactionRecords.create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      UserTransactionRecords.update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      UserTransactionRecords.remark = #{record.remark,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.stip.net.entity.UserTransactionRecords">
+    update t_user_transaction_records
+    <set>
+      <if test="betNum != null">
+        bet_num = #{betNum,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="serialNumber != null">
+        serial_number = #{serialNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="gameType != null">
+        game_type = #{gameType,jdbcType=CHAR},
+      </if>
+      <if test="paymentsType != null">
+        payments_type = #{paymentsType,jdbcType=CHAR},
+      </if>
+      <if test="source != null">
+        source = #{source,jdbcType=CHAR},
+      </if>
+      <if test="money != null">
+        money = #{money,jdbcType=DECIMAL},
+      </if>
+      <if test="unit != null">
+        unit = #{unit,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.stip.net.entity.UserTransactionRecords">
+    update t_user_transaction_records
+    set bet_num = #{betNum,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=BIGINT},
+      user_name = #{userName,jdbcType=VARCHAR},
+      serial_number = #{serialNumber,jdbcType=VARCHAR},
+      game_type = #{gameType,jdbcType=CHAR},
+      payments_type = #{paymentsType,jdbcType=CHAR},
+      source = #{source,jdbcType=CHAR},
+      money = #{money,jdbcType=DECIMAL},
+      unit = #{unit,jdbcType=CHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

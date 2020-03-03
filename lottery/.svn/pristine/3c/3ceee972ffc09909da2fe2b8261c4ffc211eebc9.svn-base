@@ -1,0 +1,370 @@
+body{
+    width: 100%;
+    background-color: #212540;
+}
+/* 头部导航栏 */
+header{
+    width: 100%;
+    height: 60px;
+    background-color:#333a60;
+}
+header>nav{
+    width: 1000px;
+    height: 100%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+}
+header>nav>img{
+    height: 25px;
+    margin-top: 18px;
+}
+.nav1-1{
+    display: flex;
+    flex: 1;
+    align-items: center;
+    position: relative;
+}
+.nav-pull-down{
+    color: #d8d9de;
+    font-size: 14px;
+   
+    margin-right: 12px;
+    display: flex;
+}
+.nav-pull-down>p{
+    margin-left: 20px;
+    line-height: 22px;
+}
+.nav-pull-down>img{
+    height: 6px;
+    margin-top: 15px;
+    margin-left: 20px;
+}
+.nav1-1>p{
+    color: white;
+    margin-right: 15px;
+    font-size: 16px;
+}
+.nav1-1>p:hover{
+    color: #3097ff;
+    cursor:pointer;
+}
+.SelectGame{
+    position: absolute;
+    top: 60px;
+    color: #d8d9de;
+    font-size: 14px;
+    left: 20px;
+    display: none;
+    background-color: #333A60;
+    padding-bottom: 10px;
+}
+.SelectGame>p:first-child{
+    margin-top: 5px;
+}
+.SelectGame>p:last-child{
+    margin-top: 10px;
+    margin-left: 10px;
+}
+/* .SelectGame>p{
+    border: 1px solid #43496D;
+    height: 30px;
+    line-height: 30px;
+    width: 70px;
+    text-align: center;
+} */
+.nav1-2{
+    display: flex;
+    
+}
+.nav1-2>img{
+    height: 16px;
+    margin-top: 22px;
+    margin-right: 8px;
+}
+.nav1-2>div{
+    display: flex;
+}
+#language1>img:first-child{
+    height: 20px;
+    margin-top: 20px;
+    margin-right: 6px;
+}
+#language1>img:last-child{
+    height: 6px;
+    margin-top: 28px;
+    margin-left: 5px;
+}
+.nav1-2>div>p{
+    font-size: 14px;
+    color: #ffffff;
+    line-height: 60px; 
+}
+#language{
+    position: relative;
+}
+#language1{
+    font-size: 14px;
+    color: #ffffff;
+    line-height: 60px; 
+    display: flex;
+    width: 100px;
+}
+#language2{
+    position: absolute;
+    width: 100px;
+    top: 50px;
+    right: 0px;
+    font-size: 14px;
+    color: #ffffff;
+    line-height: 35px; 
+    display: none;
+}
+/* 导航栏登录和用户信息 */
+.headerLoginBtn>p{
+    width: 50px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    color: #d8d9de;
+    margin-right: 20px;
+    border: 1px solid #d8d9de;
+    padding: 2px 5px;
+    margin-top: 12px;
+}
+.userinfo{
+    color: #d8d9de;
+    
+    display: flex;
+    
+}
+.userinfo>p{
+    display: none;
+}
+.userinfo>p:nth-of-type(1){
+    margin-right: 15px;
+    line-height: 60px;
+}
+.userinfo>p:nth-of-type(1)>span{
+    color: #FF564F;
+    margin-right: 5px;
+}
+.userinfo>p:nth-of-type(2){
+    margin-right: 15px;
+    color: #3097ff;
+    line-height: 60px;
+}
+.userinfo>p:nth-of-type(3){
+    font-size: 12px;
+    width: 40px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border: 1px solid #d8d9de;
+    margin-right: 15px;
+    margin-top: 15px;
+    
+}
+
+
+
+/* 内容区域 */
+body>section{
+    width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+/* 开奖记录区域 */
+.The-lottery-record{
+    width: 100%;
+    height: 465px;
+    background-color: #252A48;
+    padding:0 10px;
+    margin-top: 20px;
+    box-sizing: border-box;
+    border: 1px solid rgba(141, 197, 255, 0.1);
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 7px 7px ;
+}
+.lotteryHeader{
+    height: 40px;
+}
+.lotteryHeader>h6{
+    line-height: 40px;
+    color: #ffffff;
+    text-align: center;
+}
+
+
+/* 开奖记录现在开奖显示区域 */
+.CurrentlyTheLottery{
+    width: 100%;
+    height: 60px;
+    background-color: #313862;
+    padding: 0 12px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+}
+.newIssue>p{
+    color: #ffffff;
+    font-size: 16px;
+    margin-top: 10px;
+}
+.newBlockChainNo>p:last-child{
+    /* width: 350px; */
+    line-height: 60px;
+    text-align: right;
+    overflow: hidden;
+    display: flex;
+    flex-direction:row-reverse;
+}
+.newBlockChainNo{
+    display: flex;
+    line-height: 60px;
+    color: #ffffff;
+    font-size: 16px;
+}
+.newIssue>div{
+    display: flex;
+    margin-top:8px;
+}
+
+.newIssue>div>p{
+    font-size: 12px;
+    color: #ffffff;
+}
+.newIssue>div:last-child>p:last-child{
+    font-size: 10px;
+    color: #BF4B56;
+    width: 30px;
+    height: 14px;
+    text-align: center;
+    line-height: 12px;
+    background-color: #503C5F;
+    margin-top: 2px;
+    margin-left: 6px;
+}
+.newResult{
+    margin-top: 10px;
+}
+.newResult>p:last-child{
+    font-size: 24px;
+    color: #FF564F;
+    margin-left: 10px;
+}
+.newResult>p:first-child{
+    color: #9eaab5;
+    font-size: 12px;
+}
+
+/* 开奖记录表格区域 */
+.lotteryTableTh{
+    display: flex;
+    color: #ffffff;
+    font-size: 12px;
+    justify-content: space-around;
+    height: 40px;
+    border-bottom: 1px solid #313862;
+}
+/* 表头 */
+.lotteryTableTh>li{
+    line-height: 40px;
+}
+.lotteryTableTh>li:nth-of-type(1){
+    width: 110px;
+    text-align: center;
+}
+.lotteryTableTh>li:nth-of-type(2){
+    width: 370px;
+    text-align: center;
+}
+
+.lotteryTableTh>li:nth-of-type(3){
+    width: 80px;
+    text-align: center;
+}
+.lotteryTableTh>li:nth-of-type(4){
+    width: 120px;
+    text-align: center;
+}
+.lotteryTableTh>li:nth-of-type(5){
+    width: 100px;
+    text-align: center;
+}
+
+/* 表格内容 */
+
+.lotteryTableTr{
+    color:  #9eaab5;
+    height: 40px;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-around;
+}
+.lotteryTableTr>li{
+    line-height: 40px;
+}
+.lotteryTableTr>li:nth-of-type(1){
+    width: 110px;
+    text-align: center;
+}
+.lotteryTableTr>li:nth-of-type(2){
+    width: 370px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+}
+.lotteryTableTr>li:nth-of-type(2)>p{
+    text-align: right;
+    overflow: hidden;
+    display: flex;
+    flex-direction:row-reverse;
+}
+.lotteryTableTr>li:nth-of-type(2)>p:last-child{
+    width: 180px;
+    display: flex;
+    justify-content: space-between;
+}
+.lotteryTableTr>li:nth-of-type(3){
+    width: 80px;
+    text-align: center;
+    color: #FF564F;
+}
+.lotteryTableTr>li:nth-of-type(4){
+    width: 120px;
+    text-align: center;
+}
+.lotteryTableTr>li:nth-of-type(5){
+    width: 100px;
+    text-align: center;
+    color: #9eaab5;
+}
+
+
+#carousel{
+    position: relative;
+    height: 365px;
+    overflow: hidden;
+    top: -40px;
+}
+
+
+.lotteryTable1-1{
+    position: relative;
+    z-index: 2;
+    background-color: #252A48;
+}
+
+/* 开奖倒计时 */
+#theLast{
+    font-size: 80px;
+    position: fixed;
+    z-index: 5;
+    top: 35%;
+    left: 50%;
+    right: 50%;
+    color: red;
+    display: none;
+}
+

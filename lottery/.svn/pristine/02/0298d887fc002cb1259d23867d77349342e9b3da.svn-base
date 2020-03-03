@@ -1,0 +1,135 @@
+package com.stip.net.service.impl;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.stip.net.dao.TigerDao;
+import com.stip.net.entity.TopFlow;
+import com.stip.net.entity.tiger.TigerConfirm;
+import com.stip.net.entity.tiger.TigerHistory;
+import com.stip.net.entity.tiger.TigerPutRecord;
+import com.stip.net.entity.tiger.TigerPutRecordUpdater;
+import com.stip.net.entity.tiger.TigerRoom;
+import com.stip.net.service.TigerService;
+
+@Service
+@Transactional(propagation = Propagation.REQUIRED, rollbackFor = { RuntimeException.class, Exception.class })
+public class TigerServiceImpl implements TigerService {
+
+	@Autowired
+	private TigerDao dao;
+
+	@Override
+	public BigDecimal getMyPutMoney(String userId, int roomId, int qid, int opt) {
+		BigDecimal sum = dao.getMyPutMoney(userId, roomId, qid, opt);
+		if (sum == null) {
+			return new BigDecimal(0);
+		}
+		return sum;
+	}
+
+	@Override
+	public void saveRecord(TigerPutRecord record) {
+		dao.saveRecord(record);
+	}
+
+	@Override
+	public TigerPutRecord getRecordByTxId(String txId) {
+		return dao.getRecordByTxId(txId);
+	}
+
+	@Override
+	public void updateRecord(TigerPutRecordUpdater updater) {
+		dao.updateRecordByTxId(updater);
+	}
+
+	@Override
+	public List<TigerPutRecord> getRecordsWhenOpen(int roomId, int qid) {
+		return dao.getRecordsWhenOpen(roomId, qid);
+	}
+
+	@Override
+	public List<TigerPutRecord> getRecordsWhenSend(int roomId, int qid) {
+		return dao.getRecordsWhenSend(roomId, qid);
+	}
+
+	@Override
+	public List<TigerPutRecord> getExpiredRecordsToOpen(long cur, long expire) {
+		return dao.getExpiredRecordsToOpen(cur, expire);
+	}
+
+	@Override
+	public List<TigerPutRecord> getExpiredRecordsToSend(long cur, long expire) {
+		return dao.getExpiredRecordsToSend(cur, expire);
+	}
+
+	@Override
+	public List<TigerPutRecord> getMyRecords(String userId, int pageSize, long time) {
+		return dao.getMyRecords(userId, pageSize, time);
+	}
+
+	@Override
+	public List<TigerRoom> getAllTigerRooms() {
+		return dao.getAllTigerRooms();
+	}
+
+	@Override
+	public void saveAllRooms(List<TigerRoom> list) {
+		if (list != null & list.size() > 0) {
+			dao.deleteAllRooms();
+			dao.batchInsertRooms(list);
+		}
+	}
+
+	@Override
+	public List<TigerPutRecord> getFailedRecords() {
+		return dao.getRecordsByStatus(-1);
+	}
+
+	@Override
+	public List<TigerPutRecord> getRecordsToSendTop() {
+		return dao.getRecordsToSendTop();
+	}
+
+	@Override
+	public List<TigerConfirm> getAllConfirms() {
+		return dao.getAllConfirms();
+	}
+
+	@Override
+	public void saveAllConfirms(List<TigerConfirm> list) {
+		dao.deleteAllConfirms();
+		if (list != null && list.size() > 0) {
+			dao.batchInsertConfirms(list);
+		}
+	}
+
+	@Override
+	public void insertTigerHistory(TigerHistory th) {
+		dao.insertTigerHistory(th);
+	}
+
+	@Override
+	public TigerHistory getTigerHistory(int qid, int roomId) {
+		return dao.getTigerHistory(qid, roomId);
+	}
+
+	@Override
+	public void insertTopFlow(TopFlow tf) {
+		dao.insertTopFlow(tf);
+	}
+
+	@Override
+	public BigDecimal getTotalTop() {
+		BigDecimal sum = dao.getTotalTop();
+		if (sum == null) {
+			return new BigDecimal(0);
+		}
+		return sum;
+	}
+}

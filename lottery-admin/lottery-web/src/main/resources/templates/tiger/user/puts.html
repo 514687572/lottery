@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh_CN" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="col-sm-12">
+			<div class="ibox">
+				<div class="ibox-body">
+					<div class="fixed-table-toolbar">
+						<div class="columns pull-left">
+							<button type="button" class="btn btn-primary" onclick="back();"> &lt;&lt;返回</button>
+						</div>
+					</div>
+					<!-- 数据列表 -->
+					<table id="exampleTable" data-mobile-responsive="true"></table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div th:include="include :: footer"></div>
+	<script th:inline="javascript">
+    	var userId = [[${userId}]];
+	</script>
+	<script type="text/javascript" src="/js/appjs/tiger/user/puts.js"></script>
+</body>
+</html>

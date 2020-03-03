@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh_CN" xmlns:th="http://www.thymeleaf.org"
+	  xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link href="/css/style.min.css" rel="stylesheet">
+<body class="gray-bg">
+		<div>
+			<div class="col-10 col-md-6">
+				<div class="card">
+					<div class="card-body">
+						<div class="row align-items-center">
+							<div class="col-4">
+								<i class="mdi mdi-currency-eur font-20 text-purple"></i>
+								<p class="font-16 m-b-5">官方账号余额</p>
+							</div>
+							<div class="col-8">
+								<h1 class="font-light text-right mb-0 account">0.00EOS</h1>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-10 col-md-6">
+				<div class="card">
+					<div class="card-body">
+						<div class="row align-items-center">
+							<div class="col-4">
+								<i class="mdi mdi-poll font-20 text-danger"></i>
+								<p class="font-16 m-b-5">累计交易额</p>
+							</div>
+							<div class="col-8">
+								<h1 class="font-light text-right mb-0 balance">0.00EOS</h1>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	<!--shiro控制bootstraptable行内按钮看见性 -->
+		<div>
+			<script type="text/javascript">
+				var s_edit_h = 'hidden';
+				var s_remove_h = 'hidden';
+				var s_resetPwd_h = 'hidden';
+			</script>
+		</div>
+		<div shiro:hasPermission="lottery:userBerecords:edit">
+			<script type="text/javascript">
+				s_edit_h = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="lottery:userBerecords:remove">
+			<script type="text/javascript">
+				var s_remove_h = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="lottery:userBerecords:resetPwd">
+			<script type="text/javascript">
+				var s_resetPwd_h = '';
+			</script>
+		</div>
+	</div>
+
+	<div th:include="include :: histogram"></div>
+	<div th:include="include :: footer"></div>
+
+	<!-- ECharts -->
+	<script src="/js/plugins/echarts/echarts-all.js"></script>
+	<!-- 自定义js -->
+	<script src="/js/content.js?v=1.0.0"></script>
+	<!-- ECharts data -->
+	<script src="/js/appjs/lottery/userBerecords/echarts-profitStatistics.js"></script>
+
+</body>
+</html>

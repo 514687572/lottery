@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh_CN" xmlns:th="http://www.thymeleaf.org"
+	  xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<!--<link href="/css/style.min.css" rel="stylesheet">-->
+<body class="gray-bg">
+<div class="wrapper wrapper-content ">
+	<div class="col-sm-12">
+		<div class="ibox">
+			<div class="ibox-body">
+				<div class="fixed-table-toolbar">
+					<div class="columns pull-left">
+						<button type="button" class="btn btn-primary" onclick="back()"> &lt;&lt;返回
+						</button>
+					</div>
+				</div>
+				<table id="exampleTable" data-mobile-responsive="true">
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+	<!--shiro控制bootstraptable行内按钮看见性 -->
+		<div>
+			<script type="text/javascript">
+				var s_edit_h = 'hidden';
+				var s_remove_h = 'hidden';
+				var s_userStatus_h = 'hidden';
+			</script>
+		</div>
+		<div shiro:hasPermission="lottery:userBerecords:userEdit">
+			<script type="text/javascript">
+				var s_userStatus_h = '';
+			</script>
+		</div>
+	</div>
+
+	<div th:include="include :: footer"></div>
+	<script type="text/javascript" src="/js/appjs/lottery/userBerecords/userDetail.js"></script>
+
+</body>
+<script th:inline="javascript">
+    var userName = [[${userName}]];
+</script>
+</html>

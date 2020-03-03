@@ -1,0 +1,1199 @@
+
+.header{
+    height: .4rem;
+    background-color: #100F0B;
+    color: white;
+    text-align: center;
+    font-size: .18rem;
+    line-height: .4rem;
+}
+.header1{
+    height: .8rem;
+    background-color: #141621;
+    font-size: .16rem;
+    padding: 0 0.1rem;
+    padding-top: .15rem;
+    box-sizing: border-box;
+    color: white;
+    position: relative;
+}
+.header1>div:nth-of-type(1){
+    display: flex;
+    justify-content: space-between;
+    
+}
+.header1>div:nth-of-type(1)>div>img:first-child{
+    margin-right: .15rem;
+}
+.user{
+    display: flex;
+    margin-top: .1rem;
+}
+.user>div{
+    display: flex;
+}
+.user>div:nth-of-type(1)>img{
+    width: .13rem;
+    height: .13rem;
+    margin-top: .05rem;
+    margin-right: .08rem;
+}
+.user>div:nth-of-type(2){
+    margin-left: .2rem;
+}
+.user>div:nth-of-type(2)>img{
+    width: .11rem;
+    height: .15rem;
+    margin-top: .04rem;
+    margin-right: .08rem;
+}
+.userCpu>img{
+    width: .16rem;
+    height: .16rem;
+    margin-top: .03rem;
+    margin-left: .1rem;
+    margin-right: .05rem;
+}
+
+/* 更多操作弹窗 */
+#operation{
+    position: absolute;
+    background-color: #292E50;
+    border: .002rem solid #626AA1;
+    width: .8rem;
+    top: .5rem;
+    right: .05rem;
+    font-size: .14rem;
+    display: none;
+    z-index: 3;
+}
+#operation>p{
+    line-height: .3rem;
+    text-align: center;
+}
+#operation>p:nth-of-type(1){
+    border-bottom: .002rem solid #626AA1;
+}
+
+#logOut{
+    display: none;
+    width: 0.12rem;
+    height: 0.12rem;
+    position: absolute;
+    right: .13rem;
+    top: .5rem;
+}
+.switchTheLanguage{
+    position: absolute;
+    display: none;
+}
+.switchTheLanguage>p{
+    line-height: .35rem;
+}
+/* 最新开奖结果 */
+.newLottery{
+    height: .52rem;
+    background-color: #1C1E2D;
+    padding: 0 0.1rem;
+    display: flex;
+    justify-content: space-between;
+    font-size: .12rem;
+    color: white;
+}
+.newLottery>div:nth-of-type(2){
+    display: flex;
+    margin-top: .18rem;
+}
+.newLottery1-1>p:first-child{
+    color: #C04443;
+    margin-top: .1rem;
+}
+.newLottery1-2>p:first-child{
+    color:#2973C2;
+    margin-top: .1rem;
+}
+.newLottery1-2>p:last-child{
+    color: #C04443;
+    text-align: right;
+}
+.newLottery+div{
+    background-color: #141621;
+    height: .1rem;
+}
+
+/* 开奖滚动区域 */
+.Carousel{
+    height: 1.95rem;
+    background-color: #1C1E2D;
+    padding: 0 0.1rem;
+    font-size: .14rem;
+    color: #98A4AF;
+    padding-top: .12rem;
+    box-sizing: border-box;
+    overflow: hidden;
+    top: -40px;
+}
+/* .Carousel>div{
+    height: 2.1rem;
+} */
+#carousel{
+    height: 2rem;
+position: relative;
+    top: -0.22rem;
+    overflow: hidden;
+}
+
+.TheLotteryData{
+    display: flex;
+    justify-content: space-between;
+    height: .22rem;
+    line-height: .22rem;
+}
+.TheLotteryData>li:last-child{
+    color: #5C6670;
+}
+.TheLotteryData>li{
+    display: flex;
+    justify-content: space-between;
+}
+.TheLotteryData>li:nth-of-type(2){
+    display: flex;
+    width: 1.85rem;
+}
+.TheLotteryData>li:nth-of-type(2)>p:last-child{
+    width: 1.74rem;
+    display: flex;
+    justify-content: space-around;
+}
+
+/* 选择投注区 */
+.BettingArea{
+    height: 1.92rem;
+    background-color: #292E50;
+    padding-top: .06rem;
+    padding-right: .08rem;
+    box-sizing: border-box;
+    display: flex;
+}
+.BettingArea>div:first-child{
+    width: .82rem;
+}
+.WinningNumbers{
+    width: .45rem;
+    text-align: center;
+    font-size: .14rem;
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: .15rem;
+}
+.WinningNumbers>div{
+    margin-top: .08rem;
+}
+.WinningNumbers>div>p{
+    background-color: #FF564F;
+    height: .25rem;
+    text-align: center;
+    line-height: .25rem;
+}
+#betNum{
+    display: none;
+}
+.jackpot{
+    font-size: .12rem;
+    color: white;
+    width: .78rem;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: .2rem;
+}
+.jackpot>img{
+    margin-top: .05rem;
+    margin-bottom: .05rem;
+}
+.SelectBet>div:nth-of-type(1){
+    width: 2.85rem;
+    height: 1.35rem;
+    background-color: #20243F;
+    padding: 0 0.06rem;
+    padding-top: .06rem;
+    box-sizing: border-box;
+}
+.select{
+    display: flex;
+    font-size: .14rem;
+    margin-left: auto;
+    margin-right: auto;
+    border-bottom: 0.002rem solid #292E50;
+}
+.select>div{
+    width: 50%;
+    text-align: center;
+    margin-bottom: .06rem;
+}
+.select>div>p{
+    width: .42rem;
+    color: white;
+    padding-bottom: .02rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+#GuessInterval{
+    color: #2973C2;
+    border-bottom: 0.002rem solid #2973C2;
+}
+.SelectTypeArea{
+    height: .72rem;
+    border-bottom: 0.002rem solid #292E50;
+    position: relative;
+}
+.guessInterval1-1{
+    display: flex;
+}
+.guessInterval1-1>div:first-child>p{
+    font-size: .16rem;
+    color: white;
+    background-color: #313862;
+    width: .45rem;
+    height: .25rem;
+    text-align: center;
+    line-height: .25rem;
+    margin-left: .1rem;
+}
+.guessInterval1-1>div:first-child>p:first-child{
+    margin-top: .06rem;
+    margin-bottom: .08rem;
+}
+.slider{
+    font-size: .14rem;
+}
+.slider>input{
+    margin-left: .2rem;
+    margin-top: .35rem;
+    opacity: 0.5;
+}
+.slider>p{
+    margin-left: .7rem;
+    color: white;
+}
+.digitalRange{
+    color: white;
+    font-size: .12rem;
+    display: flex;
+}
+.digitalRange>p:first-child{
+    position: absolute;
+    top: .45rem;
+    left: .75rem;
+}
+.digitalRange>p:last-child{
+    position: absolute;
+    top: .45rem;
+    left: 2.4rem;
+}
+input[type=range] {
+    -webkit-appearance: none;
+    width: 1.8rem;
+    height: .1rem;
+    background: -webkit-linear-gradient(left, #FF564F , #FF8523); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, #FF564F, #FF8523); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, #FF564F, #FF8523); /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, #FF564F , #FF8523); /* 标准的语法（必须放在最后） */
+}
+input[type=range]:focus {
+    outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+}  
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: .22rem;
+    width: .22rem;
+    margin-top: -0.33rem; 
+   border-radius: .02rem;
+   transform: rotate(45deg);
+    background: -webkit-linear-gradient(left, #FF564F , #FF8523); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, #FF564F, #FF8523); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, #FF564F, #FF8523); /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, #FF564F , #FF8523); /* 标准的语法（必须放在最后） */
+}
+input[type=range]::-moz-range-thumb {
+    -webkit-appearance: none;
+}  
+input[type=range]::-moz-range-thumb {
+    -webkit-appearance: none;
+    height: .22rem;
+    width: .22rem;
+    margin-top: -0.33rem; 
+   border-radius: .02rem;
+   transform: rotate(45deg);
+    background: -webkit-linear-gradient(left, #FF564F , #FF8523); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, #FF564F, #FF8523); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, #FF564F, #FF8523); /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, #FF564F , #FF8523); /* 标准的语法（必须放在最后） */
+}
+input[type=range]::-ms-track {
+    border-color: transparent; /*去除原有边框*/
+    color: transparent; /*去除轨道内的竖线*/
+}
+
+input[type=range]::-ms-thumb {
+    height: .22rem;
+    width: .22rem;
+    margin-top: -0.33rem; 
+   border-radius: .02rem;
+   transform: rotate(45deg);
+    background: -webkit-linear-gradient(left, #FF564F , #FF8523); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, #FF564F, #FF8523); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, #FF564F, #FF8523); /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, #FF564F , #FF8523); /* 标准的语法（必须放在最后） */
+}
+.crap1-1{
+    display: none;
+}
+.crap1-1>div{
+    height: .72rem;
+    border-bottom: 0.002rem solid #292E50;
+    display: flex;
+    justify-content: space-around;
+    font-size: .18rem;
+    
+}
+.crap1-1>div>p{
+    width: .5rem;
+    height: .36rem;
+    background-color: #313862;
+    text-align: center;
+    line-height: .36rem;
+    color: white;
+    border-radius: .03rem;
+    margin-top: .18rem;
+}
+.OddsAndBonuses{
+    font-size: .14rem;
+    color: #EA504D;
+    display: flex;
+    justify-content: space-between;
+}
+.OddsAndBonuses>p{
+    line-height: .25rem;
+}
+
+
+/* 投注金额区 */
+.amountSelected{
+    width: 2.82rem;
+    height: .3rem;
+    border: .02rem solid #47518A;
+    border-radius: .03rem;
+    margin-top: .06rem;
+    display: flex;
+    background-color: #20243F;
+    position: relative;
+}
+.amountSelected>img{
+    width: .13rem;
+    height: .17rem;
+    position: absolute;
+    top: .05rem;
+    left: .04rem;
+}
+.amountSelected>input{
+    background-color: #20243F;
+    border: none;
+    outline: none;
+    padding-left: .2rem;
+    color: white;
+    box-sizing: border-box;
+    width: .8rem;;
+}
+.amountSelected>p{
+    font-size: .14rem;
+    text-align: center;
+    background-color: #313862;
+    border-radius: .03rem;
+    margin-top: .03rem;
+    color: white;
+}
+.amountSelected>p:nth-of-type(1){
+    width: .54rem;
+    height: .24rem;
+    line-height: .24rem;
+    margin-right: .04rem;
+    margin-left: .02rem;
+}
+.amountSelected>p:nth-of-type(2){
+    width: .54rem;
+    height: .24rem;
+    line-height: .24rem;
+    margin-right: .04rem;
+}
+.amountSelected>p:nth-of-type(3){
+    width: .8rem;
+    height: .24rem;
+    line-height: .24rem;
+}
+
+/* 登录按钮区域 */
+.login{
+    height: .75rem;
+    background-color: #20243F;
+    display: flex;
+    align-items: center;
+}
+.login>p{
+    width: 1.8rem;
+    height: .4rem;
+    text-align: center;
+    line-height: .4rem;
+    margin: auto;
+    font-size: .18rem;
+    color: white;
+    border-radius: .03rem;
+    background: -webkit-linear-gradient(left, #FF564F , #FF8523); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, #FF564F, #FF8523); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, #FF564F, #FF8523); /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, #FF564F , #FF8523); /* 标准的语法（必须放在最后） */
+}
+
+/* 中奖投注区域 */
+.recordNav{
+    height: .4rem;
+    background-color: #1C1E2D;
+    font-size: .14rem;
+    color: #424A55;
+}
+.recordNav>div{
+    width: 2.5rem;
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+}
+.recordNav>div>p{
+    width: 50%;
+    text-align: center;
+    line-height: .4rem;
+}
+.recordNav>div>p:first-child{
+    color: white;
+}
+/* 我的投注 */
+
+#iBetTheTable{
+    display: none;
+}
+.recordTable{
+    font-size: .12rem;
+}
+.recordHeader{
+    height: .35rem;
+    display: flex;
+    color: #9EAAB5;
+    background-color: #1C1E2D;
+}
+.recordHeader>li{
+    line-height: .35rem;
+}
+.recordHeader>li:nth-of-type(1){
+    width: .68rem;
+    text-align: center;
+    margin-right: .15rem;
+    margin-left: .08rem
+}
+.recordHeader>li:nth-of-type(2){
+    width: .8rem;
+    text-align: center;
+}
+.recordHeader>li:nth-of-type(3){
+    width: .5rem;
+    text-align: center;
+}
+.recordHeader>li:nth-of-type(4){
+    width: .72rem;
+    text-align: center;
+}
+.recordHeader>li:nth-of-type(5){
+    width: .82rem;
+    text-align: center;
+    margin-right: .08rem;
+}
+#iBetThe{
+    background-color: #20243F;
+    height: 3.8rem;
+    overflow: auto;
+}
+.devoteTheResults{
+    display: flex;
+    height: .25rem;
+    color: #9EAAB5;
+}
+.devoteTheResults>li{
+    line-height: .25rem;
+}
+.devoteTheResults>li:nth-of-type(1){
+    width: .75rem;
+    text-align: center;
+    margin-right: .08rem;
+    margin-left: .08rem
+}
+.devoteTheResults>li:nth-of-type(2){
+    width: .8rem;
+    text-align: center;
+}
+.devoteTheResults>li:nth-of-type(3){
+    width: .5rem;
+    text-align: center;
+}
+.devoteTheResults>li:nth-of-type(4){
+    width: .72rem;
+    text-align: center;
+}
+.devoteTheResults>li:nth-of-type(5){
+    width: .82rem;
+    text-align: center;
+    margin-right: .08rem;
+}
+
+/* 中奖投注区域 */
+.theWinningBets{
+    height: .35rem;
+    display: flex;
+    color: #9Eaab5;
+    background-color: #1C1E2D;
+}
+.theWinningBets>li{
+    line-height: .35rem;
+}
+.theWinningBets>li:nth-of-type(1){
+    width: .68rem;
+    text-align: center;
+    margin-right: .15rem;
+    margin-left: .08rem
+}
+.theWinningBets>li:nth-of-type(2){
+    width: .8rem;
+    text-align: center;
+}
+.theWinningBets>li:nth-of-type(3){
+    width: .5rem;
+    text-align: center;
+}
+.theWinningBets>li:nth-of-type(4){
+    width: .72rem;
+    text-align: center;
+}
+.theWinningBets>li:nth-of-type(5){
+    width: .82rem;
+    text-align: center;
+    margin-right: .08rem;
+}
+#allPrizeTable{
+    background-color: #20243F;
+    height: 3.8rem;
+}
+.theWinningBetsTable{
+    display: flex;
+    height: .25rem;
+    color: #9EAAB5;
+}
+.theWinningBetsTable>li{
+    line-height: .25rem;
+}
+.theWinningBetsTable>li:nth-of-type(1){
+    width: .75rem;
+    text-align: center;
+    margin-right: .08rem;
+    margin-left: .08rem
+}
+.theWinningBetsTable>li:nth-of-type(2){
+    width: .8rem;
+    text-align: center;
+}
+.theWinningBetsTable>li:nth-of-type(3){
+    width: .5rem;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; 
+}
+.theWinningBetsTable>li:nth-of-type(4){
+    width: .72rem;
+    text-align: center;
+}
+.theWinningBetsTable>li:nth-of-type(5){
+    width: .82rem;
+    text-align: center;
+    margin-right: .08rem;
+    color: #A94047;
+}
+
+/* 底部 */
+footer{
+    height: .4rem;
+    background-color: #12141D;
+    color: #9EAAB5;
+}
+footer>p{
+    text-align: center;
+    line-height: .4rem;
+    font-size: .12rem;
+}
+
+/* 登录弹窗 */
+.loginCPM{
+    font-size: .16rem;
+    width: 80%;
+    background-color: #20243F;
+    color: white;
+    display: none;
+    position: absolute;
+    top: 40%;
+    left: 10%;
+    height: 1.95rem;
+    border-radius: 0.1rem;
+    padding-left: .1rem;
+    padding-right: .1rem;
+}
+.loginCPM>div>p{
+    text-align: center;
+    margin-top: .2rem;
+}
+.loginCPM>div{
+    position: relative;
+}
+.loginCPM>div>img{
+    position: absolute;
+    right: .1rem;
+    top: -0.05rem;
+}
+.loginCPM>input{
+    width: 100%;
+    border: 0.02rem solid #424A55;
+    margin-top: .35rem;
+    border: none;
+    border-bottom: 0.002rem solid #373A53;
+    padding-bottom: .05rem;
+    color: white;
+}
+#loginComfire{
+    height: .36rem;
+    text-align: center;
+    line-height: .36rem;
+    background: -webkit-linear-gradient(left, #FF564F , #FF8523); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, #FF564F, #FF8523); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, #FF564F, #FF8523); /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, #FF564F , #FF8523); /* 标准的语法（必须放在最后） */
+    margin-top: .35rem;
+    margin-bottom: .1rem;
+    border-radius: 0.03rem
+}
+
+
+
+
+/* 玩法规则界面 */
+#gameRules{
+    display: none;
+}
+#getBack{
+    position: absolute;
+    color: white;
+    font-size: .16rem;
+    right: .15rem;
+    top: .05rem;
+}
+#gameRules{
+    background-color: #1C1E2D;
+    padding-top: .12rem;
+}
+.rulesTitle{
+    position: relative;
+}
+.rulesTitle>p:first-child{
+    color: white;
+    font-size: .3rem;
+    text-align: center;
+}
+.rulesTitle>p:nth-of-type(2){
+    color: #6A72AD;
+    font-size: .2rem;
+    text-align: center;
+}
+.NumberGeneration1-1{
+    display: flex;
+    margin-top: .15rem;
+}
+.NumberGeneration1-1>p{
+    color: white;
+    font-size: .19rem;
+}
+.NumberGeneration1-1>img{
+    width: .2rem;
+    height: .2rem;
+    margin-left: .1rem;
+    margin-right: .1rem;
+}
+.NumberGeneration2-1{
+    border-left: .002rem solid #333542;
+    margin-left: .2rem;
+    padding-left: .2rem;
+    padding-right: .18rem;
+    margin-top: .1rem;
+}
+.NumberGeneration2-1>div>p:first-child{
+    color: white;
+    font-size: .16rem;
+}
+.NumberGeneration2-1>div>p:last-child{
+    color: #666EA7;
+    font-size: .13rem;
+}
+.NumberGeneration2-1>div:first-child>p:first-child{
+    margin-bottom: .1rem;
+}
+.NumberGeneration2-1>div:last-child>p:first-child{
+    margin-bottom: .1rem;
+    margin-top: .15rem;
+}
+
+.gameplay1-1{
+    display: flex;
+    margin-top: .35rem;
+}
+.gameplay1-1>p{
+    color: white;
+    font-size: .19rem;
+}
+.gameplay1-1>img{
+    width: .2rem;
+    height: .2rem;
+    margin-left: .1rem;
+    margin-right: .1rem;
+}
+.gameplay2-1{
+    border-left: .002rem solid #333542;
+    margin-left: .2rem;
+    padding-left: .2rem;
+    padding-right: .18rem;
+    margin-top: .1rem;
+}
+.gameplay2-1>div>p:first-child{
+    color: white;
+    font-size: .16rem;
+}
+.gameplay2-1>div>p:last-child{
+    color: #666EA7;
+    font-size: .13rem;
+}
+.gameplay2-1>div:first-child>p:first-child{
+    margin-bottom: .1rem;
+}
+.gameplay2-1>div:last-child>p:first-child{
+    margin-bottom: .1rem;
+    margin-top: .15rem;
+}
+
+.gameTime1-1{
+    display: flex;
+    margin-top: .35rem;
+}
+.gameTime1-1>p{
+    color: white;
+    font-size: .19rem;
+}
+.gameTime1-1>img{
+    width: .2rem;
+    height: .2rem;
+    margin-left: .1rem;
+    margin-right: .1rem;
+}
+.gameTime2-1{
+    border-left: .002rem solid #333542;
+    margin-left: .2rem;
+    padding-left: .2rem;
+    padding-right: .18rem;
+    margin-top: .1rem;
+}
+.gameTime2-1>p{
+    color: #666EA7;
+    font-size: .13rem;
+}
+
+
+.BettingLimits1-1{
+    display: flex;
+    margin-top: .35rem;
+}
+.BettingLimits1-1>p{
+    color: white;
+    font-size: .19rem;
+}
+.BettingLimits1-1>img{
+    width: .2rem;
+    height: .2rem;
+    margin-left: .1rem;
+    margin-right: .1rem;
+}
+.BettingLimits2-1{
+    border-left: .002rem solid #333542;
+    margin-left: .2rem;
+    padding-left: .2rem;
+    padding-right: .18rem;
+    margin-top: .1rem;
+}
+.BettingLimits2-1>p{
+    color: #666EA7;
+    font-size: .13rem;
+}
+
+.rulesFooter>p{
+    color: #666EA7;
+    font-size: .13rem;
+    padding-left: .1rem;
+    padding-right: .1rem;
+    margin-top: .5rem;
+    padding-bottom: .5rem;
+}
+
+
+
+/* 邀请好友区域 */
+
+#getBack1{
+    position: absolute;
+    color: white;
+    font-size: .16rem;
+    right: .15rem;
+    top: .05rem;
+}
+#invuteFriends{
+    background-color: #1C1E2D;
+    padding-top: .12rem;
+    padding-bottom: .5rem;
+    display: none;
+}
+.invuteFriendsTitle{
+    position: relative;
+}
+.invuteFriendsTitle>p:first-child{
+    color: white;
+    font-size: .3rem;
+    text-align: center;
+}
+.invuteFriendsTitle>p:nth-of-type(2){
+    color: #6A72AD;
+    font-size: .2rem;
+    text-align: center;
+}
+.invuteFriendsContent{
+    width: 3.55rem;
+    margin-left: auto;
+    margin-right: auto;
+    border: 0.002rem solid #333542;
+    padding: 0.25rem 0.2rem;
+    box-sizing: border-box;
+    margin-top: .2rem;
+}
+.TheNewSend>p:nth-of-type(1){
+    font-size: .20rem;
+    color: white;
+}
+.TheNewSend>p:nth-of-type(1)>span{
+    font-size: .40rem;
+    color: white;
+}
+.TheNewSend>p:nth-of-type(2){
+    font-size: .16rem;
+    color: white;
+}
+.TheNewSend>p:nth-of-type(3){
+    font-size: .12rem;
+    color: #525886;
+    margin-top: .1rem;
+}
+.TheNewSend{
+    border-bottom: .002rem solid #333542;
+    padding-bottom: .3rem;
+}
+
+.invuteFriends1>p:nth-of-type(1){
+    font-size: .20rem;
+    color: white;
+}
+.invuteFriends1>p:nth-of-type(1)>span{
+    font-size: .40rem;
+    color: white;
+}
+.invuteFriends1>p:nth-of-type(2){
+    font-size: .16rem;
+    color: white;
+}
+.invuteFriends1>p:nth-of-type(3){
+    font-size: .12rem;
+    color: #525886;
+    margin-top: .1rem;
+}
+.invuteFriends1>p:nth-of-type(4){
+    font-size: .12rem;
+    color: #525886;
+    margin-top: .1rem;
+}
+.invuteFriends1>p:nth-of-type(5){
+    font-size: .12rem;
+    color: #525886;
+    margin-top: .1rem;
+}
+.invuteFriends1{
+    border-bottom: .002rem solid #333542;
+    padding-bottom: .3rem;
+    margin-top: .3rem;
+}
+
+.StandCommission>p:nth-of-type(1){
+    font-size: .20rem;
+    color: white;
+}
+.StandCommission>p:nth-of-type(1)>span{
+    font-size: .40rem;
+    color: white;
+}
+.StandCommission>p:nth-of-type(2){
+    font-size: .16rem;
+    color: white;
+}
+.StandCommission>p:nth-of-type(3){
+    font-size: .12rem;
+    color: #525886;
+    margin-top: .1rem;
+}
+
+.StandCommission{
+    margin-top: .3rem;
+}
+
+.TheInvitationWay{
+    padding-left: .1rem;
+    padding-right: .1rem;
+}
+.TheInvitationWay>P{
+    font-size: .22rem;
+    color: white;
+    text-align: center;
+    margin-top: .4rem;
+}
+.icon{
+    display: flex;
+    justify-content: space-around;
+    margin-top: .3rem;
+    
+}
+.icon>p:nth-child(odd){
+    width: .4rem;
+    height: .4rem;
+    background-color: #333542;
+    border-radius: 50%;
+    position: relative;
+}
+.icon>p:nth-child(even){
+    width: .8rem;
+    border-bottom: .002rem solid #333542;
+    position: relative;
+    bottom: .2rem;
+}
+.icon>p:nth-of-type(1)>img{
+    position: absolute;
+    top: 0.13rem;
+    left: .12rem;
+}
+.icon>p:nth-of-type(3)>img{
+    position: absolute;
+    top: 0.13rem;
+    left: .13rem;
+}
+.icon>p:nth-of-type(5)>img{
+    position: absolute;
+    top: 0.13rem;
+    left: .11rem;
+}
+
+.InvitedToIntroduce{
+    display: flex;
+    justify-content: space-between;
+    margin-top: .15rem;
+    margin-bottom: .12rem;
+}
+.InvitedToIntroduce>p{
+    color: white;
+    font-size: .16rem;
+}
+.InvitedToIntroduce1{
+    display: flex;
+    justify-content: space-between;
+}
+.InvitedToIntroduce1>p{
+    font-size: .14rem;
+    color: #666EA7;
+}
+.InvitedToIntroduce1>p:nth-of-type(1){
+    width: .7rem;
+}
+.InvitedToIntroduce1>p:nth-of-type(2){
+    width: 1rem;
+}
+.InvitedToIntroduce1>p:nth-of-type(3){
+    width: .7rem;
+}
+
+.DuplicateFrame{
+    background-color: #282938;
+    height: .4rem;
+    display: flex;
+    padding-top: .05rem;
+    padding-left: .05rem;
+    box-sizing: border-box;
+    margin-top: .3rem;
+}
+.DuplicateFrame>input{
+    background-color: #484956;
+    width: 2.7rem;
+    padding-left: .15rem;
+    box-sizing: border-box;
+    color: white;
+    height: .3rem;
+}
+.DuplicateFrame>p{
+    width: .75rem;
+    height: .3rem;
+    background: -webkit-linear-gradient(left, #FF564F , #FF8523); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, #FF564F, #FF8523); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, #FF564F, #FF8523); /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, #FF564F , #FF8523); /* 标准的语法（必须放在最后） */
+    text-align: center;
+    line-height: .3rem;
+    font-size: .12rem;
+    color: white;
+}
+
+.subordinate{
+    border: 0.003rem solid #383E58;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: .3rem;
+}
+.subordinate1-1{
+    display: flex;
+    justify-content: space-between;
+    font-size: .2rem;
+    color: white;
+    margin-left: .1rem;
+    margin-right: .1rem;
+    margin-top: .15rem;
+}
+.subordinateTh{
+    display: flex;
+    height: .25rem;
+    background-color: #343D68;
+    color: #7786d9;
+    font-size: .14rem;
+    margin-top: .1rem;
+    justify-content: space-between
+}
+.subordinateTh>li{
+    line-height: .25rem;
+}
+.subordinateTh>li:nth-of-type(1){
+    width: .35rem;
+    text-align: center;
+}
+.subordinateTh>li:nth-of-type(2){
+    width: 1rem;
+    text-align: center;
+}
+.subordinateTh>li:nth-of-type(3){
+    width: .35rem;
+    text-align: center;
+}
+.subordinateTh>li:nth-of-type(4){
+    width: .9rem;
+    text-align: center;
+}
+.subordinateTh>li:nth-of-type(5){
+    width: .9rem;
+    text-align: center;
+}
+.subordinateTable{
+    display: flex;
+    height: .25rem;
+    font-size: .14rem;
+    justify-content: space-between;
+    border-bottom: 0.002rem solid #383E58;
+}
+.subordinateTable>li{
+    line-height: .25rem;
+}
+.subordinateTable>li:nth-of-type(1){
+    width: .35rem;
+    text-align: center;
+    color: #7786d9;
+}
+.subordinateTable>li:nth-of-type(2){
+    width: 1rem;
+    text-align: center;
+    color: #ffffff;
+}
+.subordinateTable>li:nth-of-type(3){
+    width: .35rem;
+    text-align: center;
+    color: #ffffff;
+}
+.subordinateTable>li:nth-of-type(4){
+    width: .9rem;
+    text-align: center;
+    color: #D54D4D;
+}
+.subordinateTable>li:nth-of-type(5){
+    width: .9rem;
+    text-align: center;
+    color: #D54D4D;
+}
+.subordinate1-1>p:last-child{
+    font-size: .14rem;
+}
+.subuserForm{
+    overflow: auto;
+    height: 2.6rem;
+}
+/* 分页 */
+.page{
+    font-size: .16rem;
+    display: flex;
+    margin-top: .15rem;
+    margin-bottom: .2rem;
+    justify-content: flex-end;
+    color: #7786d9;
+    margin-right: 35%;
+}
+#upPage{
+    width: .3rem;
+    height: .3rem;
+    color: #ffffff;
+    text-align: center;
+    line-height: .3rem;
+    background-color: #343D68;
+    margin-right: .1rem;
+}
+#nextPage{
+    width: .3rem;
+    height: .3rem;
+    color: #ffffff;
+    text-align: center;
+    line-height: .3rem;
+    background-color: #343D68;
+    margin-left: .1rem;
+}
+.page>p:nth-of-type(2),p:nth-of-type(3),p:nth-of-type(4){
+    margin-top: .05rem;
+}

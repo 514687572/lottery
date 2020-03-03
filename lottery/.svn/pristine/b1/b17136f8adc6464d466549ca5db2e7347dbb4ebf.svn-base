@@ -1,0 +1,34 @@
+// let baseUrl = "http://localhost/lottery";
+let baseUrl = "https://myeosgame.com";
+// 语言选择切换
+$("#changeLanguage").click(function(event) {
+    event.stopPropagation();
+    $("#language").toggle();
+  });
+  $("#Ch").click(function(){
+    $("#inputBox").html(`<img src="../images/guoqi.png" alt="" id="guoqiBox">简体中文`)
+    $("#language").css("display","none");
+  });
+  $("#En").click(function(){
+    $("#inputBox").html(`<img src="../images/guoqi02.png" alt="" id="guoqiBox">English`)
+    $("#language").css("display","none");
+  });
+  $(document).click(function(){
+    $("#language").css("display","none");
+  })
+//   lottery游戏主页面
+$(".LotteryBoxOne").click(function(){
+    window.location.href=`${baseUrl}/lottery`;
+});
+//   CASINO游戏主页面
+$(".LotteryBoxTwo").click(function(){
+    window.location.href=`${baseUrl}/eosdtplay/tiger/home.html`;
+});
+//   21游戏主页面
+$(".LotteryBoxThree").click(function(){
+    window.location.href=`${baseUrl}/Dice`;
+});
+
+function toIndex() {
+    window.location.href=`${baseUrl}/`;
+}

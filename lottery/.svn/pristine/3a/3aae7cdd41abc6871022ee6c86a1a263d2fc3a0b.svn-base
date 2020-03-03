@@ -1,0 +1,21 @@
+package com.stip.net.dao;
+
+import org.apache.ibatis.annotations.Select;
+
+import com.stip.mybatis.generator.plugin.GenericMapper;
+import com.stip.net.entity.LotteryUserInfo;
+import com.stip.net.example.LotteryUserInfoExample;
+
+/**
+* 可添加自定义查询语句，方便后续扩展
+**/
+public interface LotteryUserInfoDao extends GenericMapper<LotteryUserInfo, LotteryUserInfoExample, Long> {
+	@Select("select * from t_lottery_user_info where user_id = #{uid}")
+	LotteryUserInfo selectLotteryUserInfo(int uid);
+	
+	@Select("select * from t_lottery_user_info where mobile_phone = #{tel}")
+	LotteryUserInfo selectLotteryUserInfoTel(String tel);
+	
+	@Select("select * from t_lottery_user_info where email = #{email}")
+	LotteryUserInfo selectLotteryUserInfoEmail(String email);
+}

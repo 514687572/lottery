@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh_CN" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="col-sm-12">
+			<div class="ibox">
+				<div class="ibox-body">
+					<div class="fixed-table-toolbar">
+						<div style="width: 100px; float: left">
+							<select id="roomId" class="form-control">
+								<option value="">房间</option>
+								<option value="1001">1001</option>
+								<option value="1002">1002</option>
+								<option value="1003">1003</option>
+							</select>
+						</div>
+						<div style="width: 100px; float: left">
+							<input id="userId" type="text" class="form-control"
+								placeholder="用户名" />
+						</div>
+						<div style="width: 100px; float: left">
+							<input id="putMoney" type="number" class="form-control"
+								placeholder="投注大于" />
+						</div>
+						<div style="width: 100px; float: left">
+							<input id="gainMoney" type="number" class="form-control"
+								placeholder="中奖大于" />
+						</div>
+						<div style="width: 80px; float: left">
+							<select id="txStatus" class="form-control">
+								<option value="">区块</option>
+								<option value="0">未确认</option>
+								<option value="1">已确认</option>
+							</select>
+						</div>
+						<div style="width: 80px; float: left">
+							<select id="status" class="form-control">
+								<option value="">状态</option>
+								<option value="0">未开奖</option>
+								<option value="1">未中奖</option>
+								<option value="2">中奖未发</option>
+								<option value="3">发奖成功</option>
+								<option value="-1">发奖失败</option>
+								<option value="-2">交易回滚</option>
+							</select>
+						</div>
+						<div style="width: 80px; float: left">
+							<select id="topStatus" class="form-control">
+								<option value="">代币</option>
+								<option value="0">未发</option>
+								<option value="1">已发</option>
+							</select>
+						</div>
+						<div style="width: 140px; float: left">
+							<input id="startTime" type="date" class="form-control"
+								placeholder="起始时间" />
+						</div>
+						<div style="width: 140px; float: left">
+							<input id="endTime" type="date" class="form-control"
+								placeholder="结束时间" />
+						</div>
+						<div style="float: left">
+							<button class="btn btn-success" onclick="reLoad()">查询</button>
+						</div>
+					</div>
+					<!-- 数据列表 -->
+					<table id="exampleTable" data-mobile-responsive="true"></table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div th:include="include :: footer"></div>
+	<script type="text/javascript" src="/js/appjs/tiger/record/list.js"></script>
+</body>
+</html>

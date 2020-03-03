@@ -1,0 +1,10 @@
+package com.stip.net.service;
+
+import com.stip.net.entity.EosFlow;
+
+public interface GameService {
+
+	void insertEosFlow(EosFlow ef);
+
+	long countMyPut(String username);
+}

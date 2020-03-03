@@ -1,0 +1,31 @@
+package com.stip.net.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.stip.net.entity.tiger.TigerRoom;
+import com.stip.net.main.MainData;
+
+public class InitService {
+	private static boolean inited;
+
+	@Autowired
+	private TigerService tigerService;
+
+	public void initData() {
+		if (inited) {
+			return;
+		}
+		if (MainData.tigerRooms.size() == 0) {
+			List<TigerRoom> rooms = tigerService.getAllTigerRooms();
+			for (TigerRoom room : rooms) {
+				// 防止关闭服务器时期号未存储，导致开奖历史记录主键冲突
+				room.setQid(room.getQid() + 2);
+				room.setLastUpdate(System.currentTimeMillis());
+			}
+			MainData.tigerRooms.addAll(rooms);
+		}
+		inited = true;
+	}
+}

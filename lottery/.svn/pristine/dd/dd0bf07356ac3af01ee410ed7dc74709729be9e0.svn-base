@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.UserWithdrawApplRecordsDao">
+  <!--
+    文件的生成时间： 2019-01-23 10:53:42.
+    你应该把Mapper类的扩展方法的sql语句放在这个文件里面
+  -->
+  
+  <insert id="batchInsert" parameterType="java.util.List">
+    insert into t_user_withdrawappl_records (inOrderId, uid, eos_price, 
+      recharge_num, recharge_type, recharge_status, num, time, update_time, 
+      remark) values 
+    <foreach item='item' collection='list' separator=','  index=''>
+     (#{item.inorderid,jdbcType=VARCHAR}, #{item.uid,jdbcType=BIGINT}, 
+      #{item.eosPrice,jdbcType=DECIMAL}, #{item.rechargeNum,jdbcType=INTEGER}, 
+      #{item.rechargeType,jdbcType=INTEGER}, #{item.rechargeStatus,jdbcType=INTEGER}, 
+      #{item.num,jdbcType=DECIMAL}, #{item.time,jdbcType=TIMESTAMP}, 
+      #{item.updateTime,jdbcType=TIMESTAMP}, #{item.remark,jdbcType=VARCHAR}) 
+    </foreach>
+  </insert>
+</mapper>

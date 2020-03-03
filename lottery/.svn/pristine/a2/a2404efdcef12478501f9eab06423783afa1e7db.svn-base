@@ -1,0 +1,15 @@
+package com.stip.net.service;
+
+import com.stip.net.entity.UserTransactionRecords;
+import com.stip.net.example.UserTransactionRecordsExample;
+
+import java.util.List;
+
+public interface UserTransactionRecordsService {
+    List<UserTransactionRecords> selectByExample(UserTransactionRecordsExample example);
+
+    int updateByPrimaryKey(UserTransactionRecords userTransactionRecords);
+
+    int insert(UserTransactionRecords userTransactionRecords);
+
+}

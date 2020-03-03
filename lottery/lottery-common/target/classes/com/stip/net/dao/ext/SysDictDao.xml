@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stip.net.dao.SysDictDao">
+  <!--
+    文件的生成时间： 2018-11-30 13:45:40.
+    你应该把Mapper类的扩展方法的sql语句放在这个文件里面
+  -->
+  
+  <insert id="batchInsert" parameterType="java.util.List">
+    insert into sys_dict (id, name, value, type, description, sort, 
+      parent_id, create_by, create_date, update_by, update_date, 
+      remarks, del_flag) values 
+    <foreach item='item' collection='list' separator=','  index=''>
+     (#{item.id,jdbcType=BIGINT}, #{item.name,jdbcType=VARCHAR}, 
+      #{item.value,jdbcType=VARCHAR}, #{item.type,jdbcType=VARCHAR}, 
+      #{item.description,jdbcType=VARCHAR}, #{item.sort,jdbcType=DECIMAL}, 
+      #{item.parentId,jdbcType=BIGINT}, #{item.createBy,jdbcType=INTEGER}, 
+      #{item.createDate,jdbcType=TIMESTAMP}, #{item.updateBy,jdbcType=BIGINT}, 
+      #{item.updateDate,jdbcType=TIMESTAMP}, #{item.remarks,jdbcType=VARCHAR}, 
+      #{item.delFlag,jdbcType=CHAR}) 
+    </foreach>
+  </insert>
+</mapper>

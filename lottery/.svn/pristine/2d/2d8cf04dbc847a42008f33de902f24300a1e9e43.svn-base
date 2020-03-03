@@ -1,0 +1,2465 @@
+// 历史开奖记录请求数据
+
+let baseUrl = "https://myeosgame.com";
+let websocketUrl = "myeosgame.com";
+// let baseUrl = "http://172.16.1.214:8080/lottery";
+
+let Numstr = ""; //实时开奖的号码
+let pageNum = 1; //历史开奖请求页数
+let pageNumMybets = 1; //我的投注历史页数
+let uid; //websocket用户名
+let userName = ""; //登录的用户名
+let balance = 0; //奖金池金额
+let userBlance = 0; //用户投注金额
+let baseBetsNum = 0; //基础投注总金额
+let higherBetsNum = 0; //高阶投注总金额
+let totalLimitBets = 0; //投注限额总数
+let userLimitBets = 0; //个人投注限额
+let s; //倒计时区域时间
+let pageNumFriends = 0; //我的下级请求页数
+let hashArr = []; //hash值信息数组
+let tempul = $("#Marquee"); //整个hash值推送区域li的容器
+let changedTime; //最新数据的时间
+let strHashNum1 = ""; //不包含开奖号码的内容
+let strHashNum2 = ""; //包含开奖号码的内容
+let hashNumbers; //hash值号码
+let lastNUmber; //hash值最后一位
+let historyRowNum = 10; //历史记录请求条数
+let isStart = false;
+let loginBoolean = false;
+let isPrivate = "1";
+let publicKey = "";
+let perPageFriends=10;
+let nextPeriods=0;
+let yBarTop=0;
+
+
+// let win = "中奖";
+// let lang = "zh";
+// let logOut = "退出登录";
+// let userCode = "111";
+// let ucerror="投注出错";
+// let common="共";
+// let people="人";
+
+
+//初始调用scatter
+ScatterJS.plugins(new ScatterEOS());
+const network = {
+  blockchain: "eos",
+  protocol: "https",
+  host: "myeosgame.com",
+  port: 8443,
+  chainId: "cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f"
+};
+ScatterJS.scatter.connect("My-App").then(connected => {
+  if (!connected) return false;
+  const scatter = ScatterJS.scatter;
+  const requiredFields = {accounts: [network]};
+  scatter.getIdentity(requiredFields).then(() => {
+      const account = scatter.identity.accounts.find(x => x.blockchain === "eos");
+      const eosOptions = {expireInSeconds: 60};
+      const eos = scatter.eos(network, Eos, eosOptions);
+      $.ajax({
+        type: "post",
+        url: `${baseUrl}/account/addUserInfo.do`,
+        data: {
+          account: scatter.identity?scatter.identity:userName,
+          userCode: userCode ? userCode : ""
+        },
+        success: function (msg) {
+        }
+      });
+      checkIdentity();
+      getHisBets();
+    })
+    .catch(error => {
+    });
+});
+
+//判断是英语还是中文，改变个别英语显示样式
+if (lang == "en_US") {
+  $("#invitePart1").css({
+    height: "540px"
+  });
+  $("#getAward").css({
+    height: "240px"
+  });
+  $("#getAward div:eq(1)").css({
+    width: "750px"
+  });
+  $("#inviteFriends").css({
+    height: "180px"
+  });
+  $("#inviteContainer").css({
+    height: "1680px"
+  });
+  $("#invitePart2").css({
+    height: "360px"
+  });
+  $("#rulerWords").css({
+    height: "100px"
+  });
+}
+
+
+let oMyBar1 = new MyScrollBar({
+  selId: "messageBox",
+  bgColor: "#212540",
+  barColor: "#3083de",
+  enterColor: "#056FD8",
+  enterShow: false,
+  borderRadius: 6
+});
+
+
+
+
+
+history(); //调用获取历史开奖信息
+$("#messageBox>div:first>div").css("top","0");
+
+getBlance(); //调用获取奖金池数量
+
+$("#betsUsers").text("0"); //初始用户投注额为0
+$("#betsUsers").css("width", "0"); //初始用户投注额区域宽度为0
+
+//初始判断用户进来开奖的进行时间
+
+//开奖历史滚动条
+
+
+
+//点击更多获取更多历史开奖记录
+$("#more").click(function () {
+  pageNum += 1;
+  history();
+});
+
+$("#messageBox").mouseover(function () {
+  let srollHeight = $("#messageBox>div:first").height();
+  let innerScrollH = $("#messageBox>div:first>div").height();
+  // console.log(srollHeight - innerScrollH,Math.round($("#messageBox>div:first>div").position().top))
+  if (srollHeight - innerScrollH - Math.round($("#messageBox>div:first>div").position().top) ==0) {
+    pageNum += 1;
+    history();
+    yBarTop=srollHeight - innerScrollH;
+    oMyBar1.setSize();
+  }
+});
+
+
+
+//我的投注滚动条
+let oMyBar2 = new MyScrollBar({
+  selId: "orderContainer",
+  bgColor: "#212540",
+  barColor: "#3083de",
+  enterColor: "#056FD8",
+  enterShow: false,
+  borderRadius: 6
+});
+
+
+//点击更多和滚动条下滑请求历史投注函数
+function hisBetsAppend(){
+  $.ajax({
+    type: "get",
+    url: `${baseUrl}/lottery/getUserBetHis.do`,
+    data: {
+      userName: window.ScatterJS.scatter.identity==null ?userName:scatter.identity.accounts[0].name,
+      pageNum: pageNumMybets
+    },
+    success: function (msg) {
+      for (let item of msg.userHis) {
+        if (item.lotteryBonus) {
+          $("#scrollTwo").append(`<div class="orderHead">
+            <div class="orderHeadInner">
+              <div>
+              ${item.betNum}
+              <a 
+              href="https://bloks.io/transaction/3333a6acac949244b1231d9e0263191ca6041d1ebd47ce457e704eda8d00a238?${item.transactionId}" 
+              class="search" target="_blank"
+              />
+              </div>
+              <div>${item.betId}</div>
+              <div>
+              ${item.largeNum == "1" && item.largeNum != null? englistBig: ""}
+              ${item.largeNum == "0" && item.largeNum != null ? englistSmall : ""}
+              ${item.lotterySingle == "1" && item.lotterySingle != null? englistOdd: ""}
+              ${item.lotterySingle == "0" && item.lotterySingle != null? englistEven: ""}
+              ${item.lotteryFive ? item.lotteryFive : ""}
+              ${item.lotteryFour ? item.lotteryFour : ""}
+              ${item.lotteryThree ? item.lotteryThree : ""}
+              ${item.lotteryTwo ? item.lotteryTwo : ""}
+              ${item.lotteryOne ? item.lotteryOne : ""}
+              </div>
+              <div style="color:#ff564f">${win}</div>
+              <div>${item.lotteryBonus}</div>
+              <div>${datetimeDay(item.updateTime)}</div>
+            </div>
+            </div>`);
+        } else {
+          var betJsonStr1 = `${item.betJson}`;
+          if (lang == "en_US") {
+            betJsonStr1 = betJsonStr1
+              .replace("大", "B")
+              .replace("小", "S")
+              .replace("单", "O")
+              .replace("双", "E");
+          }
+          $("#scrollTwo").append(`<div class="orderHead">
+            <div class="orderHeadInner">
+              <div>${item.betNum}
+              <a href="https://bloks.io/transaction/3333a6acac949244b1231d9e0263191ca6041d1ebd47ce457e704eda8d00a238?${
+            item.transactionId
+          }" class="search" target="_blank"/></div>
+              <div>${item.betId}</div>
+              <div title=${betJsonStr1} style="overflow: hidden; text-overflow: ellipsis;">
+              ${betJsonStr1}
+              </div>
+              <div style="color:#3083de">${englistBet}</div>
+              <div>${item.noteMoney}</div>
+              <div>${datetimeDay(item.createTime)}</div>
+            </div>
+            </div>`);
+        }
+        oMyBar2.setSize();
+      }
+    }
+  });
+}
+
+
+//点击更多获取更多我的投注
+$("#moreBets").click(function () {
+  // console.log(111)
+  pageNumMybets += 1;
+  if (window.ScatterJS.scatter.identity!=null || userName != "") {
+    hisBetsAppend();
+  }else{
+    $.message({
+      type:"warning",
+      message:"请先登录!"
+    })
+  }
+});
+
+
+// 鼠标到底请求历史投注
+$("#orderContainer").mouseover(function () {
+  let srollHeight = $("#orderContainer>div:first").height();
+  let innerScrollH = $("#orderContainer>div:first>div").height();
+  if (srollHeight - innerScrollH ==parseInt($("#orderContainer>div:first>div").position().top)) {
+    pageNumMybets += 1;
+    if (window.ScatterJS.scatter.identity!=null || userName != "") {
+      yBarTop=srollHeight - innerScrollH;
+      hisBetsAppend();
+    }
+  }
+});
+
+
+// 登录弹框效果切换
+$("#myChainId").click(function () {
+  $("#myChainId").css("border-bottom", "1px solid #3083de");
+  $("#scatterLogin").css("border-bottom", "none");
+  $("#privateLogin").css("display", "block");
+  $("#loadScatter").css("display", "none");
+});
+$("#scatterLogin").click(function () {
+  $("#scatterLogin").css("border-bottom", "1px solid #3083de");
+  $("#myChainId").css("border-bottom", "none");
+  $("#privateLogin").css("display", "none");
+  $("#loadScatter").css("display", "block");
+});
+
+
+// 登录、账号管理
+$(".scatter_login").click(function () {
+  if (!window["scatter"]) {
+    $.message({
+      type: "warning",
+      message: notInstalled
+    });
+    return;
+  }
+  window.ScatterJS.scatter.connect("My-App").then(function (connected) {
+    if (!connected) return false;
+    const scatter = ScatterJS.scatter;
+    const requiredFields = {
+      accounts: [network]
+    };
+    scatter.getIdentity(requiredFields).then(() => {
+      const requiredFields = {
+        accounts: [network]
+      };
+      const account = scatter.identity.accounts.find(
+        x => x.blockchain === "eos"
+      );
+      checkIdentity();
+      loginBoolean = false;
+      getHisBets();
+      $.ajax({
+        type: "post",
+        url: `${baseUrl}/account/addUserInfo.do`,
+        data: {
+          account: scatter.identity?scatter.identity:userName,
+          userCode: userCode ? userCode : ""
+        },
+        success: function (msg) {
+        }
+      });
+    });
+  });
+});
+
+//退出登录
+$("#loginOut").click(function () {
+  $.message({
+    type: "error",
+    message: logOut
+  });
+  if (window.ScatterJS.scatter.identity != null) {
+    scatter.forgetIdentity();
+    $("#scrollTwo").empty();
+    oMyBar2.setSize();
+    $("#userInfomation").css("display", "none");
+    $(".loginBtn").css("display", "block");
+    $(".loginBtnBets").css("display", "block");
+    $(".betsBtn").css("display", "none");
+    $("#loginBtn").css("display", "block");
+  }
+  if (userName != "") {
+    $("#scrollTwo").empty();
+    oMyBar2.setSize();
+    $("#userInfomation").css("display", "none");
+    $(".loginBtn").css("display", "block");
+    $(".loginBtnBets").css("display", "block");
+    $(".betsBtn").css("display", "none");
+    $("#loginBtn").css("display", "block");
+  }
+});
+
+
+
+let carouselAry = [];
+// let timer = "";
+let isStop = false;
+let awardCount=0;
+let awardStr="";
+let liFind = "move_li";
+let count = 0;
+let endAwad = false; //判断开奖号码是否出完
+let timeEnter, timeStart;
+
+
+
+
+// websocket连接获取数据
+let chars = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+let path = baseUrl;
+uid = generateMixed(6);
+let from = uid;
+let fromName = generateMixed(6);
+var lockReconnect = false;  //避免ws重复连接
+var ws = null;          // 判断当前浏览器是否支持WebSocket
+var wsUrl = `wss://${websocketUrl}/ws?userId=${uid}&gameType=lottery`;
+
+function generateMixed(n) {
+  var res = "";
+  for (var i = 0; i < n; i++) {
+    var id = Math.ceil(Math.random() * 35);
+    res += chars[id];
+  }
+  return res;
+}
+
+
+function createWebSocket(url) {
+  try{
+      if('WebSocket' in window){
+          ws = new WebSocket(url);
+      }else if('MozWebSocket' in window){  
+          ws = new MozWebSocket(url);
+      }
+      initEventHandle();
+  }catch(e){
+      reconnect(url);
+      console.log(e);
+  }     
+}
+
+// let websocket = new WebSocket(`wss://${websocketUrl}/ws?userId=${uid}&gameType=lottery`);
+
+createWebSocket(wsUrl);   //连接ws
+
+
+
+
+
+//wensocket推送信息到前端
+ws.onmessage = function (event) {
+  heartCheck.reset().start();      //拿到任何消息都说明当前连接是正常的
+  // console.log("llws收到消息啦:" +event.data);
+  if(event.data!='pong'){
+      var obj=eval("("+event.data+")");
+  }
+  
+  let data = JSON.parse(event.data);
+  let dataObj = JSON.parse(data.text);
+  let liFind = "move_li";
+  changedTime = Date.parse(dataObj.header.timestamp.replace("-", "/").replace("T", "z")); //数据推送的最新时间
+  timeEnter = datetimeFormat(changedTime); //最新数据的推送时间
+  timeStart = parseInt(timeEnter.split(":")[2]); //最新数据的推送时间只取秒
+
+  carouselAry.push(dataObj);
+  if(carouselAry.length>=11){
+    carouselAry.unshift();
+  }
+  // let newStart="";
+  // for(let item of carouselAry){
+  //   newStart += `<li class=${liFind} style='font-family: consolas,monaco,monospace;font-size=20px'>
+  //     <div>${item.prize_start == true ? item.lottery_num : ""}</div>
+  //     <div class='hashId'>${item.block_num}</div>
+  //     <a class='hashNumber' style='text-align:center'  target="blank" href="https://bloks.io/block/${item.block_num}">${item.prize_num == true ? strHashNum2 : strHashNum1} </a>
+  //     <div class='hashDate'>${datetimeFormat(changedTime)}</div>
+  //     </li>`;
+  // }
+  tempul.on("mouseenter",function(){
+    isStop=true;
+  })
+  tempul.on("mouseleave",function(){
+    isStop=false;
+    // tempul.html(`${newStart}`);
+  })
+
+  //将等到的信息传入前端显示
+ if (data.from == "block") {
+   if(!isStop){
+  // let start=new Date();
+  //整点时间新一期开奖开始的整行特殊显示
+  if (dataObj.prize_start == true) {
+    liFind = "find_Li";
+  }
+
+  //判断开奖号码是否已出完，显示在当前开奖区域,并判断大小单双
+  let a, b, c, d;
+  if (count == 5) {
+    let awardNum = parseInt($("#kjhm").text()[$("#kjhm").text().length - 1]);
+    endAwad = true;
+    if (awardNum >= 5) {
+      $("#dx").text(englistBig);
+      b = "resultSmall";
+      a = "resultBig";
+    } else {
+      $("#dx").text(englistSmall);
+      a = "resultSmall";
+      b = "resultBig";
+    }
+    if (awardNum % 2 == 0) {
+      $("#ds").text(englistEven);
+      c = "resultSingle";
+      d = "resultDouble";
+    } else {
+      $("#ds").text(englistOdd);
+      d = "resultSingle";
+      c = "resultDouble";
+    }
+    $("#scrollOne").prepend(
+      `<article>
+        <span>${$("#qh").text()}</span>
+        <span>${$("#kjTime").text()}</span>
+        <span style="color:#ff5961;font-weight:bold">${$("#kjhm").text()}</span>
+        <div>
+        <span><b class=${b}>${englistBig}</b>-<b class=${a}>${englistSmall}</b></span>|<span><b class=${d}>${englistOdd}</b>-<b class=${c}>${englistEven}</b></span>
+        </div>
+      </article>`
+    );
+    $("#scrollOne").children().last().remove();
+    $("#current").css({color: "grey"});
+    $("#dx").css({color: "grey"});
+    $("#ds").css({color: "grey"});
+    $("#kjhm").css({color: "grey"});
+    count = 0;
+  }
+
+ 
+  strHashNum1 = ""; //不包含开奖号码的内容
+  strHashNum2 = ""; //包含开奖号码的内容
+  hashNumbers = dataObj.id; //hash值
+  lastNUmber = hashNumbers[hashNumbers.length - 1]; //最后一位
+  strHashNum1 = `<span>...</span><span class=hashBox>${hashNumbers.slice(25,hashNumbers.length - 1)}</span><span style="color:#86919e">${lastNUmber}</span>`;
+  strHashNum2 = `<span>...</span><span class=hashBox>${hashNumbers.slice(25,hashNumbers.length - 1)}</span><span style="color:#ff5c4a">${lastNUmber}</span>`;
+  let stringH = "";
+  stringH = `<li class=${liFind} style='font-family: consolas,monaco,monospace;font-size=20px'>
+      <div>${dataObj.prize_start == true ? dataObj.lottery_num : ""}</div>
+      <div class='hashId'>${dataObj.block_num}</div>
+      <a class='hashNumber' style='text-align:center'  target="blank" href="https://bloks.io/block/${dataObj.block_num}">${dataObj.prize_num == true ? strHashNum2 : strHashNum1} </a>
+      <div class='hashDate'>${datetimeFormat(changedTime)}</div>
+      </li>`;
+  tempul.prepend(stringH);
+
+  let li = tempul.children(":last");
+  li.animate({
+    marginBottom: "-40px"
+  },0,function () {
+    li.remove();
+  });
+}
+
+    // 开奖信息显示在当前页面
+  if (dataObj.prize_start == true) {
+    $("#kjhm").text("");
+    $("dx").text("");
+    $("ds").text("");
+    isStart = true;
+    $(".find_Li div:first").text(`${dataObj.lottery_num}`);
+    $("#kjTime").text(`${datetimeFormat(changedTime)}`); //当前开奖的时间
+    $("#qh").text(`${dataObj.lottery_num}`); //当前开奖期数
+    $("#nextPeriods").text(
+      `${period1}${parseInt(dataObj.lottery_num) + 1}${period2}`
+    ); //投注下一期的期数显示
+  }
+
+  //开奖号码
+  if (dataObj.prize_num == true) {
+    $("#current").css({
+      color: "white"
+    });
+    $("#dx").css({
+      color: "#3083de"
+    });
+    $("#ds").css({
+      color: "#3083de"
+    });
+    $("#kjhm").css({
+      color: "#ff5c4a"
+    });
+
+    if (endAwad == true) {
+    }
+    count++;
+    if (isStart) {
+      $("#kjhm").append(`${lastNUmber}`); //将开奖号码一次推入当前开奖号码显示区
+    } else {
+      $("#scrollOne").html("");
+      historyOnePage();
+    }
+    endAwad = false;
+  }
+
+  //投注区域时间实时计时
+  s = 60 - timeStart;
+  if (s == 1) {
+    $("#betsUsers").text("0");
+    $("#betsUsers").css({
+      width: "0"
+    });
+    getBlance();
+  }
+  if (s < 10) {
+    $("#second").text(`0${s}`);
+  } else {
+    $("#second").text(s);
+  }
+}
+
+
+  // 投注直播
+  // 用户投注
+  if (data.from == "bet") {
+    userBlance = dataObj.limit;
+    let betLiveTime = datetimeFormat(dataObj.date.time).split(".");
+    if(userBlance>=100000){
+      $("#betsUsers").text(`${parseFloat(userBlance/1000).toFixed(2)}K`);
+    }else{
+      $("#betsUsers").text(`${userBlance}`);
+    }
+    $("#betsUsers").css({
+      width: `${parseFloat(userBlance / balance).toFixed(2)}px`
+    });
+    let monthDay = data.date.split(" ")[0].split("-");
+    $("#betsLiveContain").prepend(
+      `<div class="userProfit">
+        <p class="userDetail"><span>${
+          dataObj.userName
+        }</span><span style="color:purple">${parseFloat(dataObj.count).toFixed(
+        4
+      )}<b>EOS</b></span></p>
+        <div>
+        <span>${dataObj.num}</span>-<span>${monthDay[1]}/${monthDay[2]}</span>
+        <span>${betLiveTime[0]}</span>
+        </div>
+      </div>`
+    );
+  }
+
+  //用户已中奖中奖
+  else if (data.from == "prizeMsg") {
+    let prizeTime = datetimeFormat(dataObj.time.time).split(".");
+    getBlance();
+    if (data.fromName == $("#userName").text()) {
+      $.message({
+        type: "success",
+        message: `+${parseFloat(dataObj.pri).toFixed(4)}EOS`
+      });
+      checkIdentity();
+    }
+    pageNumMybets = 1;
+    getHisBets();
+    let monthDay = data.date.split(" ")[0].split("-");
+    $("#betsLiveContain").prepend(
+      `<div class="userProfit">
+            <div class="userDetail"><span>${
+              data.fromName
+            }</span><div style="color:green"><span>+</span><span style="color:green">${parseFloat(
+        dataObj.pri
+      ).toFixed(4)}EOS</span></div></div>
+            <div>
+            <span>${dataObj.num}</span>-<span>${monthDay[1]}/${
+        monthDay[2]
+      }</span><span>${prizeTime[0]}</span>
+            </div>
+        </div>`
+    );
+  }
+};
+
+function initEventHandle(){
+  ws.onopen = function (event) {
+    heartCheck.reset().start();      //心跳检测重置
+    // console.log("llws连接成功!"+new Date().toUTCString());
+  };
+  ws.onerror = function (event) {
+    reconnect(wsUrl);
+    console.log("llws连接错误!");
+  };
+  ws.onclose = function (event) {
+    reconnect(wsUrl);
+    console.log("llws连接关闭!"+new Date().toUTCString());
+  };
+  window.onbeforeunload = function() {
+    ws.close();
+  }
+}
+
+function reconnect(url) {
+  if(lockReconnect) return;
+  lockReconnect = true;
+  setTimeout(function () {     //没连接上会一直重连，设置延迟避免请求过多
+    createWebSocket(url);
+    lockReconnect = false;
+  }, 2000);
+}
+
+//心跳检测
+var heartCheck = {
+  timeout: 540000,        //9分钟发一次心跳
+  timeoutObj: null,
+  serverTimeoutObj: null,
+  reset: function(){
+      clearTimeout(this.timeoutObj);
+      clearTimeout(this.serverTimeoutObj);
+      return this;
+  },
+  start: function(){
+      var self = this;
+      this.timeoutObj = setTimeout(function(){
+          //这里发送一个心跳，后端收到后，返回一个心跳消息，
+          //onmessage拿到返回的心跳就说明连接正常
+          ws.send("ping");
+          console.log("ping!")
+          self.serverTimeoutObj = setTimeout(function(){//如果超过一定时间还没重置，说明后端主动断开了
+            ws.close();     //如果onclose会执行reconnect，我们执行ws.close()就行了.如果直接执行reconnect 会触发onclose导致重连两次
+          }, self.timeout)
+      }, this.timeout)
+  }
+}
+
+
+
+// 点击登录
+$("#loginBtn").click(function () {
+  $("#loginContainer").css("display", "block");
+});
+$(".loginBtnBets").click(function () {
+  $("#loginContainer").css("display", "block");
+});
+// 点击关闭
+$("#loginClose").click(function () {
+  $("#loginContainer").css("display", "none");
+});
+
+// 语言选择切换
+$("#headRight").click(function () {
+  $("#language").toggle();
+});
+$("#Ch").click(function () {
+  $("#inputBox").html(
+    `<img src="../images/Singapore.png" alt="" id="guoqiBox">Chinese`
+  );
+  $("#language").css("display", "none");
+  $.ajax({
+    type: "get",
+    url: `${baseUrl}/lottery/updLocale?type=1`,
+    success: function (mag) {
+      window.location.reload();
+    }
+  });
+});
+$("#En").click(function () {
+  $("#inputBox").html(
+    `<img src="../images/guoqi02.png" alt="" id="guoqiBox">English`
+  );
+  $("#language").css("display", "none");
+  $.ajax({
+    type: "get",
+    url: `${baseUrl}/lottery/updLocale?type=2`,
+    success: function (mag) {
+      window.location.reload();
+    }
+  });
+});
+
+// 基础模式和高阶模式之间的切换
+// 点击基础模式
+let modelBollen = "0";
+$("#baseModelBtn").click(function () {
+  modelBollen = "0";
+  $(this).css("border-bottom", "1px solid #3083de");
+  $("#baseModelBox").css("display", "block");
+  $("#higherModelBox").css("display", "none");
+  $(this).css("color", "#3083de");
+  $("#higherModelBtn").css({
+    color: "#4d5569",
+    "border-bottom": "none"
+  });
+});
+
+// 点击切换高阶模式
+$("#higherModelBtn").click(function () {
+  modelBollen = "1";
+  $(this).css("border-bottom", "1px solid #3083de");
+  $("#higherModelBox").css("display", "block");
+  $("#baseModelBox").css("display", "none");
+  $(this).css("color", "#3083de");
+  $("#baseModelBtn").css({
+    color: "#4d5569",
+    "border-bottom": "none"
+  });
+});
+
+// 基础模式玩法
+let flag1 = false;
+let flag2 = false;
+let flag3 = false;
+let flag4 = false;
+let arr = [];
+let str = "";
+let betsNumber = 0; //投注数
+let large = -1;
+let single = -1;
+//大小选择
+$("#small").click(function () {
+  flag1 = !flag1;
+  flag2 = false;
+  if (flag1 == true) {
+    $(this).css({
+      "background-color": "#613522",
+      border: "1px solid #ff5f47"
+    });
+    $("#big").css({
+      "background-color": "#282e50",
+      border: "none"
+    });
+    arr.push(englistSmall);
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i] == englistBig) {
+        arr.splice(i, 1);
+      }
+    }
+    large = 0;
+  } else {
+    large = -1;
+    $(this).css({
+      "background-color": "#282e50",
+      border: "none"
+    });
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i] == englistSmall) {
+        arr.splice(i, 1);
+      }
+    }
+  }
+  if (arr.length == 0) {
+    $("#sbsd").text("[ ]");
+  } else {
+    for (let item of arr) {
+      str += item;
+    }
+    $("#sbsd").text(`[${str}]`);
+  }
+  str = "";
+  currentNumber();
+  totalCalculation();
+});
+$("#big").click(function () {
+  flag2 = !flag2;
+  flag1 = false;
+  if (flag2 == true) {
+    $(this).css({
+      "background-color": "#613522",
+      border: "1px solid #ff5f47"
+    });
+    $("#small").css({
+      "background-color": "#282e50",
+      border: "none"
+    });
+    arr.push(englistBig);
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i] == englistSmall) {
+        arr.splice(i, 1);
+      }
+    }
+    large = 1;
+  } else {
+    large = -1;
+    $(this).css({
+      "background-color": "#282e50",
+      border: "none"
+    });
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i] == englistBig) {
+        arr.splice(i, 1);
+      }
+    }
+  }
+  if (arr.length == 0) {
+    $("#sbsd").text("[ ]");
+  } else {
+    for (let item of arr) {
+      str += item;
+    }
+    $("#sbsd").text(`[${str}]`);
+  }
+  str = "";
+  currentNumber();
+  totalCalculation();
+});
+
+//单双选择
+$("#single").click(function () {
+  flag3 = !flag3;
+  flag4 = false;
+  if (flag3 == true) {
+    $(this).css({
+      "background-color": "#613522",
+      border: "1px solid #ff5f47"
+    });
+    $("#double").css({
+      "background-color": "#282e50",
+      border: "none"
+    });
+    arr.push(englistOdd);
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i] == englistEven) {
+        arr.splice(i, 1);
+      }
+    }
+    single = 1;
+  } else {
+    single = -1;
+    $(this).css({
+      "background-color": "#282e50",
+      border: "none"
+    });
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i] == englistOdd) {
+        arr.splice(i, 1);
+      }
+    }
+  }
+  if (arr.length == 0) {
+    $("#sbsd").text("[ ]");
+  } else {
+    for (let item of arr) {
+      str += item;
+    }
+    $("#sbsd").text(`[${str}]`);
+  }
+  str = "";
+  currentNumber();
+  totalCalculation();
+});
+$("#double").click(function () {
+  flag4 = !flag4;
+  flag3 = false;
+  if (flag4 == true) {
+    $(this).css({
+      "background-color": "#613522",
+      border: "1px solid #ff5f47"
+    });
+    $("#single").css({
+      "background-color": "#282e50",
+      border: "none"
+    });
+    arr.push(englistEven);
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i] == englistOdd) {
+        arr.splice(i, 1);
+      }
+    }
+    single = 0;
+  } else {
+    single = -1;
+    $(this).css({
+      "background-color": "#282e50",
+      border: "none"
+    });
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i] == englistEven) {
+        arr.splice(i, 1);
+      }
+    }
+  }
+  if (arr.length == 0) {
+    $("#sbsd").text("[ ]");
+  } else {
+    for (let item of arr) {
+      str += item;
+    }
+    $("#sbsd").text(`[${str}]`);
+  }
+  str = "";
+  currentNumber();
+  totalCalculation();
+});
+
+//星级切换清除被隐藏的样式
+function cssReset(nodename) {
+  $(nodename).css({
+    "background-color": "#282e50",
+    border: "none"
+  });
+}
+
+// 单双重置功能
+$("#resetOne").click(function () {
+  arr.length = 0;
+  if (arr.length == 0) {
+    $("#sbsd").text("[ ]");
+  } else {
+    for (let item of arr) {
+      str += item;
+    }
+    $("#sbsd").text(`[${str}]`);
+  }
+  str = "";
+  cssReset("#small");
+  cssReset("#big");
+  cssReset("#single");
+  cssReset("#double");
+  flag1 = false;
+  flag2 = false;
+  flag3 = false;
+  flag4 = false;
+  currentNumber();
+  totalCalculation();
+});
+
+// 选择数字函数调用
+numberChoose("numberBtn", "#numbersBox", "#resetTwo");
+numberChoose("number1Btn", "#h1box", "#resetTr");
+numberChoose("number2Btn", "#h2box", "#resetFr");
+numberChoose("number3Btn", "#h3box", "#resetFv");
+numberChoose("number4Btn", "#h4box", "#resetSx");
+numberChoose("number5Btn", "#h5box", "#resetSv");
+
+//游戏星级选择
+let starCheck1 = false;
+let starCheck2 = false;
+let starCheck3 = false;
+let starCheck4 = false;
+let starCheck5 = true;
+let starRank = "5"; //高阶模式星级，默认五星
+// 点击一星模式
+$("#oneStar").click(function () {
+  starRank = "1";
+  starCheck1 = true;
+  starCheck2 = false;
+  starCheck3 = false;
+  starCheck4 = false;
+  starCheck5 = false;
+  judgeStarCheck();
+  $("#num2Box").css("display", "none");
+  $("#num3Box").css("display", "none");
+  $("#num4Box").css("display", "none");
+  $("#num5Box").css("display", "none");
+  $("#h2box").css("display", "none");
+  $("#h3box").css("display", "none");
+  $("#h4box").css("display", "none");
+  $("#h5box").css("display", "none");
+  currentNumber();
+  totalCalculation();
+});
+
+// 点击二星模式
+$("#twoStar").click(function () {
+  starRank = "2";
+  starCheck1 = false;
+  starCheck2 = true;
+  starCheck3 = false;
+  starCheck4 = false;
+  starCheck5 = false;
+  judgeStarCheck();
+  $("#num2Box").css("display", "block");
+  $("#num3Box").css("display", "none");
+  $("#num4Box").css("display", "none");
+  $("#num5Box").css("display", "none");
+  $("#h2box").css("display", "block");
+  $("#h3box").css("display", "none");
+  $("#h4box").css("display", "none");
+  $("#h5box").css("display", "none");
+  currentNumber();
+  totalCalculation();
+});
+
+// 点击三星模式
+$("#threeStar").click(function () {
+  starRank = "3";
+  starCheck1 = false;
+  starCheck2 = false;
+  starCheck3 = true;
+  starCheck4 = false;
+  starCheck5 = false;
+  judgeStarCheck();
+  $("#num2Box").css("display", "block");
+  $("#num3Box").css("display", "block");
+  $("#num4Box").css("display", "none");
+  $("#num5Box").css("display", "none");
+  $("#h2box").css("display", "block");
+  $("#h3box").css("display", "block");
+  $("#h4box").css("display", "none");
+  $("#h5box").css("display", "none");
+  currentNumber();
+  totalCalculation();
+});
+
+// 点击四星模式
+$("#fourStar").click(function () {
+  starRank = "4";
+  starCheck1 = false;
+  starCheck2 = false;
+  starCheck3 = false;
+  starCheck4 = true;
+  starCheck5 = false;
+  judgeStarCheck();
+  $("#num2Box").css("display", "block");
+  $("#num3Box").css("display", "block");
+  $("#num4Box").css("display", "block");
+  $("#num5Box").css("display", "none");
+  $("#h2box").css("display", "block");
+  $("#h3box").css("display", "block");
+  $("#h4box").css("display", "block");
+  $("#h5box").css("display", "none");
+  currentNumber();
+  totalCalculation();
+});
+
+// 点击五星模式
+$("#fiveStar").click(function () {
+  starRank = "5";
+  starCheck1 = false;
+  starCheck2 = false;
+  starCheck3 = false;
+  starCheck4 = false;
+  starCheck5 = true;
+  judgeStarCheck();
+  $("#num2Box").css("display", "block");
+  $("#num3Box").css("display", "block");
+  $("#num4Box").css("display", "block");
+  $("#num5Box").css("display", "block");
+  $("#h2box").css("display", "block");
+  $("#h3box").css("display", "block");
+  $("#h4box").css("display", "block");
+  $("#h5box").css("display", "block");
+  currentNumber();
+  totalCalculation();
+});
+
+//一半，两倍，最大选择改变输入框的金额
+$(".half").click(function () {
+  $(".myBets").val(parseFloat($(".myBets").val() / 2).toFixed(1));
+  totalCalculation();
+});
+$(".doubles").click(function () {
+  $(".myBets").val(parseFloat($(".myBets").val() * 2).toFixed(1));
+  if($(".myBets").val()>100){
+    $(".myBets").val(100);
+  }
+  totalCalculation();
+});
+$(".max").click(function () {
+  $(".myBets").val(100);
+  totalCalculation();
+});
+
+//改变两个输入框的值
+let reg = new RegExp("^[0-9]+(.[0-9]{0,1})?$");
+$(".myBets:first").change(function () {
+  if (reg.test($(".myBets").val()) == false||$(".myBets").val()>100) {
+    $(".myBets").val("1");
+  }
+  $(".myBets:last").val($(".myBets:first").val());
+  totalCalculation();
+});
+$(".myBets:last").change(function () {
+  if (reg.test($(".myBets").val()) == false||$(".myBets").val()>100) {
+    $(".myBets").val("1");
+  }
+  $(".myBets:first").val($(".myBets:last").val());
+  totalCalculation();
+});
+
+//获取奖金池的数量
+function getBlance() {
+  $.ajax({
+    type: "get",
+    url: `${baseUrl}/account/getSysInfo.do`,
+    success: function (msg) {
+      balance = parseFloat(
+        msg.balance.replace("EOS", "").replace(" ", "")
+      ).toFixed(2);
+      totalLimitBets = parseFloat(balance * 0.05).toFixed(4);
+      if(totalLimitBets>=10000){
+        $("#percent").text(`/${parseFloat(totalLimitBets/1000).toFixed(2)}K`);
+      }else{
+        $("#percent").text(`/${parseFloat(totalLimitBets)}`);
+      }
+    }
+  });
+}
+
+// 下注与后台对接
+$(".betsBtn").click(function () {
+  if($("#cpu").text()!="100.00%"){
+  $("#stop").css({
+    display: "block"
+  });
+  let btnObj = $(this);
+  btnObj.attr("disabled", true);
+  btnObj.css("background", "grey");
+  const sid = `${new Date().getTime()}${Math.random()}${generateMixed(6)}`;
+  const remark = {
+    gameType: "lottery",
+    id: sid,
+    userName: window.ScatterJS.scatter.identity == null ? userName : scatter.identity.accounts[0].name
+  };
+  $.ajax({
+    type: "get",
+    async: false,
+    url: `${baseUrl}/lottery/checkUserStatus`,
+    data: {
+      userName: window.ScatterJS.scatter.identity == null ? userName : scatter.identity.accounts[0].name
+    },
+    success: function (msg) {
+      if (msg.status == true) {
+        $.ajax({
+          type: "post",
+          url: `${baseUrl}/oauth/token`,
+          data: {
+            userName: window.ScatterJS.scatter.identity == null ?
+              userName :
+              scatter.identity.accounts[0].name,
+            appKey: "90dc11a7ce5f8c6f7c337b8f9eaac12397ezde",
+            userKey: window.ScatterJS.scatter.identity == null ? publicKey : scatter.identity.publicKey
+          },
+          success: function (msg) {
+            userLimitBets = totalLimitBets - userBlance;
+           
+            if (modelBollen == "0") {
+              if (
+                baseBetsNum != 0 &&baseBetsNum <= userLimitBets 
+                &&parseFloat($(".myBets").val()) >= 0.1&&
+                s > 0&&parseFloat($(".myBets").val()) <= 100) 
+              {
+                //基础模式投注
+                if (loginBoolean == true) {
+                  privateBaseBets(sid,msg.token.access_token,btnObj);
+                } else {
+                  scatterBaseBets(sid,msg.token.access_token,remark,btnObj);
+                }
+              } else {
+                btnObj.attr("disabled", false);
+                btnObj.css("background","linear-gradient(to right, #ff5c4a , #ff8325)");
+                $.message({
+                  type: "warning",
+                  message: ucerror
+                });
+                $("#stop").css({
+                  display: "none"
+                });
+              }
+            } else {
+              if (
+                higherBetsNum != 0 &&
+                higherBetsNum <= userLimitBets &&
+                parseFloat($(".myBets").val()) >= 0.1 &&
+                s > 0 &&
+                parseFloat($(".myBets").val()) <= 100
+              ) {
+                //高阶模式投注
+                if (loginBoolean == true) {
+                  privateHigherBets(sid,msg.token.access_token,btnObj,starRank);
+                } else {
+                  scatterHigherBets(sid,msg.token.access_token,remark,btnObj,starRank);
+                }
+              } else {
+                btnObj.attr("disabled", false);
+                btnObj.css(
+                  "background",
+                  "linear-gradient(to right, #ff5c4a , #ff8325)"
+                );
+                $.message({
+                  type: "warning",
+                  message: "未选组合或金额错误！"
+                });
+                $("#stop").css({
+                  display: "none"
+                });
+              }
+            }
+          },
+          error: function () {
+            btnObj.attr("disabled", false);
+            btnObj.css(
+              "background",
+              "linear-gradient(to right, #ff5c4a , #ff8325)"
+            );
+          }
+        });
+      } else {
+        btnObj.attr("disabled", false);
+        btnObj.css(
+          "background",
+          "linear-gradient(to right, #ff5c4a , #ff8325)"
+        );
+        $.message({
+          type: "warning",
+          message: `${msg.msg}`
+        });
+      }
+    }
+  });
+}else{
+  $.message({
+    type: "warning",
+    message: `${cpuerorr}`
+  });
+}
+});
+
+
+//scatter登录的基础模式下注
+function scatterBaseBets(sid,access_token,remark,btnObj){
+  const eosOptions = {
+    expireInSeconds: 60
+  };
+  const eos = scatter.eos(network, Eos, eosOptions);
+  $.ajax({
+    type: "post",
+    async: false,
+    url: `${baseUrl}/lottery/goBet.do`,
+    data: {
+      userName: scatter.identity.accounts[0].name, //用户账户名
+      model: "0", //模式类型
+      large: large, //大小
+      single: single, //单双
+      baseNum: $("#numbersBox")
+        .text()
+        .replace("[", "")
+        .replace("]", ""),
+      perBets: $(".myBets").val(),
+      starRank: "",
+      firstNums: "",
+      secondNums: "",
+      thirdNums: "",
+      forthNums: "",
+      fifthNums: "",
+      higherTotalBets: "",
+      sid: sid,
+      access_token: access_token,
+      userCode: userCode ? userCode : ""
+    },
+    success: function (msg) {
+      $("#stop").css({
+        display: "block"
+      });
+      eos
+        .transfer(
+          scatter.identity.accounts[0].name,
+          "eosio",
+          `${parseFloat(baseBetsNum).toFixed(4)} EOS`,
+          JSON.stringify(remark)
+        )
+        .then(result => {
+          $("#stop").css({
+            display: "none"
+          });
+          if (msg.status == "true") {
+            $.message({
+              type: "success",
+              message: `${msg.msg}`
+            });
+          } else {
+            $.message({
+              type: "warning",
+              message: `${msg.msg}`
+            });
+          }
+          pageNumMybets = 1;
+          getHisBets();
+          checkIdentity();
+          getBlance();
+          btnObj.attr("disabled", false);
+          btnObj.css(
+            "background",
+            "linear-gradient(to right, #ff5c4a , #ff8325)"
+          );
+        })
+        .catch(e => {
+          $("#stop").css({
+            display: "none"
+          });
+          btnObj.attr("disabled", false);
+          btnObj.css(
+            "background",
+            "linear-gradient(to right, #ff5c4a , #ff8325)"
+          );
+          $.message({
+            type: "warning",
+            message: e.message
+          });
+        });
+    },
+    error: function () {
+      btnObj.attr("disabled", false);
+      btnObj.css(
+        "background",
+        "linear-gradient(to right, #ff5c4a , #ff8325)"
+      );
+    }
+  });
+}
+//私钥登录的基础模式下注
+function privateBaseBets(sid,access_token,btnObj){
+  $.ajax({
+    type: "post",
+    async: false,
+    url: `${baseUrl}/lottery/goBet.do`,
+    data: {
+      userName: userName, //用户账户名
+      model: "0", //模式类型
+      large: large, //大小
+      single: single, //单双
+      baseNum: $("#numbersBox")
+        .text()
+        .replace("[", "")
+        .replace("]", ""),
+      perBets: $(".myBets").val(),
+      starRank: "",
+      firstNums: "",
+      secondNums: "",
+      thirdNums: "",
+      forthNums: "",
+      fifthNums: "",
+      higherTotalBets: "",
+      sid: sid,
+      access_token:access_token,
+      userCode: userCode ? userCode : "",
+      isPrivate: "1"
+    },
+    success: function (msg) {
+      $("#stop").css({
+        display: "none"
+      });
+      $.message({
+        type: "success",
+        message: "投注成功！"
+      });
+      pageNumMybets = 1;
+      getHisBets();
+      checkIdentity();
+      getBlance();
+      btnObj.attr("disabled", false);
+      btnObj.css(
+        "background",
+        "linear-gradient(to right, #ff5c4a , #ff8325)"
+      );
+    },
+    error: function () {
+      btnObj.attr("disabled", false);
+      btnObj.css(
+        "background",
+        "linear-gradient(to right, #ff5c4a , #ff8325)"
+      );
+    }
+  });
+}
+//私钥登录的高阶模式下注
+function privateHigherBets(sid,access_token,btnObj){
+  let betNumOne = "";
+  let betNumTwo = "";
+  let betNumThree = "";
+  let betNumFour = "";
+  let betNumFive = "";
+  let higherNumOne = $("#h1box")
+  .text()
+  .replace("[", "")
+  .replace("]", "");
+let higherNumTwo = $("#h2box")
+  .text()
+  .replace("[", "")
+  .replace("]", "");
+let higherNumThree = $("#h3box")
+  .text()
+  .replace("[", "")
+  .replace("]", "");
+let higherNumFour = $("#h4box")
+  .text()
+  .replace("[", "")
+  .replace("]", "");
+let higherNumFive = $("#h5box")
+  .text()
+  .replace("[", "")
+  .replace("]", "");
+  switch (starRank) {
+    case "1":
+      betNumOne = higherNumOne;
+      break;
+    case "2":
+      betNumOne = higherNumOne;
+      betNumTwo = higherNumTwo;
+      break;
+    case "3":
+      betNumOne = higherNumOne;
+      betNumTwo = higherNumTwo;
+      betNumThree = higherNumThree;
+      break;
+    case "4":
+      betNumOne = higherNumOne;
+      betNumTwo = higherNumTwo;
+      betNumThree = higherNumThree;
+      betNumFour = higherNumFour;
+      break;
+    case "5":
+      betNumOne = higherNumOne;
+      betNumTwo = higherNumTwo;
+      betNumThree = higherNumThree;
+      betNumFour = higherNumFour;
+      betNumFive = higherNumFive;
+      break;
+  }
+  $.ajax({
+    type: "post",
+    async: false,
+    url: `${baseUrl}/lottery/goBet.do`,
+    data: {
+      userName: userName, //用户账户名
+      model: "1", //模式类型
+      large: -1, //大小
+      single: -1, //单双
+      baseNum: "",
+      perBets: $(".myBets").val(),
+      starRank: starRank,
+      firstNums: betNumOne,
+      secondNums: betNumTwo,
+      thirdNums: betNumThree,
+      forthNums: betNumFour,
+      fifthNums: betNumFive,
+      higherTotalBets: $("#higherBets").text(),
+      sid: sid,
+      access_token:access_token,
+      userCode: userCode ? userCode : "",
+      isPrivate: "1"
+    },
+    success: function (msg) {
+      $("#stop").css({
+        display: "none"
+      });
+      $.message({
+        type: "success",
+        message: "投注成功！"
+      });
+      pageNumMybets = 1;
+      getHisBets();
+      checkIdentity();
+      getBlance();
+      btnObj.attr("disabled", false);
+      btnObj.css(
+        "background",
+        "linear-gradient(to right, #ff5c4a , #ff8325)"
+      );
+    },
+    error: function () {
+      btnObj.attr("disabled", false);
+      btnObj.css(
+        "background",
+        "linear-gradient(to right, #ff5c4a , #ff8325)"
+      );
+    }
+  });
+}
+//scatter登录的高阶模式投注
+function scatterHigherBets(sid,access_token,remark,btnObj,starRank){
+  const eosOptions = {
+    expireInSeconds: 60
+  };
+  const eos = scatter.eos(network, Eos, eosOptions);
+  let betNumOne = "";
+  let betNumTwo = "";
+  let betNumThree = "";
+  let betNumFour = "";
+  let betNumFive = "";
+  let higherNumOne = $("#h1box")
+  .text()
+  .replace("[", "")
+  .replace("]", "");
+let higherNumTwo = $("#h2box")
+  .text()
+  .replace("[", "")
+  .replace("]", "");
+let higherNumThree = $("#h3box")
+  .text()
+  .replace("[", "")
+  .replace("]", "");
+let higherNumFour = $("#h4box")
+  .text()
+  .replace("[", "")
+  .replace("]", "");
+let higherNumFive = $("#h5box")
+  .text()
+  .replace("[", "")
+  .replace("]", "");
+  switch (starRank) {
+    case "1":
+      betNumOne = higherNumOne;
+      break;
+    case "2":
+      betNumOne = higherNumOne;
+      betNumTwo = higherNumTwo;
+      break;
+    case "3":
+      betNumOne = higherNumOne;
+      betNumTwo = higherNumTwo;
+      betNumThree = higherNumThree;
+      break;
+    case "4":
+      betNumOne = higherNumOne;
+      betNumTwo = higherNumTwo;
+      betNumThree = higherNumThree;
+      betNumFour = higherNumFour;
+      break;
+    case "5":
+      betNumOne = higherNumOne;
+      betNumTwo = higherNumTwo;
+      betNumThree = higherNumThree;
+      betNumFour = higherNumFour;
+      betNumFive = higherNumFive;
+      break;
+  }
+  $.ajax({
+    type: "post",
+    async: false,
+    url: `${baseUrl}/lottery/goBet.do`,
+    data: {
+      userName: scatter.identity.accounts[0].name, //用户账户名
+      model: "1", //模式类型
+      large: -1, //大小
+      single: -1, //单双
+      baseNum: "",
+      perBets: $(".myBets").val(),
+      starRank: starRank,
+      firstNums: betNumOne,
+      secondNums: betNumTwo,
+      thirdNums: betNumThree,
+      forthNums: betNumFour,
+      fifthNums: betNumFive,
+      higherTotalBets: $("#higherBets").text(),
+      sid: sid,
+      access_token:access_token,
+      userCode: userCode ? userCode : ""
+    },
+    success: function (msg) {
+      eos
+        .transfer(
+          scatter.identity.accounts[0].name,
+          "eosio",
+          `${parseFloat(higherBetsNum).toFixed(4)} EOS`,
+          JSON.stringify(remark)
+        )
+        .then(result => {
+          $("#stop").css({
+            display: "none"
+          });
+          if (msg.status == "true") {
+            $.message({
+              type: "success",
+              message: `${msg.msg}`
+            });
+          } else {
+            $.message({
+              type: "warning",
+              message: `${msg.msg}`
+            });
+          }
+          pageNumMybets = 1;
+          getHisBets();
+          checkIdentity();
+          getBlance();
+          btnObj.attr("disabled", false);
+          btnObj.css(
+            "background",
+            "linear-gradient(to right, #ff5c4a , #ff8325)"
+          );
+        })
+        .catch(e => {
+          $("#stop").css({
+            display: "none"
+          });
+          btnObj.attr("disabled", false);
+          btnObj.css(
+            "background",
+            "linear-gradient(to right, #ff5c4a , #ff8325)"
+          );
+          $.message({
+            type: "warning",
+            message: e.message
+          });
+        });
+    },
+    error: function () {
+      btnObj.attr("disabled", false);
+      btnObj.css(
+        "background",
+        "linear-gradient(to right, #ff5c4a , #ff8325)"
+      );
+    }
+  });
+}
+// 邀请好友跳转
+$("#inviteBtn").click(function () {
+  $("#inviteContainer").css("display", "block");
+  $("#rulerContainer").css("display", "none");
+  $("#app").css("display", "none");
+  $("#historyContainer").css("display", "none");
+  $("#myFriendsContainner").html("");
+  if ($("#userName").text() != "") {
+    // 邀请好友接口
+    $.ajax({
+      type: "post",
+      url: `${baseUrl}/user/getUser.do`,
+      data: {
+        userName: $("#userName").text()
+      },
+      success: function (msg) {
+        $("#linkInput").val(
+          `${baseUrl}/lottery/tolottery?userCode=${msg.user.userCode}`
+        );
+      }
+    });
+
+    //我的下级接口
+    myFriends(pageNumFriends,perPageFriends);
+  }
+});
+
+
+//点击下一页请求我的下级
+$("#nextPage").click(function(){
+  pageNumFriends++;
+  perPageFriends+=10;
+  myFriends(pageNumFriends,perPageFriends)
+})
+//点击上一页请求我的下级
+$("#nextPage").click(function(){
+  pageNumFriends--;
+  perPageFriends-=10;
+  myFriends(pageNumFriends,perPageFriends);
+})
+
+
+//我的下级函数
+function myFriends(pageNumFriends,perPageFriends){
+  $.ajax({
+    type: "get",
+    url: `${baseUrl}/user/getMyChilds.do?pageNum=${pageNumFriends}&records=${perPageFriends}&userName=${$(
+      "#userName"
+    ).text()}`,
+    success: function (msg) {
+      console.log(msg)
+      let friendsStr = "";
+      $("#totalFriends").text(`${common}${msg.total}${people}`);
+      $("#totalPage").text(`${msg.totalPage}`);
+      $("#curpage").text(`${pageNumFriends}/${msg.totalPage}`);
+      for (let i = 0; i < msg.childs.length; i++) {
+        friendsStr += `<div class="myFriends">
+        <div>${(i + 1)*perPageFriends*(pageNumFriends-1)}</div>
+        <div style="color:white;">${msg.childs[i].userName}</div>
+        <div style="color:white;">1</div>
+        <div style="color:#ec524f;">${msg.childs[i].noteMoney}</div>
+        <div style="color:#ec524f;">${msg.childs[i].lotteryBonus}</div>
+        </div>`;
+        $("#myFriendsContainner").html(friendsStr);
+      }
+    }
+  });
+}
+
+
+//点击复制邀请框邀请码
+$("#copyUrl").click(function () {
+  $("#linkInput").select();
+  if (document.execCommand("copy")) {
+    document.execCommand("copy");
+  }
+});
+
+// 玩法介绍跳转
+$("#rluerIntroduce").click(function () {
+  $("#rulerContainer").css("display", "block");
+  $("#app").css("display", "none");
+  $("#inviteContainer").css("display", "none");
+  $("#historyContainer").css("display", "none");
+});
+
+//邀请好友返回主界面
+$("#backToindexI").click(function () {
+  $("#rulerContainer").css("display", "none");
+  $("#app").css("display", "block");
+  $("#inviteContainer").css("display", "none");
+  $("#historyContainer").css("display", "none");
+});
+
+//游戏规则返回主界面
+$("#backToIndexG").click(function () {
+  $("#rulerContainer").css("display", "none");
+  $("#app").css("display", "block");
+  $("#inviteContainer").css("display", "none");
+  $("#historyContainer").css("display", "none");
+});
+
+//历史记录跳转
+$("#historyBtn").click(function () {
+  $("#historyContainer").css("display", "block");
+  $("#rulerContainer").css("display", "none");
+  $("#app").css("display", "none");
+  $("#inviteContainer").css("display", "none");
+  $("#hisTbody").html("");
+  //请求历史开奖记录
+  $.ajax({
+    type: "get",
+    url: `${baseUrl}/lottery/getLotteryHis.do`,
+    data: {
+      pageNum: 1,
+      rowNum: 23
+    },
+    success: function (msg) {
+      // console.log(msg)
+      for (let item of msg.hisRecords) {
+        let a, b, c, d;
+        if (item.largeNum == 0) {
+          a = "resultSmall";
+          b = "resultBig";
+        } else {
+          b = "resultSmall";
+          a = "resultBig";
+        }
+        if (item.lotterySingle == 0) {
+          c = "resultSingle";
+          d = "resultDouble";
+        } else {
+          d = "resultSingle";
+          c = "resultDouble";
+        }
+        $("#hisTbody").append(
+          `<div class="historyTabContent">
+            <div>${datetimeFormat(item.updateTime)}</div>
+            <div>${item.recordsId}</div>
+            <div style="color:purple">${item.lotteryFive}${item.lotteryFour}${
+            item.lotteryThree
+          }${item.lotteryTwo}${item.lotteryOne}</div>
+            <div><span class=${b}>${englistBig}</span><span class=${a}>${englistSmall}</span>|<span class=${d}>${englistOdd}</span><span class=${c}>${englistEven}</span></div>
+            </div>`
+        );
+      }
+    }
+  });
+});
+
+//历史记录返回主界面
+$("#backToIndexH").click(function () {
+  $("#rulerContainer").css("display", "none");
+  $("#app").css("display", "block");
+  $("#inviteContainer").css("display", "none");
+  $("#historyContainer").css("display", "none");
+});
+
+//获取账户信息
+function checkIdentity() {
+  $.ajax({
+    type: "get",
+    url: `${baseUrl}/account/getAccount.do`,
+    data: {
+      account: window.ScatterJS.scatter.identity == null ? userName : scatter.identity.accounts[0].name
+    },
+    success: function (msg) {
+      if (window.ScatterJS.scatter.identity != null || userName != "") {
+        uid =
+        window.ScatterJS.scatter.identity == null ?
+          userName :
+          scatter.identity.accounts[0].name;
+        $("#userInfomation").css("display", "block");
+        $("#loginBtn").css("display", "none");
+        $("#loginContainer").css("display", "none");
+        $("#loginContainer").css("display", "none");
+        $(".loginBtnBets").css("display", "none");
+        $(".betsBtn").css("display", "block");
+        $("#cpu").text(
+          `${parseFloat((msg.cpu.used / msg.cpu.max) * 100).toFixed(2)}%`
+        );
+        $("#userName").text(
+          `${
+            window.ScatterJS.scatter.identity== null
+              ? userName
+              : scatter.identity.accounts[0].name
+          }`
+        );
+        $("#EosMoney").text(`${msg.balance ? msg.balance : "0"}`);
+      } else {
+        $("#userInfomation").css("display", "none");
+        $(".loginBtn").css("display", "block");
+        $(".loginBtnBets").css("display", "block");
+        $(".betsBtn").css("display", "none");
+      }
+    }
+  });
+}
+
+// 改变选中按钮及未选中按钮样式函数
+function judgeStarCheck() {
+  if (
+    starCheck1 == true &&
+    (starCheck2 = starCheck3 = starCheck4 = starCheck5) == false
+  ) {
+    $("#oneStar").css({
+      background: "linear-gradient(to right, #ff5c4a , #ff8325)",
+      border: "1px solid #ff5f47",
+      color: "white"
+    });
+    $("#twoStar").css({
+      background: "#323761",
+      border: "none"
+    });
+    $("#threeStar").css({
+      background: "#323761",
+      border: "none"
+    });
+    $("#fourStar").css({
+      background: "#323761",
+      border: "none"
+    });
+    $("#fiveStar").css({
+      background: "#323761",
+      border: "none"
+    });
+  }
+  if (
+    starCheck2 == true &&
+    (starCheck1 = starCheck3 = starCheck4 = starCheck5) == false
+  ) {
+    $("#twoStar").css({
+      background: "linear-gradient(to right, #ff5c4a , #ff8325)",
+      border: "1px solid #ff5f47",
+      color: "white"
+    });
+    $("#oneStar").css({
+      background: "#323761",
+      border: "none"
+    });
+    $("#threeStar").css({
+      background: "#323761",
+      border: "none"
+    });
+    $("#fourStar").css({
+      background: "#323761",
+      border: "none"
+    });
+    $("#fiveStar").css({
+      background: "#323761",
+      border: "none"
+    });
+  }
+  if (
+    starCheck3 == true &&
+    (starCheck1 = starCheck2 = starCheck4 = starCheck5) == false
+  ) {
+    $("#threeStar").css({
+      background: "linear-gradient(to right, #ff5c4a , #ff8325)",
+      border: "1px solid #ff5f47",
+      color: "white"
+    });
+    $("#oneStar").css({
+      background: "#323761",
+      border: "none"
+    });
+    $("#twoStar").css({
+      background: "#323761",
+      border: "none"
+    });
+    $("#fourStar").css({
+      background: "#323761",
+      border: "none"
+    });
+    $("#fiveStar").css({
+      background: "#323761",
+      border: "none"
+    });
+  }
+  if (
+    starCheck4 == true &&
+    (starCheck1 = starCheck2 = starCheck3 = starCheck5) == false
+  ) {
+    $("#fourStar").css({
+      background: "linear-gradient(to right, #ff5c4a , #ff8325)",
+      border: "1px solid #ff5f47",
+      color: "white"
+    });
+    $("#oneStar").css({
+      background: "#323761",
+      border: "none"
+    });
+    $("#twoStar").css({
+      background: "#323761",
+      border: "none"
+    });
+    $("#threeStar").css({
+      background: "#323761",
+      border: "none"
+    });
+    $("#fiveStar").css({
+      background: "#323761",
+      border: "none"
+    });
+  }
+  if (
+    starCheck5 == true &&
+    (starCheck1 = starCheck2 = starCheck3 = starCheck4) == false
+  ) {
+    $("#fiveStar").css({
+      background: "linear-gradient(to right, #ff5c4a , #ff8325)",
+      border: "1px solid #ff5f47",
+      color: "white"
+    });
+    $("#oneStar").css({
+      background: "#323761",
+      border: "none"
+    });
+    $("#twoStar").css({
+      background: "#323761",
+      border: "none"
+    });
+    $("#threeStar").css({
+      background: "#323761",
+      border: "none"
+    });
+    $("#fourStar").css({
+      background: "#323761",
+      border: "none"
+    });
+  }
+}
+
+//ajax请求历史开奖记录
+function history() {
+  $.ajax({
+    type: "get",
+    url: `${baseUrl}/lottery/getLotteryHis.do`,
+    data: {
+      pageNum: pageNum,
+      rowNum: 10
+    },
+    success: function (msg) {
+      for (let item of msg.hisRecords) {
+        if (item.largeNum == 0) {
+          a = "resultSmall";
+          b = "resultBig";
+        } else {
+          b = "resultSmall";
+          a = "resultBig";
+        }
+        if (item.lotterySingle == 0) {
+          c = "resultSingle";
+          d = "resultDouble";
+        } else {
+          d = "resultSingle";
+          c = "resultDouble";
+        }
+        $("#scrollOne").append(`<article><span class="recordsId">${
+          item.recordsId
+        }</span><span>${datetimeFormat(item.updateTime)}</span>
+        <span style="color:#ff5961;font-weight:bold">${item.lotteryFive}${
+          item.lotteryFour
+        }${item.lotteryThree}${item.lotteryTwo}${item.lotteryOne}</span>
+        <div><span><b class=${b}>${englistBig}</b>-<b class=${a}>${englistSmall}</b></span>|<span><b class=${d}>${englistOdd}</b>-<b class=${c}>${englistEven}</b></span></div></article>`);
+        oMyBar1.setSize();
+      }
+      $("#nextPeriods").text(
+        `${period1}${parseInt($(".recordsId:first").text()) + 1}${period2}`
+      );
+    }
+  });
+}
+
+//ajax请求历史开奖记录
+function historyOnePage() {
+  $.ajax({
+    type: "get",
+    url: `${baseUrl}/lottery/getLotteryHis.do`,
+    data: {
+      pageNum: 1,
+      rowNum: 10
+    },
+    success: function (msg) {
+      for (let item of msg.hisRecords) {
+        if (item.largeNum == 0) {
+          a = "resultSmall";
+          b = "resultBig";
+        } else {
+          b = "resultSmall";
+          a = "resultBig";
+        }
+        if (item.lotterySingle == 0) {
+          c = "resultSingle";
+          d = "resultDouble";
+        } else {
+          d = "resultSingle";
+          c = "resultDouble";
+        }
+        $("#scrollOne").append(`<article><span class="recordsId">${
+          item.recordsId
+        }</span><span>${datetimeFormat(item.updateTime)}</span>
+        <span style="color:#ff5961;font-weight:bold">${item.lotteryFive}${
+          item.lotteryFour
+        }${item.lotteryThree}${item.lotteryTwo}${item.lotteryOne}</span>
+        <div><span><b class=${b}>${englistBig}</b>-<b class=${a}>${englistSmall}</b></span>|<span><b class=${d}>${englistOdd}</b>-<b class=${c}>${englistEven}</b></span></div></article>`);
+        oMyBar1.setSize();
+      }
+      $("#nextPeriods").text(
+        `${period1}${parseInt($(".recordsId:first").text()) + 1}${period2}`
+      );
+    }
+  });
+}
+
+//首次进入请求最新一条历史记录
+function newHistory(){
+  $.ajax({
+    type: "get",
+    url: `${baseUrl}/lottery/getLotteryHis.do`,
+    data: {
+      pageNum: 1,
+      rowNum: 1
+    },
+    success: function (msg) {
+      //  console.log(msg)
+       for(let item of msg.hisRecords){
+        $("#qh").text(`${item.recordsId}`);
+        $("#kjTime").text(`${datetimeFormat(item.updateTime)}`);
+        $("#kjhm").text(`${item.lotteryFive}${item.lotteryFour}${item.lotteryThree}${item.lotteryTwo}${item.lotteryOne}`);
+        if (item.lotteryOne >= 5) {
+          $("#dx").text(englistBig);
+          b = "resultSmall";
+          a = "resultBig";
+        } else {
+          $("#dx").text(englistSmall);
+          a = "resultSmall";
+          b = "resultBig";
+        }
+        if (item.lotteryOne % 2 == 0) {
+          $("#ds").text(englistEven);
+          c = "resultSingle";
+          d = "resultDouble";
+        } else {
+          $("#ds").text(englistOdd);
+          d = "resultSingle";
+          c = "resultDouble";
+        }
+        $("#current").css({color: "grey"});
+        $("#dx").css({color: "grey"});
+        $("#ds").css({color: "grey"});
+        $("#kjhm").css({color: "grey"});
+       }
+    }
+  })
+}
+newHistory()
+
+// 数字选择函数
+function numberChoose(nodename, numberBox, resetBtnName) {
+  let numberAry = [];
+  let numberStr = "";
+  let numberBtn = document.getElementsByClassName(nodename);
+  for (let item of numberBtn) {
+    item.onclick = function () {
+      if (this.dataset.check == "off") {
+        this.dataset.check = "on";
+        $(this).css({
+          "background-color": "#613522",
+          border: "1px solid #ff5f47",
+          color: "white"
+        });
+        numberAry.push(item.innerText);
+        numberAry.sort((a, b) => a - b);
+      } else {
+        this.dataset.check = "off";
+        $(this).css({
+          "background-color": "#282e50",
+          border: "none",
+          color: "white"
+        });
+        for (let i = 0; i < numberAry.length; i++) {
+          if (numberAry[i] == item.innerText) {
+            numberAry.splice(i, 1);
+          }
+        }
+      }
+      if (numberAry.length == 0) {
+        $(numberBox).text("[ ]");
+      } else {
+        for (let j = 0; j < numberAry.length; j++) {
+          if (j == numberAry.length - 1) {
+            numberStr += `${numberAry[j]}`;
+          } else {
+            numberStr += `${numberAry[j]},`;
+          }
+        }
+        $(numberBox).text(`[${numberStr}]`);
+      }
+      numberStr = "";
+      currentNumber();
+      totalCalculation();
+    };
+  }
+  // 数字选项重置
+  $(resetBtnName).click(function () {
+    for (let item of numberBtn) {
+      item.dataset.check = "off"; //改变自定义属性值
+    }
+    $(`.${nodename}`).css({
+      "background-color": "#282e50",
+      border: "none",
+      color: "white"
+    }); //还原样式
+    numberAry.length = 0;
+    numberStr = "";
+    $(numberBox).text("[ ]");
+    currentNumber();
+    totalCalculation();
+  });
+}
+
+//计算投注金额函数
+function totalCalculation() {
+  $("#baseTotalBets").text(
+    parseFloat($(".myBets").val() * parseFloat($("#baseBets").text())).toFixed(
+      4
+    )
+  );
+  $("#higherTotalBets").text(
+    parseFloat(
+      $(".myBets").val() * parseFloat($("#higherBets").text())
+    ).toFixed(4)
+  );
+  baseBetsNum =
+    $("#baseTotalBets").text() == "0" ?
+    0 :
+    parseFloat($("#baseTotalBets").text());
+  higherBetsNum =
+    $("#higherTotalBets").text() == "0" ?
+    0 :
+    parseFloat($("#higherTotalBets").text());
+}
+
+// 当前注数
+function currentNumber() {
+  let baseBet1 = arr.length;
+  let baseBet2 = $("#numbersBox")
+    .text()
+    .replace("[", "")
+    .replace("]", "")
+    .replace(/,/g, "")
+    .replace(/\s/g, "").length;
+  let h1Num = $("#h1box")
+    .text()
+    .replace("[", "")
+    .replace("]", "")
+    .replace(/,/g, "")
+    .replace(/\s/g, "").length;
+  let h2Num = $("#h2box")
+    .text()
+    .replace("[", "")
+    .replace("]", "")
+    .replace(/,/g, "")
+    .replace(/\s/g, "").length;
+  let h3Num = $("#h3box")
+    .text()
+    .replace("[", "")
+    .replace("]", "")
+    .replace(/,/g, "")
+    .replace(/\s/g, "").length;
+  let h4Num = $("#h4box")
+    .text()
+    .replace("[", "")
+    .replace("]", "")
+    .replace(/,/g, "")
+    .replace(/\s/g, "").length;
+  let h5Num = $("#h5box")
+    .text()
+    .replace("[", "")
+    .replace("]", "")
+    .replace(/,/g, "")
+    .replace(/\s/g, "").length;
+
+  //基础模式计算注数
+  if (modelBollen == "0") {
+    $("#baseBets").text(`${baseBet1 + baseBet2}`);
+  }
+
+  //选择高阶模式的注数计算
+  if (modelBollen == "1") {
+    if (
+      starCheck1 == true &&
+      (starCheck2 = starCheck3 = starCheck4 = starCheck5) == false
+    ) {
+      $("#higherBets").text(`${h1Num}`);
+    }
+    if (
+      starCheck2 == true &&
+      (starCheck1 = starCheck3 = starCheck4 = starCheck5) == false
+    ) {
+      $("#higherBets").text(`${h1Num * h2Num}`);
+    }
+    if (
+      starCheck3 == true &&
+      (starCheck1 = starCheck2 = starCheck4 = starCheck5) == false
+    ) {
+      $("#higherBets").text(`${h1Num * h2Num * h3Num}`);
+    }
+    if (
+      starCheck4 == true &&
+      (starCheck1 = starCheck2 = starCheck3 = starCheck5) == false
+    ) {
+      $("#higherBets").text(`${h1Num * h2Num * h3Num * h4Num}`);
+    }
+    if (
+      starCheck5 == true &&
+      (starCheck1 = starCheck2 = starCheck3 = starCheck4) == false
+    ) {
+      $("#higherBets").text(`${h1Num * h2Num * h3Num * h4Num * h5Num}`);
+    }
+  }
+}
+
+//我的投注记录请求函数
+function getHisBets() {
+    if (window.ScatterJS.scatter.identity!=null || userName != "") {
+      $.ajax({
+        type: "get",
+        url: `${baseUrl}/lottery/getUserBetHis.do`,
+        data: {
+          userName: window.ScatterJS.scatter.identity == null ?
+            userName :
+            scatter.identity.accounts[0].name,
+          pageNum: pageNumMybets
+        },
+        success: function (msg) {
+          // console.log(msg)
+          let hisbetsStr = "";
+          for (let item of msg.userHis) {
+            if (item.lotteryBonus) {
+              hisbetsStr += `<div class="orderHead">
+              <div class="orderHeadInner">
+                <div>${
+                  item.betNum
+                }<a href="https://bloks.io/transaction/${
+                item.transactionId
+              }" class="search" target="_blank"/></div>
+                <div>${item.betId}</div>
+                <div>
+                ${
+                  item.largeNum == "1" && item.largeNum != null
+                    ? englistBig
+                    : ""
+                }${
+                item.largeNum == "0" && item.largeNum != null
+                  ? englistSmall
+                  : ""
+              }
+                ${
+                  item.lotterySingle == "1" && item.lotterySingle != null
+                    ? englistOdd
+                    : ""
+                }${
+                item.lotterySingle == "0" && item.lotterySingle != null
+                  ? englistEven
+                  : ""
+              }
+                ${item.lotteryFive ? item.lotteryFive : ""}
+                ${item.lotteryFour ? item.lotteryFour : ""}
+                ${item.lotteryThree ? item.lotteryThree : ""}
+                ${item.lotteryTwo ? item.lotteryTwo : ""}
+                ${item.lotteryOne ? item.lotteryOne : ""}
+                </div>
+                <div style="color:#ff564f">${win}</div>
+                <div>${item.lotteryBonus}</div>
+                <div>${datetimeDay(item.updateTime)}</div>
+              </div>
+              </div>`;
+              $("#scrollTwo").html(hisbetsStr);
+            } else {
+              var betJsonStr = `${item.betJson}`;
+              if (lang == "en_US") {
+                betJsonStr = betJsonStr
+                  .replace("大", "B")
+                  .replace("小", "S")
+                  .replace("单", "O")
+                  .replace("双", "E");
+              }
+              hisbetsStr += `<div class="orderHead">
+              <div class="orderHeadInner">
+                <div>${
+                  item.betNum
+                }<a href="https://bloks.io/transaction?${
+                item.transactionId
+              }" class="search" target="_blank"/></div>
+                <div>${item.betId}</div>
+                <div title=${betJsonStr} style="overflow: hidden; text-overflow: ellipsis;">
+                ${betJsonStr}
+                </div>
+                <div style="color:#3083de">${englistBet}</div>
+                <div>${item.noteMoney}</div>
+                <div>${datetimeDay(item.createTime)}</div>
+              </div>
+              </div>`;
+              $("#scrollTwo").html(hisbetsStr);
+            }
+          }
+          oMyBar2.setSize();
+          $("#scrollTwo").children(":first").mouseenter(function(){
+               $(this).css({
+                "background-color": "#313862",
+                "border": "1px solid #3083de"
+               })
+          })
+          $("#scrollTwo").children(":first").mouseleave(function(){
+            $(this).css({
+            "background-color": "#252a48",
+             "border": "none"
+            })
+       })
+        }
+      });
+    }
+}
+
+// 抵押cpu
+$("#cpuImg").click(function () {
+  if(loginBoolean==false){
+    let cpuInput = 0;
+    $("#cpuContainer").css("display", "block");
+    $("#cpuInput").blur(function () {
+      cpuInput = parseFloat($("#cpuInput").val()).toFixed(4);
+    });
+    const eosOptions = {
+      expireInSeconds: 60
+    };
+    const eos = scatter.eos(network, Eos, eosOptions);
+    $("#cpuComfire").click(function () {
+      eos.transaction(tr => {
+          tr.delegatebw({
+            from: scatter.identity.accounts[0].name,
+            receiver: scatter.identity.accounts[0].name,
+            stake_net_quantity: "0.0000 EOS",
+            stake_cpu_quantity: `${cpuInput} EOS`,
+            transfer: 0
+          });
+        }).then(result => {
+          checkIdentity();
+          $("#cpuContainer").css("display", "none");
+        });
+    });
+  }else{
+    $.message({
+      type:"error",
+      message:"暂不支持私钥抵押CPU！"
+    })
+  }
+});
+
+$("#closeCpu").click(function(){
+  $("#cpuContainer").css("display", "none");
+})
+
+//私钥登录
+$("#loginComfire").click(function () {
+  let reg = new RegExp("^[A-Za-z0-9]{51}$");
+  if (reg.test($("#userChainId").val()) == true) {
+    $.ajax({
+      type: "post",
+      url: `${baseUrl}/account/loginWidthPriKey.do`,
+      data: {
+        private_key: $("#userChainId").val(),
+        userCode: userCode ? userCode : ""
+      },
+      success: function (date) {
+        userName = date.userName;
+        publicKey = date.pubKey;
+        loginBoolean = true;
+        $.ajax({
+          type: "get",
+          url: `${baseUrl}/account/getAccount.do`,
+          data: {
+            account: date.userName
+          },
+          success: function (msg) {
+            uid = date.userName;
+            $("#userInfomation").css("display", "block");
+            $("#loginBtn").css("display", "none");
+            $("#loginContainer").css("display", "none");
+            $("#loginContainer").css("display", "none");
+            $(".loginBtnBets").css("display", "none");
+            $(".betsBtn").css("display", "block");
+
+            $("#cpu").text(
+              `${parseFloat((msg.cpu.used / msg.cpu.max) * 100).toFixed(2)}%`
+            );
+            $("#userName").text(`${date.userName}`);
+            $("#EosMoney").text(`${msg.balance ? msg.balance : "0"}`);
+          }
+        });
+        getHisBets();
+      }
+    });
+  } else {
+    $.message({
+      type: "warning",
+      message: "请输入正确的私钥"
+    });
+  }
+});
+
+function toIndex() {
+  window.location.href=`${baseUrl}/`;
+}

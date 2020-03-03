@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/welcome.css" />
+    <title>欢迎页</title>
+  </head>
+
+  <body>
+    <div id="waveBox"></div>
+    <div id="main">
+      <header>
+        <img src="../images/logo.png" alt="logo" />
+        <div id="headRight">
+          <div id="LanguageBox">
+            <div id="inputBox">
+              <img src="../images/Singapore.png" alt="" id="guoqiBox" />简体中文
+            </div>
+            <ul id="language">
+              <li id="Ch"><i></i>简体中文</li>
+              <li id="En"><i></i>English</li>
+            </ul>
+          </div>
+          <img src="../images/down.png" alt="down" id="changeLanguage" />
+        </div>
+      </header>
+      <h1><span>欢迎来到 </span>EOS Casino</h1>
+      <div style="display:flex;justify-content: space-between;margin:auto;margin-top: 116px;width: 1600px;">
+          <div class="LotteryBoxOne">
+              <div class="circleBox">
+                <img src="../images/circle.png" alt="circle" />
+              </div>
+              <div class="Lottery">
+                <p>LOTTERY</p>
+                <p>
+                  第一个构建于EOS主网上的彩票游戏，<br />
+                  将EOS区块ID作为开奖号码，每分钟<br />开奖的去中心化平台，公平公正 
+                </p>
+              </div>
+              <i id="arrowOne"></i>
+            </div>
+            <div class="LotteryBoxTwo">
+                <div class="circleBox">
+                  <img src="../images/circle.png" alt="circle" />
+                </div>
+                <div class="Lottery">
+                  <p>龙虎斗</p>
+                  <p>
+                    第一个构建于EOS主网上的彩票游戏，<br />
+                    将EOS区块ID作为开奖结果，公平公正。
+                  </p>
+                </div>
+                <i id="arrowTwo"></i>
+            </div>
+            <div class="LotteryBoxThree">
+                <div class="circleBox">
+                  <img src="../images/circle.png" alt="circle" />
+                </div>
+                <div class="Lottery">
+                  <p>21点</p>
+                  <p>
+                    第一个构建于EOS主网上的彩票游戏，<br />
+                    将EOS区块ID作为开奖结果，公平公正。
+                  </p>
+                </div>
+                <i id="arrowThree"></i>
+            </div>
+      </div>
+      
+    </div>
+    <script src="../js/jquery-1.12.4.min.js"></script>
+    <script src="../js/three.min.js"></script>
+    <script src="../js/follow.js"></script>
+    <script src="../js/welcome.js"></script>
+    <script type="text/javascript">
+      window.onload = function() {
+        setTimeout(function() {
+          initCanvas("#waveBox");
+        }, 500);
+      };
+    </script>
+  </body>
+</html>

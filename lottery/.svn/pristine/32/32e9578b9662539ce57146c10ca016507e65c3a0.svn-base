@@ -1,0 +1,35 @@
+package com.stip.net.entity;
+
+import java.util.Date;
+
+public class DiceOpenPrize {
+	private long Termnumber;	//期号
+	private String prize;		//中奖号码
+	private Date time;			//开奖时间
+	public long getTermnumber() {
+		return Termnumber;
+	}
+	public void setTermnumber(long termnumber) {
+		Termnumber = termnumber;
+	}
+	public String getPrize() {
+		return prize;
+	}
+	public void setPrize(String prize) {
+		this.prize = prize;
+	}
+	public Date getTime() {
+		return time;
+	}
+	public void setTime(Date time) {
+		this.time = time;
+	}
+	public DiceOpenPrize(long termnumber, String prize, Date time) {
+		super();
+		Termnumber = termnumber;
+		this.prize = prize;
+		this.time = time;
+	}
+	public DiceOpenPrize(){}
+
+}
